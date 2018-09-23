@@ -9,11 +9,12 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
         where TStartup : class
     {
         protected CorrelatorTestsBase()
+            : this(CreateTestWebHostBuilder())
         {
-            IWebHostBuilder builder = new WebHostBuilder()
-                .UseEnvironment("test")
-                .UseStartup<TStartup>();
+        }
 
+        protected CorrelatorTestsBase(IWebHostBuilder builder)
+        {
             Server = new TestServer(builder);
             Client = Server.CreateClient();
         }
@@ -35,5 +36,10 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
                 Client?.Dispose();
             }
         }
+
+        private static IWebHostBuilder CreateTestWebHostBuilder() =>
+            new WebHostBuilder()
+                .UseEnvironment("test")
+                .UseStartup<TStartup>();
     }
 }
