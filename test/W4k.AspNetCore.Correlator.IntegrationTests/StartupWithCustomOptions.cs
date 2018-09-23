@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.IntegrationTests
 {

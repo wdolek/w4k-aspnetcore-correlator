@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Options
 {
     /// <summary>
     /// Correlator (middleware) options.
@@ -24,5 +24,15 @@ namespace W4k.AspNetCore.Correlator
         /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
         /// </summary>
         public Func<CorrelationId> Factory { get; set; } = () => CorrelationId.NewCorrelationId();
+
+        /// <summary>
+        /// Gets or sets correlation ID propagation settings affecting response headers.
+        /// </summary>
+        public PropagationSettings Emit { get; set; } = PropagationSettings.PropagateAs(HttpHeaders.CorrelationId);
+
+        /// <summary>
+        /// Gets or sets correlation ID propagation settings affecting subsequent requests via <see cref="CorrelatorHttpMessageHandler"/>.
+        /// </summary>
+        public PropagationSettings Forward { get; set; } = PropagationSettings.PropagateAs(HttpHeaders.CorrelationId);
     }
 }

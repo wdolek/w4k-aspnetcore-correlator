@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
 {
