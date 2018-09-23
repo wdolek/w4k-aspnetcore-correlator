@@ -8,7 +8,7 @@ using Xunit;
 
 namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 {
-    public partial class HttpRequestExtensionsShould
+    public class HttpRequestExtensionsShould
     {
         [Fact]
         public void ThrowOnNullRequest()

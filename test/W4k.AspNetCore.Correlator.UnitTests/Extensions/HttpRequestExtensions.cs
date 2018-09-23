@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using W4k.AspNetCore.Correlator.UnitTests.Misc;
 
 namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 {
