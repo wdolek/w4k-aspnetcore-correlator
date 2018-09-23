@@ -28,6 +28,17 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
                     null));
         }
 
+        [Fact]
+        public void NotThrowOnNullHeader()
+        {
+            var fromHeaders = new List<string> { null };
+            HttpRequest request = new Mock<HttpRequest>().SetupRequestHeaders("X-CorrelationId", "123").Object;
+
+            Exception exception = Record.Exception(() => request.ReadCorrelationId(fromHeaders));
+
+            Assert.Null(exception);
+        }
+
         [Theory]
         [MemberData(nameof(GenerateHttpRequests))]
         public void ReadExpectedCorrelationId(
@@ -44,7 +55,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
             var headers = new List<string>
             {
                 "X-CorrelationId",
-                "X-RequestId"
+                "X-RequestId",
             };
 
             yield return new object[]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
@@ -36,7 +37,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
 
             string headerName = null;
             string value = null;
-            foreach (string header in fromHeaders)
+            foreach (string header in fromHeaders.Where(h => h != null))
             {
                 if (request.Headers.TryGetValue(header, out StringValues headerValues)
                     && headerValues.Count > 0
