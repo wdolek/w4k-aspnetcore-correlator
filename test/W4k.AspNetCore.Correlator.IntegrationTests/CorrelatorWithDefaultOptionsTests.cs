@@ -10,8 +10,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
     public sealed class CorrelatorWithDefaultOptionsTests : CorrelatorTestsBase<StartupWithDefaultOptions>
     {
         [Theory]
-        [InlineData("X-CorrelationId")]
-        [InlineData("X-RequestId")]
+        [InlineData("X-Correlation-ID")]
+        [InlineData("x-correlation-id")]
+        [InlineData("X-Request-ID")]
         public async Task CorrelationIdReadFromRequest(string correlationHeaderName)
         {
             // arrange: correlation ID header sent
@@ -20,7 +21,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 
             // act: `X-Test-CorrelationId` is set by inline test middleware
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
-            string correlationId = response.Headers.GetValues("X-Test-CorrelationId").FirstOrDefault();
+            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
 
             // assert
             Assert.NotNull(correlationId);
@@ -35,7 +36,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 
             // act
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
-            string correlationId = response.Headers.GetValues("X-Test-CorrelationId").FirstOrDefault();
+            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
 
             // assert
             Assert.NotNull(correlationId);

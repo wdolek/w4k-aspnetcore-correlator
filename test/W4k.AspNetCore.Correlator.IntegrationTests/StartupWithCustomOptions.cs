@@ -23,7 +23,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
         {
             app.UseMiddleware<CorrelatorMiddleware>();
             app.Use((context, next) => {
-                context.Response.Headers.Add("X-Test-CorrelationId", context.TraceIdentifier);
+                context.Response.Headers.Add("X-Test-Correlation-ID", context.TraceIdentifier);
                 return next.Invoke();
             });
         }
