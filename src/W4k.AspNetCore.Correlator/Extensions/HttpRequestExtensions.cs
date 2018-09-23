@@ -16,9 +16,13 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <param name="request">HTTP request.</param>
         /// <param name="fromHeaders">Enumerable of HTTP header names to be used for correlation ID.</param>
         /// <returns>
-        /// Correlation ID read from request headers or empty correlation ID if header(s) not set.
+        /// Returns tuple of correlation ID and header name from which value was read.
+        /// If header is not set or contains invalid value, <see cref="CorrelationId.Empty"/> is returned
+        /// with <c>null</c> header value.
         /// </returns>
-        public static CorrelationId ReadCorrelationId(this HttpRequest request, IEnumerable<string> fromHeaders)
+        public static (CorrelationId CorrelationId, string HeaderName) ReadCorrelationId(
+            this HttpRequest request,
+            IEnumerable<string> fromHeaders)
         {
             if (request == null)
             {
@@ -30,6 +34,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
                 throw new ArgumentNullException(nameof(fromHeaders));
             }
 
+            string headerName = null;
             string value = null;
             foreach (string header in fromHeaders)
             {
@@ -37,12 +42,14 @@ namespace W4k.AspNetCore.Correlator.Extensions
                     && headerValues.Count > 0
                     && !string.IsNullOrEmpty(headerValues[0]))
                 {
+                    headerName = header;
                     value = headerValues[0];
                     break;
                 }
             }
 
-            return CorrelationId.FromString(value) ?? CorrelationId.Empty;
+            // NB! correlation ID may be empty (but still something), however header name may be null
+            return (CorrelationId.FromString(value) ?? CorrelationId.Empty, headerName);
         }
     }
 }

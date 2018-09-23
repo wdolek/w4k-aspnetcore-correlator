@@ -17,7 +17,7 @@ namespace W4k.AspNetCore.Correlator.Options
         public List<string> ReadFrom { get; } = new List<string>
             {
                 HttpHeaders.CorrelationId,
-                HttpHeaders.RequestId
+                HttpHeaders.RequestId,
             };
 
         /// <summary>

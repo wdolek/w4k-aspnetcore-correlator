@@ -35,8 +35,10 @@ namespace W4k.AspNetCore.Correlator
         /// </returns>
         public Task Invoke(HttpContext httpContext)
         {
-            httpContext.Request
-                .ReadCorrelationId(_options.ReadFrom)
+            (CorrelationId correlationId, string headerName) =
+                httpContext.Request.ReadCorrelationId(_options.ReadFrom);
+
+            correlationId
                 .GenerateIfEmpty(_options.Factory)
                 .ApplyTo(httpContext);
 

@@ -35,7 +35,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
             IEnumerable<string> fromHeaders,
             CorrelationId expected)
         {
-            CorrelationId correlationId = request.ReadCorrelationId(fromHeaders);
+            (CorrelationId correlationId, string _) = request.ReadCorrelationId(fromHeaders);
             Assert.Equal(expected, correlationId);
         }
 
