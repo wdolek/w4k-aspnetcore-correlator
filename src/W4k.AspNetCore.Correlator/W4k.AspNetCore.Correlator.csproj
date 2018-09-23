@@ -10,11 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
-    
-    <!-- Setting private assets to avoid running Style cop on referencing test project:
-         https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/2278#issuecomment-292795665 -->
     <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="All" />    
   </ItemGroup>
 
