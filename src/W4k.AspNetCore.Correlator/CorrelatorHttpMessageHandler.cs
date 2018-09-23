@@ -39,6 +39,7 @@ namespace W4k.AspNetCore.Correlator
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
+            // TODO: Set request header according to settings
             request.AddHeaderIfNotSet(HttpHeaders.CorrelationId, _contextAccessor.HttpContext?.TraceIdentifier);
 
             return base.SendAsync(request, cancellationToken);

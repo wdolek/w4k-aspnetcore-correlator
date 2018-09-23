@@ -42,6 +42,7 @@ namespace W4k.AspNetCore.Correlator
                 .GenerateIfEmpty(_options.Factory)
                 .ApplyTo(httpContext);
 
+            // TODO: Set response header if configured so...
             return _next.Invoke(httpContext);
         }
     }
