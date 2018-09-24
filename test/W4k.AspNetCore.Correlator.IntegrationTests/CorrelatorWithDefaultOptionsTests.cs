@@ -42,5 +42,21 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
             Assert.NotNull(correlationId);
             Assert.True(Guid.TryParse(correlationId, out Guid _));
         }
+
+        [Fact]
+        public async Task CorrelationIdEmitted()
+        {
+            // arrange: correlation ID header sent as `X-Request-ID`
+            var request = new HttpRequestMessage(HttpMethod.Get, "/");
+            request.Headers.Add(HttpHeaders.RequestId, "123");
+
+            // act: `X-Test-CorrelationId` is set by inline test middleware
+            HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
+            string correlationId = response.Headers.GetValues("X-Correlation-ID").FirstOrDefault();
+
+            // assert
+            Assert.NotNull(correlationId);
+            Assert.Equal("123", correlationId);
+        }
     }
 }

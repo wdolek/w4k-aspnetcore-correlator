@@ -87,9 +87,7 @@ namespace W4k.AspNetCore.Correlator
 
         /// <inheritdoc />
         public override bool Equals(object obj) =>
-            obj is CorrelationId correlationId
-                ? Equals(correlationId)
-                : false;
+            obj is CorrelationId correlationId && Equals(correlationId);
 
         /// <inheritdoc />
         public override string ToString() => _value;

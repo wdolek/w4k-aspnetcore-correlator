@@ -20,6 +20,11 @@ namespace W4k.AspNetCore.Correlator.Options
             new PropagationSettings(HeaderPropagation.KeepIncomingHeaderName, string.Empty);
 
         /// <summary>
+        /// Internal header name.
+        /// </summary>
+        private readonly string _headerName;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PropagationSettings"/> struct.
         /// </summary>
         /// <param name="propagation">Header propagation.</param>
@@ -27,7 +32,7 @@ namespace W4k.AspNetCore.Correlator.Options
         private PropagationSettings(HeaderPropagation propagation, string headerName)
         {
             Settings = propagation;
-            HeaderName = headerName;
+            _headerName = headerName;
         }
 
         /// <summary>
@@ -38,7 +43,10 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets custom header name (not set for all header propagation types).
         /// </summary>
-        public string HeaderName { get; }
+        /// <remarks>
+        /// Defaults to <see cref="HttpHeaders.CorrelationId"/> if struct instantiated using <c>default</c>.
+        /// </remarks>
+        public string HeaderName => _headerName ?? HttpHeaders.CorrelationId;
 
         /// <summary>
         /// Performs equal comparison between two values.
@@ -63,7 +71,7 @@ namespace W4k.AspNetCore.Correlator.Options
             !left.Equals(right);
 
         /// <summary>
-        /// Creates settings to propacade header with provided name.
+        /// Creates settings to propagate header with provided name.
         /// </summary>
         /// <param name="headerName">Custom header name.</param>
         /// <returns>
@@ -81,9 +89,7 @@ namespace W4k.AspNetCore.Correlator.Options
 
         /// <inheritdoc />
         public override bool Equals(object obj) =>
-            obj is PropagationSettings other
-                ? Equals(other)
-                : false;
+            obj is PropagationSettings other && Equals(other);
 
         /// <inheritdoc />
         public override int GetHashCode()

@@ -17,6 +17,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
                     // read custom header
                     o.ReadFrom.Clear();
                     o.ReadFrom.Add("X-CID");
+
+                    // do not emit correlation ID
+                    o.Emit = PropagationSettings.NoPropagation;
                 });
         }
 
