@@ -9,13 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{C0698901-3482-428B-8863-D631F0304244}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.IntegrationTests", "test\W4k.AspNetCore.Correlator.IntegrationTests\W4k.AspNetCore.Correlator.IntegrationTests.csproj", "{74E1A843-6D1A-457A-9F1A-C89A368F59EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.IntegrationTests", "test\W4k.AspNetCore.Correlator.IntegrationTests\W4k.AspNetCore.Correlator.IntegrationTests.csproj", "{74E1A843-6D1A-457A-9F1A-C89A368F59EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.UnitTests", "test\W4k.AspNetCore.Correlator.UnitTests\W4k.AspNetCore.Correlator.UnitTests.csproj", "{80908A90-2E8C-416C-91AF-FBA9A23D58D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.UnitTests", "test\W4k.AspNetCore.Correlator.UnitTests\W4k.AspNetCore.Correlator.UnitTests.csproj", "{80908A90-2E8C-416C-91AF-FBA9A23D58D3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8FE80DF2-87C8-4639-AFB8-C97980565E70}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		ca.ruleset = ca.ruleset
 		README.md = README.md
