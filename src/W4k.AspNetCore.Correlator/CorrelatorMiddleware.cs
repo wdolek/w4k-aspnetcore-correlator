@@ -35,6 +35,8 @@ namespace W4k.AspNetCore.Correlator
         /// </returns>
         public async Task Invoke(HttpContext httpContext)
         {
+            // TODO: Review extension methods (refactor?)
+
             // keep name of header from which correlation ID has been read
             (CorrelationId correlationId, string headerName) =
                 httpContext.Request.ReadCorrelationId(_options.ReadFrom);
