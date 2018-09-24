@@ -1,8 +1,12 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
 {
@@ -12,15 +16,18 @@ namespace W4k.AspNetCore.Correlator
     public class CorrelatorHttpMessageHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly CorrelatorOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
         /// </summary>
         /// <param name="contextAccessor">HTTP context accessor.</param>
-        public CorrelatorHttpMessageHandler(IHttpContextAccessor contextAccessor)
+        /// <param name="options">Correlator options.</param>
+        public CorrelatorHttpMessageHandler(IHttpContextAccessor contextAccessor, IOptions<CorrelatorOptions> options)
             : base()
         {
-            _contextAccessor = contextAccessor ?? throw new System.ArgumentNullException(nameof(contextAccessor));
+            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -28,10 +35,15 @@ namespace W4k.AspNetCore.Correlator
         /// </summary>
         /// <param name="innerHandler">Inner HTTP message handler.</param>
         /// <param name="contextAccessor">HTTP context accessor.</param>
-        public CorrelatorHttpMessageHandler(HttpMessageHandler innerHandler, IHttpContextAccessor contextAccessor)
+        /// <param name="options">Correlator options.</param>
+        public CorrelatorHttpMessageHandler(
+            HttpMessageHandler innerHandler,
+            IHttpContextAccessor contextAccessor,
+            IOptions<CorrelatorOptions> options)
             : base(innerHandler)
         {
             _contextAccessor = contextAccessor ?? throw new System.ArgumentNullException(nameof(contextAccessor));
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <inheritdoc />
@@ -39,8 +51,19 @@ namespace W4k.AspNetCore.Correlator
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            // TODO: Set request header according to settings
-            request.AddHeaderIfNotSet(HttpHeaders.CorrelationId, _contextAccessor.HttpContext?.TraceIdentifier);
+            if (_options.Forward.Settings != HeaderPropagation.NoPropagation)
+            {
+                HttpContext context = _contextAccessor.HttpContext;
+                if (context != null)
+                {
+                    var headerName = _options.Forward.Settings == HeaderPropagation.UsePredefinedHeaderName
+                        ? _options.Forward.HeaderName
+                        : _options.ReadFrom.Intersect(
+                            context.Request.Headers.Keys, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+
+                    request.AddHeaderIfNotSet(headerName, context.TraceIdentifier);
+                }
+            }
 
             return base.SendAsync(request, cancellationToken);
         }

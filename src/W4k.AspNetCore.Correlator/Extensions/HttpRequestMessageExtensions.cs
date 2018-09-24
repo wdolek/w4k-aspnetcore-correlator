@@ -21,7 +21,10 @@ namespace W4k.AspNetCore.Correlator.Extensions
             string headerName,
             string value)
         {
-            if (request == null || string.IsNullOrEmpty(value) || request.Headers.Contains(headerName))
+            if (request == null
+                || string.IsNullOrEmpty(headerName)
+                || string.IsNullOrEmpty(value)
+                || request.Headers.Contains(headerName))
             {
                 return request;
             }
