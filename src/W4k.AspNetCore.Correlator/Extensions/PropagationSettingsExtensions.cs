@@ -1,4 +1,5 @@
-﻿using W4k.AspNetCore.Correlator.Options;
+﻿using System;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {
@@ -26,6 +27,56 @@ namespace W4k.AspNetCore.Correlator.Extensions
 
             return headerName;
         }
+
+        /// <summary>
+        /// Invokes <paramref name="action"/> on <see cref="HeaderPropagation.KeepIncomingHeaderName"/>.
+        /// </summary>
+        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="action">Action to be invoked.</param>
+        /// <returns>
+        /// Propagation settings.
+        /// </returns>
+        public static PropagationSettings OnIncomingHeader(
+            this PropagationSettings propagation,
+            Action<PropagationSettings> action) => propagation.On(HeaderPropagation.KeepIncomingHeaderName, action);
+
+        /// <summary>
+        /// Invokes <paramref name="action"/> on <see cref="HeaderPropagation.UsePredefinedHeaderName"/>.
+        /// </summary>
+        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="action">Action to be invoked.</param>
+        /// <returns>
+        /// Propagation settings.
+        /// </returns>
+        public static PropagationSettings OnPredefinedHeader(
+            this PropagationSettings propagation,
+            Action<PropagationSettings> action) => propagation.On(HeaderPropagation.UsePredefinedHeaderName, action);
+
+        /// <summary>
+        /// Invokes <paramref name="action"/> on <paramref name="targetPropagation"/>.
+        /// </summary>
+        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="targetPropagation">Target propagation.</param>
+        /// <param name="action">Action to be invoked.</param>
+        /// <returns>
+        /// Propagation settings.
+        /// </returns>
+        private static PropagationSettings On(
+            this PropagationSettings propagation,
+            HeaderPropagation targetPropagation,
+            Action<PropagationSettings> action)
+        {
+            if (propagation.Settings == targetPropagation)
+            {
+                if (action == null)
+                {
+                    throw new ArgumentNullException(nameof(action));
+                }
+
+                action(propagation);
+            }
+
+            return propagation;
         }
     }
 }

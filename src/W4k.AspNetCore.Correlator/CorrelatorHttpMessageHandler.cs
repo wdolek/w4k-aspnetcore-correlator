@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +41,7 @@ namespace W4k.AspNetCore.Correlator
             IOptions<CorrelatorOptions> options)
             : base(innerHandler)
         {
-            _contextAccessor = contextAccessor ?? throw new System.ArgumentNullException(nameof(contextAccessor));
+            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -51,17 +50,16 @@ namespace W4k.AspNetCore.Correlator
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (_options.Forward.Settings != HeaderPropagation.NoPropagation)
+            HttpContext context = _contextAccessor.HttpContext;
+            if (context != null)
             {
-                HttpContext context = _contextAccessor.HttpContext;
-                if (context != null)
-                {
-                    var headerName = _options.Forward.Settings == HeaderPropagation.UsePredefinedHeaderName
-                        ? _options.Forward.HeaderName
-                        : context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
+                IHeaderDictionary headers = context.Request.Headers;
 
-                    request.Headers.AddIfNotSet(headerName, context.TraceIdentifier);
-                }
+                void AddCorrelationId(string headerName) => headers.AddIfNotSet(headerName, context.TraceIdentifier);
+
+                _options.Forward
+                    .OnPredefinedHeader(s => AddCorrelationId(s.HeaderName))
+                    .OnIncomingHeader(s => AddCorrelationId(headers.GetCorrelationHeaderName(_options.ReadFrom)));
             }
 
             return base.SendAsync(request, cancellationToken);
