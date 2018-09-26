@@ -58,10 +58,9 @@ namespace W4k.AspNetCore.Correlator
                 {
                     var headerName = _options.Forward.Settings == HeaderPropagation.UsePredefinedHeaderName
                         ? _options.Forward.HeaderName
-                        : _options.ReadFrom.Intersect(
-                            context.Request.Headers.Keys, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+                        : context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
 
-                    request.AddHeaderIfNotSet(headerName, context.TraceIdentifier);
+                    request.Headers.AddIfNotSet(headerName, context.TraceIdentifier);
                 }
             }
 
