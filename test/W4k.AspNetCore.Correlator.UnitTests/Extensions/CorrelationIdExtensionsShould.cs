@@ -33,27 +33,5 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 
             Assert.Equal(CorrelationId.Empty, newCorrelationId);
         }
-
-        [Fact]
-        public void SetCorrelationIdToHttpContext()
-        {
-            var context = new Mock<HttpContext>();
-            CorrelationId correlationId = CorrelationId.FromString("123").Value;
-
-            correlationId.ApplyTo(context.Object);
-
-            context.VerifySet(c => c.TraceIdentifier = "123", Times.Once);
-        }
-
-        [Fact]
-        public void NotSetCorrelationIdIfEmpty()
-        {
-            var context = new Mock<HttpContext>();
-            CorrelationId correlationId = CorrelationId.Empty;
-
-            correlationId.ApplyTo(context.Object);
-
-            context.VerifySet(c => c.TraceIdentifier = It.IsAny<string>(), Times.Never);
-        }
     }
 }
