@@ -1,10 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeSymbols>true</IncludeSymbols>
     <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <VersionPrefix>0.1</VersionPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Correlator middleware and HTTP message handler for managing correlation/request ID trough application.</Description>
     <PackageTags>aspnetcore;correlation-id;request-id</PackageTags>
   </PropertyGroup>
 
