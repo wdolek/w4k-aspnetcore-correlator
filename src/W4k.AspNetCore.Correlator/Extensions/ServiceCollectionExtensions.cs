@@ -18,7 +18,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
             // may be already registered
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-            return services.AddSingleton<CorrelatorHttpMessageHandler>();
+            return services.AddTransient<CorrelatorHttpMessageHandler>();
         }
     }
 }

@@ -23,23 +23,6 @@ namespace W4k.AspNetCore.Correlator
         /// <param name="contextAccessor">HTTP context accessor.</param>
         /// <param name="options">Correlator options.</param>
         public CorrelatorHttpMessageHandler(IHttpContextAccessor contextAccessor, IOptions<CorrelatorOptions> options)
-            : base()
-        {
-            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
-        /// </summary>
-        /// <param name="innerHandler">Inner HTTP message handler.</param>
-        /// <param name="contextAccessor">HTTP context accessor.</param>
-        /// <param name="options">Correlator options.</param>
-        public CorrelatorHttpMessageHandler(
-            HttpMessageHandler innerHandler,
-            IHttpContextAccessor contextAccessor,
-            IOptions<CorrelatorOptions> options)
-            : base(innerHandler)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
