@@ -40,10 +40,33 @@ namespace W4k.AspNetCore.Correlator
                 .GetCorrelationId(requestHeaderName)
                 .GenerateIfEmpty(_options.Factory);
 
-            await _next.Invoke(httpContext.WithCorrelationId(correlationId));
+            httpContext.Response.OnStarting(
+                state => EmitCorrelationId((HttpContext)state, _options.Emit, requestHeaderName, correlationId),
+                httpContext);
 
-            string responseHeaderName = _options.Emit.GetCorrelationHeaderName(requestHeaderName);
+            await _next.Invoke(httpContext.WithCorrelationId(correlationId));
+        }
+
+        /// <summary>
+        /// Adds correlation ID to response headers.
+        /// </summary>
+        /// <param name="httpContext">HTTP context.</param>
+        /// <param name="propagation">Correlation ID propagation settings.</param>
+        /// <param name="incomingHeaderName">Name of header containing correlation ID on request.</param>
+        /// <param name="correlationId">Correlation ID.</param>
+        /// <returns>
+        /// Task defining action of emitting correlation ID.
+        /// </returns>
+        private static Task EmitCorrelationId(
+            HttpContext httpContext,
+            PropagationSettings propagation,
+            string incomingHeaderName,
+            CorrelationId correlationId)
+        {
+            string responseHeaderName = propagation.GetCorrelationHeaderName(incomingHeaderName);
             httpContext.Response.Headers.AddIfNotSet(responseHeaderName, correlationId);
+
+            return Task.CompletedTask;
         }
     }
 }
