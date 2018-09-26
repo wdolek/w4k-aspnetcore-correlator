@@ -7,9 +7,6 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <summary>
         /// Decides HTTP header to emit correlation ID.
         /// </summary>
-        /// <remarks>
-        /// On missing incoming header/invalid setting, header name defaults to <see cref="HttpHeaders.CorrelationId"/>.
-        /// </remarks>
         /// <param name="settings">Header propagation settings.</param>
         /// <param name="incomingHeaderName">Request HTTP header containing correlation ID.</param>
         /// <returns>
@@ -27,7 +24,8 @@ namespace W4k.AspNetCore.Correlator.Extensions
                 ? incomingHeaderName
                 : settings.HeaderName;
 
-            return headerName ?? HttpHeaders.CorrelationId;
+            return headerName;
+        }
         }
     }
 }
