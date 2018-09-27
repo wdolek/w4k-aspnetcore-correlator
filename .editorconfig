@@ -4,7 +4,8 @@
 root = true
 
 [*]
-charset = utf-8
+indent_style = space
+# (Please don't specify an indent_size here; that has too many unintended consequences.)
 
 [*.sln]
 indent_style = tab
@@ -13,17 +14,23 @@ indent_style = tab
 indent_size = 2
 indent_style = space
 
-[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
+[*.{props,targets,ruleset,config,nuspec,resx,vsixmanifest,vsct}]
+indent_size = 2
+
+[*.json]
 indent_size = 2
 indent_style = space
 
-[*.{json}]
+[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
 indent_size = 2
 indent_style = space
 
 [*.{yml,yaml}]
 indent_size = 2
 indent_style = space
+
+[*.{cmd,ps1}]
+indent_size = 2
 
 [*.{htm,html,js,ts,tsx,css,scss,less,vue}]
 end_of_line = lf
@@ -40,9 +47,7 @@ indent_style = space
 max_line_length = 120
 trim_trailing_whitespace = true
 
-#
 # --- .NET code style settings -------------------------------------------------
-#
 
 # "this." qualifier
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#this_and_me
@@ -56,11 +61,18 @@ dotnet_style_qualification_for_event = false:suggestion
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
+# Parentheses preferences
+# https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference?view=vs-2017#example-editorconfig-file
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
+
 # Modifier preferences
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#normalize_modifiers
 dotnet_style_require_accessibility_modifiers = always:warning
-csharp_preferred_modifier_order = csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 dotnet_style_readonly_field = true:suggestion
+csharp_preferred_modifier_order = csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
 
 # Expression-level preferences
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#expression_level
@@ -71,15 +83,15 @@ dotnet_style_prefer_inferred_tuple_names = true:suggestion
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
 dotnet_style_prefer_auto_properties = true:suggestion
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_prefer_conditional_expression_over_return = true:suggestion
 
 # Null-checking preferences
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#null_checking
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
 
-#
 # --- C# code style settings ---------------------------------------------------
-#
 
 # Implicit and explicit types
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#implicit-and-explicit-types
@@ -120,9 +132,7 @@ csharp_style_conditional_delegate_call = false:suggestion
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#code_block
 csharp_prefer_braces = true:warning
 
-#
 # --- Formatting conventions ---------------------------------------------------
-#
 
 # Organize usings
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#usings
@@ -130,7 +140,7 @@ dotnet_sort_system_directives_first = true
 
 # C# formatting settings
 # https://docs.microsoft.com/en-us/visualstudio/ide/editorconfig-code-style-settings-reference#c-formatting-settings
-csharp_new_line_before_open_brace = methods,accessors,properties,control_blocks,types
+csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
@@ -179,13 +189,8 @@ csharp_space_between_empty_square_brackets = false
 csharp_space_between_method_declaration_name_and_open_parenthesis = false
 csharp_space_between_square_brackets = false
 
-#
 # --- Naming conventions -------------------------------------------------------
-#
-
-#
-# Styles definitions:
-#
+# --- Styles definitions:
 
 # base styles
 dotnet_naming_style.camel_case_style.capitalization = camel_case
@@ -207,9 +212,7 @@ dotnet_naming_style.suffix_async_style.required_suffix = Async
 dotnet_naming_style.suffix_base_style.capitalization = pascal_case
 dotnet_naming_style.suffix_base_style.required_suffix = Base
 
-#
-# Symbol definitions
-#
+# --- Symbol definitions
 
 # Symbol: const (no matter accessibility)
 dotnet_naming_symbols.constant_field_symbol.applicable_kinds = field
@@ -243,9 +246,7 @@ dotnet_naming_symbols.type_symbol.applicable_kinds = class,struct,enum,delegate
 # Symbol: member
 dotnet_naming_symbols.member_symbol.applicable_kinds = method,property,event
 
-#
-# Rules definitions
-#
+# --- Rules definitions
 
 # Rule: constants
 dotnet_naming_rule.constants_must_be_pascal_case.severity = error
