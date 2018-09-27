@@ -2,17 +2,17 @@
 
 namespace W4k.AspNetCore.Correlator.UnitTests
 {
-    public class CorrelationIdShould
+    public class CorrelationIdTests
     {
         [Fact]
-        public void BeEmptyIfDefault()
+        public void Ctor_InstantiatedUsingDefault_ExpectEmpty()
         {
             var correlationId = default(CorrelationId);
             Assert.Equal(string.Empty, correlationId.Value);
         }
 
         [Fact]
-        public void ReturnStringValueOnImplicitCast()
+        public void StringTypeCast_ExpectInternalValue()
         {
             CorrelationId correlationId = CorrelationId.FromString("123").Value;
             string value = correlationId;
@@ -25,7 +25,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests
         [InlineData("123", "123")]
         [InlineData("test", "test")]
         [InlineData("test", "TEST")]
-        public void BeQualToOtherValue(string right, string left)
+        public void Equals_MultipleOverrides_ExpectToBeEqual(string right, string left)
         {
             CorrelationId c1 = CorrelationId.FromString(right).Value;
             CorrelationId c2 = CorrelationId.FromString(left).Value;
@@ -37,7 +37,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests
 
         [Theory]
         [InlineData("test_1", "TEST_2")]
-        public void NotBeEqualToOtherValue(string right, string left)
+        public void NotEqual_MultipleOverrides_ExpectToBeNotEqual(string right, string left)
         {
             CorrelationId c1 = CorrelationId.FromString(right).Value;
             CorrelationId c2 = CorrelationId.FromString(left).Value;
@@ -48,21 +48,21 @@ namespace W4k.AspNetCore.Correlator.UnitTests
         }
 
         [Fact]
-        public void InstantiateCorrelationIdOnValidInput()
+        public void FromString_WithValidInput_ExpectCorrelationIdWithInternalValue()
         {
             CorrelationId? correlationId = CorrelationId.FromString("123");
             Assert.NotNull(correlationId);
         }
 
         [Fact]
-        public void ReturnNullOnInvalidInput()
+        public void FromString_WithInvalidInput_ExpectNull()
         {
             CorrelationId? correlationId = CorrelationId.FromString(null);
             Assert.Null(correlationId);
         }
 
         [Fact]
-        public void CreateNewCorrelationId()
+        public void NewCorrelationId_CallTwice_ExpectDifferentResult()
         {
             CorrelationId c1 = CorrelationId.NewCorrelationId();
             CorrelationId c2 = CorrelationId.NewCorrelationId();

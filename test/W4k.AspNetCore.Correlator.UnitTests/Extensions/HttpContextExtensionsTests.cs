@@ -4,10 +4,10 @@ using Xunit;
 
 namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 {
-    public class HttpContextExtensionsShould
+    public class HttpContextExtensionsTests
     {
         [Fact]
-        public void SetCorrelationIdToHttpContext()
+        public void WithCorrelationId_NonEmpty_ExpectCorrelationIdToBeSet()
         {
             HttpContext context = new DefaultHttpContext();
             CorrelationId correlationId = CorrelationId.FromString("123").Value;
@@ -18,7 +18,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
         }
 
         [Fact]
-        public void NotSetCorrelationIdIfEmpty()
+        public void WithCorrelationId_Empty_ExpectCorrelationIdToNotSet()
         {
             HttpContext context = new DefaultHttpContext();
             CorrelationId correlationId = CorrelationId.Empty;
