@@ -8,8 +8,14 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Description>Correlator middleware and HTTP message handler for managing correlation/request ID trough application.</Description>
+    <Authors>Zdenek Havlin</Authors>
+    <Description>
+      ASP.NET Core middleware processing incoming request correlation ID, together with HTTP message handler
+      for forwarding correlation ID to subsequent requests.
+    </Description>
     <PackageTags>aspnetcore;correlation-id;request-id</PackageTags>
+    <RepositoryUrl>https://dev.azure.com/w4k/W4k.AspNetCore.Correlator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
