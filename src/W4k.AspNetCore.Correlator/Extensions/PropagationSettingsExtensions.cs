@@ -31,7 +31,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <summary>
         /// Invokes <paramref name="action"/> on <see cref="HeaderPropagation.KeepIncomingHeaderName"/>.
         /// </summary>
-        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="propagation">Propagation settings.</param>
         /// <param name="action">Action to be invoked.</param>
         /// <returns>
         /// Propagation settings.
@@ -43,7 +43,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <summary>
         /// Invokes <paramref name="action"/> on <see cref="HeaderPropagation.UsePredefinedHeaderName"/>.
         /// </summary>
-        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="propagation">Propagation settings.</param>
         /// <param name="action">Action to be invoked.</param>
         /// <returns>
         /// Propagation settings.
@@ -55,7 +55,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <summary>
         /// Invokes <paramref name="action"/> on <paramref name="targetPropagation"/>.
         /// </summary>
-        /// <param name="propagation">Propagation settings/</param>
+        /// <param name="propagation">Propagation settings.</param>
         /// <param name="targetPropagation">Target propagation.</param>
         /// <param name="action">Action to be invoked.</param>
         /// <returns>
