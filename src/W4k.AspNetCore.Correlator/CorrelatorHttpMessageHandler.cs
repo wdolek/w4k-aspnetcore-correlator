@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -36,13 +37,13 @@ namespace W4k.AspNetCore.Correlator
             HttpContext context = _contextAccessor.HttpContext;
             if (context != null)
             {
-                IHeaderDictionary headers = context.Request.Headers;
-
-                void AddCorrelationId(string headerName) => headers.AddIfNotSet(headerName, context.TraceIdentifier);
+                void AddCorrelationId(string headerName) =>
+                    request.Headers.AddIfNotSet(headerName, context.TraceIdentifier);
 
                 _options.Forward
                     .OnPredefinedHeader(s => AddCorrelationId(s.HeaderName))
-                    .OnIncomingHeader(s => AddCorrelationId(headers.GetCorrelationHeaderName(_options.ReadFrom)));
+                    .OnIncomingHeader(
+                        s => AddCorrelationId(context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom)));
             }
 
             return base.SendAsync(request, cancellationToken);
