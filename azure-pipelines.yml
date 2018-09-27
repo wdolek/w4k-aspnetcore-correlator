@@ -9,9 +9,18 @@ pool:
 variables:
   buildConfiguration: 'Release'
 
-inputs:
-  version: '1'
-
 steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*UnitTests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
+
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
