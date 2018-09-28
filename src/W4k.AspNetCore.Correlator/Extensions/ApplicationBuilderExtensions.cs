@@ -1,0 +1,21 @@
+﻿using Microsoft.AspNetCore.Builder;
+
+namespace W4k.AspNetCore.Correlator.Extensions
+{
+    public static class ApplicationBuilderExtensions
+    {
+        /// <summary>
+        /// Configures application builder to use correlator middleware.
+        /// </summary>
+        /// <param name="app">Application builder.</param>
+        /// <returns>
+        /// Application builder with correlator middleware registered.
+        /// </returns>
+        public static IApplicationBuilder UseCorrelator(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<CorrelatorMiddleware>();
+
+            return app;
+        }
+    }
+}
