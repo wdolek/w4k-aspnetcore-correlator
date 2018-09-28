@@ -14,11 +14,14 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <remarks>
         /// Order of entries matters! First header with non-empty value is used.
         /// </remarks>
-        public List<string> ReadFrom { get; } = new List<string>
-            {
-                HttpHeaders.CorrelationId,
-                HttpHeaders.RequestId,
-            };
+        public SortedSet<string> ReadFrom { get; } =
+            new SortedSet<string>(
+                new[]
+                {
+                    HttpHeaders.CorrelationId,
+                    HttpHeaders.RequestId,
+                },
+                StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
@@ -28,7 +31,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets or sets correlation ID propagation settings affecting response headers.
         /// </summary>
-        public PropagationSettings Emit { get; set; } = PropagationSettings.PropagateAs(HttpHeaders.CorrelationId);
+        public PropagationSettings Emit { get; set; } = PropagationSettings.NoPropagation;
 
         /// <summary>
         /// Gets or sets correlation ID propagation settings affecting subsequent requests via <see cref="CorrelatorHttpMessageHandler"/>.
