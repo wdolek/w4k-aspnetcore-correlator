@@ -18,7 +18,7 @@ designated HTTP message handler.
 To make all those wonders happen, `CorrelatorMiddleware` must be used.
 
 ### Startup class example
-```
+```csharp
 public class MyLittleStartup
 {
     public void ConfigureServices(IServiceCollection services)
@@ -42,7 +42,7 @@ public class MyLittleStartup
 
 Add `CorrelatorHttpMessageHandler` to pipeline when registering particular implementation of HTTP client.
 
-```
+```csharp
 services.AddHttpClient("svc", c =>
 {
     // HTTP client configuration
@@ -57,7 +57,7 @@ Even if you disable generating of correlation ID, ASP.NET itself already sets it
 
 To be able to access `HttpContext` from your component, you need to inject `IHttpContextAccessor`.
 
-```
+```csharp
 using Microsoft.AspNetCore.Http;
 
 public class MyLittleService
@@ -89,7 +89,7 @@ By default, correlator behaves following way:
 
 To adjust setting, use `Configure<CorrelatorOptions>` method to override defaults.
 
-```
+```csharp
 services.Configure<CorrelatorOptions>(
     o =>
     {
@@ -117,7 +117,7 @@ Header must be present and contain non-empty value.
 
 Note that order matters - first header satisfying match is returned.
 
-```
+```csharp
 // add to defaults
 o.Add("X-Yet-Another-Request-ID");
 
@@ -133,7 +133,7 @@ Property `CorrelatorOptions.Factory`, of type `Func<CorrelationId>`.
 If set to `null` then generating of correlation ID is disabled and ASP.NET value is used instead.
 For more details look up for `HttpContext.TraceIdentifier`.
 
-```
+```csharp
 // default
 o.Factory = () => CorrelationId.NewCorrelationId();
 
@@ -155,7 +155,7 @@ There are two directions to propagate correlation ID:
 
 Correlation ID is not set.
 
-```
+```csharp
 // don't expose correlation ID in HTTP response
 o.Emit = PropagationSettings.NoPropagation;
 
@@ -167,7 +167,7 @@ o.Forward = PropagationSettings.NoPropagation;
 
 Correlation ID is propagated with same header name as it was read from.
 
-```
+```csharp
 // if correlation was taken from 'X-My-Custom-Correlation-ID', it is exposed with same header
 o.Emit = PropagationSettings.KeepIncomingHeaderName;
 ```
@@ -176,7 +176,7 @@ o.Emit = PropagationSettings.KeepIncomingHeaderName;
 
 Correlation ID is propagated with predefined header name.
 
-```
+```csharp
 // if correlation was read from 'X-My-Custom-Correlation-ID', it is exposed as 'X-Correlation-ID'
 o.Emit = PropagationSettings.PropagateAs("X-Correlation-ID");
 ```
