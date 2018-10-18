@@ -17,8 +17,9 @@
     </Description>
     <PackageId>W4k.AspNetCore.Correlator</PackageId>
     <PackageTags>aspnetcore;correlation-id;request-id</PackageTags>
-    <PackageProjectUrl>https://dev.azure.com/w4k/W4k.AspNetCore.Correlator</PackageProjectUrl>
-    <RepositoryUrl>https://dev.azure.com/w4k/W4k.AspNetCore.Correlator/_git/W4k.AspNetCore.Correlator</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/wdolek/w4k-aspnetcore-correlator</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/wdolek/w4k-aspnetcore-correlator/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/wdolek/w4k-aspnetcore-correlator.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
@@ -26,7 +27,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="[2.1,3.0)" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="[2.1,3.0)" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="[2.1,3.0)" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta009" PrivateAssets="All" />    
   </ItemGroup>
