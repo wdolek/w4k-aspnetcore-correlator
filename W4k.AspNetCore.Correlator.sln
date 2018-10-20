@@ -24,6 +24,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8F
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{38BDCA6E-815F-4B85-806B-EA86F0F96CAA}"
+	ProjectSection(SolutionItems) = preProject
+		build\w4k-aspnetcore-correlator.snk = build\w4k-aspnetcore-correlator.snk
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
