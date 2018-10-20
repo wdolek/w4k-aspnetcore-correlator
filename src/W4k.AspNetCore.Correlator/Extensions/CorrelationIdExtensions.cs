@@ -2,6 +2,9 @@
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {
+    /// <summary>
+    /// Extensions of <see cref="CorrelationId"/>.
+    /// </summary>
     public static class CorrelationIdExtensions
     {
         /// <summary>

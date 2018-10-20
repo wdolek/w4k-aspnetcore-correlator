@@ -6,6 +6,9 @@ using Microsoft.Extensions.Primitives;
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {
+    /// <summary>
+    /// Extensions of <see cref="IHeaderDictionary"/>.
+    /// </summary>
     public static class HeaderDictionaryExtensions
     {
         /// <summary>

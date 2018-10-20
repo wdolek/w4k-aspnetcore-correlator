@@ -3,6 +3,9 @@ using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {
+    /// <summary>
+    /// Extensions of <see cref="PropagationSettings"/>.
+    /// </summary>
     public static class PropagationSettingsExtensions
     {
         /// <summary>

@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {
+    /// <summary>
+    /// Extensions of <see cref="HttpContext"/>.
+    /// </summary>
     public static class HttpContextExtensions
     {
         /// <summary>
