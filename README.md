@@ -71,8 +71,10 @@ public class MyLittleService
 
     public async Task DoMagicalStuff()
     {
-        // ...
         HttpContext context = _contextAccessor.HttpContext;
+        string correlationId = context?.TraceIdentifier;
+        
+        // We found a Correlation ID, of Candy Mountain. Candy Mountain, Charlie.
         // ...
     }
 }
@@ -180,3 +182,11 @@ Correlation ID is propagated with predefined header name.
 // if correlation was read from 'X-My-Custom-Correlation-ID', it is exposed as 'X-Correlation-ID'
 o.Emit = PropagationSettings.PropagateAs("X-Correlation-ID");
 ```
+
+## Advanced tracing
+
+This package is designed to solve simple scenario with reading and writing correlation ID from/to
+HTTP headers. If you are looking for more advanced tracing, consider checking:
+[OpenTracing](https://opentracing.io/) /
+[Zipkin](https://zipkin.io/) /
+[Jaeger](https://www.jaegertracing.io/).
