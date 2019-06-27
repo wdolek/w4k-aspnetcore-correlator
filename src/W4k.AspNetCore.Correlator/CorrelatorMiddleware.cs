@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -33,6 +34,7 @@ namespace W4k.AspNetCore.Correlator
         /// <returns>
         /// A task that represents the execution of this middleware.
         /// </returns>
+        [SuppressMessage("Microsoft.Design", "CA1062", Justification = "If HTTP context is null, we have bigger problem here.")]
         public async Task Invoke(HttpContext httpContext)
         {
             string requestHeaderName = httpContext.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
