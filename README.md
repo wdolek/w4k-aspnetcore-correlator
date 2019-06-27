@@ -183,6 +183,10 @@ Correlation ID is propagated with predefined header name.
 o.Emit = PropagationSettings.PropagateAs("X-Correlation-ID");
 ```
 
+## Alternatives
+
+- [CorrelationId](https://www.nuget.org/packages/CorrelationId/) by Steve Gordon.
+
 ## Advanced tracing
 
 This package is designed to solve simple scenario with reading and writing correlation ID from/to
