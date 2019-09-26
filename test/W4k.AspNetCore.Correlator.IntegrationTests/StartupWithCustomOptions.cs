@@ -9,22 +9,20 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddCorrelator()
-                .Configure<CorrelatorOptions>(
-                    o =>
-                    {
-                        // disable correlation ID factory
-                        // (if correlation ID not sent, ASP.NET trace ID is going to be used)
-                        o.Factory = null;
+            services.AddCorrelator(
+                o =>
+                {
+                    // disable correlation ID factory
+                    // (if correlation ID not sent, ASP.NET trace ID is going to be used)
+                    o.Factory = null;
 
-                        // read custom header
-                        o.ReadFrom.Clear();
-                        o.ReadFrom.Add("X-CID");
+                    // read custom header
+                    o.ReadFrom.Clear();
+                    o.ReadFrom.Add("X-CID");
 
-                        // do not emit correlation ID
-                        o.Emit = PropagationSettings.NoPropagation;
-                    });
+                    // do not emit correlation ID
+                    o.Emit = PropagationSettings.NoPropagation;
+                });
         }
 
         public void Configure(IApplicationBuilder app)
