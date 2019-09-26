@@ -14,5 +14,13 @@
         /// <c>X-RequestId</c> header name.
         /// </summary>
         public static readonly string RequestId = "X-Request-ID";
+
+        /// <summary>
+        /// <c>Request-Id</c> header name.
+        /// </summary>
+        /// <remarks>
+        /// Used by ASP.NET Core 2.x.
+        /// </remarks>
+        public static readonly string AspNetRequestId = "Request-Id";
     }
 }

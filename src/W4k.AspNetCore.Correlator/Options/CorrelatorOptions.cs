@@ -18,6 +18,7 @@ namespace W4k.AspNetCore.Correlator.Options
             new SortedSet<string>(
                 new[]
                 {
+                    HttpHeaders.AspNetRequestId,
                     HttpHeaders.CorrelationId,
                     HttpHeaders.RequestId,
                 },

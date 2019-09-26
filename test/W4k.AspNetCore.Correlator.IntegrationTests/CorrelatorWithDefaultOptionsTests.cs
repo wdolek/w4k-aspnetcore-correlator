@@ -10,6 +10,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
     public sealed class CorrelatorWithDefaultOptionsTests : CorrelatorTestsBase<StartupWithDefaultOptions>
     {
         [Theory]
+        [InlineData("Request-Id")]
         [InlineData("X-Correlation-ID")]
         [InlineData("x-correlation-id")]
         [InlineData("X-Request-ID")]
