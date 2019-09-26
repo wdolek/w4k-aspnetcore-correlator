@@ -21,7 +21,7 @@
     <PackageId>W4k.AspNetCore.Correlator</PackageId>
     <PackageTags>aspnetcore, correlation, correlation-id, correlationid, request-id, requestid</PackageTags>
     <PackageProjectUrl>https://github.com/wdolek/w4k-aspnetcore-correlator</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/wdolek/w4k-aspnetcore-correlator/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/wdolek/w4k-aspnetcore-correlator.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
