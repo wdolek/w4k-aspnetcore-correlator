@@ -59,10 +59,24 @@ public class MyLittleStartup
 Add `CorrelatorHttpMessageHandler` to HTTP client's message handler pipeline like this:
 
 ```csharp
+// named HTTP client
 services
-    .AddHttpClient()
+    .AddHttpClient("DummyClient")
     .WithCorrelation();
+
+// typed HTTP client
+services
+    .AddHttpClient<FooClient>()
+    .WithCorrelation();
+
+// registering HTTP message handler manually
+services
+    .AddHttpClient("FizzClient")
+    .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
 ```
+
+NB! `.WithCorrelation()` is extension method of `IHttpClientBuilder`, it is available
+for named or typed HTTP clients. See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#configure-the-httpmessagehandler)" for more details.
 
 ### Accessing correlation ID within application
 
