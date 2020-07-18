@@ -15,14 +15,9 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Either originally passed correlation ID or new one.
         /// </returns>
-        public static CorrelationId GenerateIfEmpty(this CorrelationId correlationId, Func<CorrelationId> factory)
-        {
-            if (correlationId == CorrelationId.Empty && factory != null)
-            {
-                return factory.Invoke();
-            }
-
-            return correlationId;
-        }
+        public static CorrelationId GenerateIfEmpty(this CorrelationId correlationId, Func<CorrelationId> factory) =>
+            correlationId == CorrelationId.Empty && factory != null
+                ? factory.Invoke()
+                : correlationId;
     }
 }
