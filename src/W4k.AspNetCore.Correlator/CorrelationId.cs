@@ -6,7 +6,7 @@ namespace W4k.AspNetCore.Correlator
     /// <summary>
     /// Correlation ID structure.
     /// </summary>
-    public struct CorrelationId : IEquatable<CorrelationId>
+    public readonly struct CorrelationId : IEquatable<CorrelationId>
     {
         /// <summary>
         /// Empty correlation ID.
@@ -14,17 +14,12 @@ namespace W4k.AspNetCore.Correlator
         public static readonly CorrelationId Empty = new CorrelationId(string.Empty);
 
         /// <summary>
-        /// Internal correlation ID value.
-        /// </summary>
-        private readonly string _value;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="CorrelationId"/> struct.
         /// </summary>
         /// <param name="correlationId">Correlation ID value.</param>
         private CorrelationId(string correlationId)
         {
-            _value = correlationId;
+            Value = correlationId;
         }
 
         /// <summary>
@@ -33,7 +28,7 @@ namespace W4k.AspNetCore.Correlator
         /// <remarks>
         /// Returns <see cref="Empty"/> if internal value is <c>null</c> (may happen when instantiated via <c>default</c>).
         /// </remarks>
-        public string Value => _value ?? Empty;
+        public string Value { get; }
 
         /// <summary>
         /// Implicit type cast to <see cref="string"/>.
@@ -90,7 +85,7 @@ namespace W4k.AspNetCore.Correlator
             obj is CorrelationId correlationId && Equals(correlationId);
 
         /// <inheritdoc />
-        public override string ToString() => _value;
+        public override string ToString() => Value;
 
         /// <summary>
         /// Indicates whether the current correlation ID is equal to another one.
