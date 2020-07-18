@@ -5,7 +5,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
     /// <summary>
     /// Extensions of <see cref="HttpRequestHeaders"/>.
     /// </summary>
-    public static class HttpRequestHeadersExtensions
+    internal static class HttpRequestHeadersExtensions
     {
         /// <summary>
         /// Adds header value if not already set.
