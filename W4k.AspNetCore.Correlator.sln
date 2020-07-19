@@ -24,12 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8F
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{38BDCA6E-815F-4B85-806B-EA86F0F96CAA}"
-	ProjectSection(SolutionItems) = preProject
-		build\w4k-aspnetcore-correlator.snk = build\w4k-aspnetcore-correlator.snk
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.Example.NetCore30", "examples\W4k.AspNetCore.Correlator.Example.NetCore30\W4k.AspNetCore.Correlator.Example.NetCore30.csproj", "{0FD3E847-FE2A-49B9-B87E-6F15226AFE6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.Example.NetCore30", "examples\W4k.AspNetCore.Correlator.Example.NetCore30\W4k.AspNetCore.Correlator.Example.NetCore30.csproj", "{0FD3E847-FE2A-49B9-B87E-6F15226AFE6F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{260DCE5E-0649-40BF-9E55-84DFEBFC4F78}"
 EndProject

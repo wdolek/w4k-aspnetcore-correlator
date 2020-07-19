@@ -4,7 +4,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests
 {
     public class CorrelationIdTests
     {
-        [Fact]
+        [Fact(Skip = "We are about to rewrite it to C# 8 nullable type; This won't be needed")]
         public void Ctor_InstantiatedUsingDefault_ExpectEmpty()
         {
             var correlationId = default(CorrelationId);
