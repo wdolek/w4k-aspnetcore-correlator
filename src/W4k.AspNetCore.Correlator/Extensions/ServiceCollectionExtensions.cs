@@ -33,6 +33,11 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// </returns>
         public static IServiceCollection AddCorrelator(this IServiceCollection services, Action<CorrelatorOptions> configureOptions)
         {
+            if (configureOptions is null)
+            {
+                throw new ArgumentNullException(nameof(configureOptions));
+            }
+
             // may be already registered
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
