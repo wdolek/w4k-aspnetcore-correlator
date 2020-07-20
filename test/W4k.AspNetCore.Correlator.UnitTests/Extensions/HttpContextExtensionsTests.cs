@@ -10,7 +10,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
         public void WithCorrelationId_NonEmpty_ExpectCorrelationIdToBeSet()
         {
             HttpContext context = new DefaultHttpContext();
-            CorrelationId correlationId = CorrelationId.FromString("123").Value;
+            var correlationId = CorrelationId.FromString("123");
 
             context = context.WithCorrelationId(correlationId);
 

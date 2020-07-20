@@ -7,8 +7,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 {
     public class StartupWithCustomOptions
     {
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) =>
             services.AddCorrelator(
                 o =>
                 {
@@ -23,7 +22,6 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
                     // do not emit correlation ID
                     o.Emit = PropagationSettings.NoPropagation;
                 });
-        }
 
         public void Configure(IApplicationBuilder app)
         {
