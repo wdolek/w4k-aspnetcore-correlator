@@ -44,10 +44,7 @@ namespace W4k.AspNetCore.Correlator
                     .OnIncomingHeader(_ =>
                     {
                         string? headerName = context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
-                        if (!string.IsNullOrEmpty(headerName))
-                        {
-                            request.Headers.AddHeaderIfNotSet(headerName, traceIdentifier);
-                        }
+                        request.Headers.AddHeaderIfNotSet(headerName, traceIdentifier);
                     });
             }
 

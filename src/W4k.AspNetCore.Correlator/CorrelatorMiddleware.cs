@@ -66,10 +66,7 @@ namespace W4k.AspNetCore.Correlator
             CorrelationId correlationId)
         {
             string? responseHeaderName = propagation.GetCorrelationHeaderName(incomingHeaderName);
-            if (!string.IsNullOrEmpty(responseHeaderName))
-            {
-                httpContext.Response.Headers.AddHeaderIfNotSet(responseHeaderName, correlationId);
-            }
+            httpContext.Response.Headers.AddHeaderIfNotSet(responseHeaderName, correlationId);
 
             return Task.CompletedTask;
         }

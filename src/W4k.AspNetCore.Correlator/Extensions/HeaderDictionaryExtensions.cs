@@ -53,8 +53,13 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Returns HTTP headers with header set.
         /// </returns>
-        public static IHeaderDictionary AddHeaderIfNotSet(this IHeaderDictionary headers, string headerName, string value)
+        public static IHeaderDictionary AddHeaderIfNotSet(this IHeaderDictionary headers, string? headerName, string value)
         {
+            if (string.IsNullOrEmpty(headerName))
+            {
+                return headers;
+            }
+
             if (!headers.ContainsKey(headerName))
             {
                 headers.Add(headerName, new StringValues(value));
