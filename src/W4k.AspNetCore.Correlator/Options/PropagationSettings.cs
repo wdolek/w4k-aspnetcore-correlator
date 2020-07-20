@@ -5,7 +5,7 @@ namespace W4k.AspNetCore.Correlator.Options
     /// <summary>
     /// Header propagation settings.
     /// </summary>
-    public struct PropagationSettings : IEquatable<PropagationSettings>
+    public readonly struct PropagationSettings : IEquatable<PropagationSettings>
     {
         /// <summary>
         /// Don't propagate header.
@@ -96,7 +96,7 @@ namespace W4k.AspNetCore.Correlator.Options
         {
             unchecked
             {
-                return 17 * Settings.GetHashCode() ^ HeaderName.GetHashCode();
+                return 17 * Settings.GetHashCode() ^ HeaderName.GetHashCode(StringComparison.OrdinalIgnoreCase);
             }
         }
 

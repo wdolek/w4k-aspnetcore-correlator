@@ -6,7 +6,7 @@ namespace W4k.AspNetCore.Correlator.Options
     /// <summary>
     /// Correlator (middleware) options.
     /// </summary>
-    public class CorrelatorOptions
+    public sealed class CorrelatorOptions
     {
         /// <summary>
         /// Gets list of header names to be used when reading correlation ID from request headers.
@@ -27,7 +27,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
         /// </summary>
-        public Func<CorrelationId> Factory { get; set; } = () => CorrelationId.NewCorrelationId();
+        public Func<CorrelationId>? Factory { get; set; } = () => CorrelationId.NewCorrelationId();
 
         /// <summary>
         /// Gets or sets correlation ID propagation settings affecting response headers.

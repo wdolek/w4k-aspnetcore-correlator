@@ -13,11 +13,13 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <param name="correlationId">Original correlation ID value.</param>
         /// <param name="factory">Correlation ID factory.</param>
         /// <returns>
-        /// Either originally passed correlation ID or new one.
+        /// Either originally passed correlation ID or newly generated one (if <paramref name="factory"/> set, otherwise <see cref="CorrelationId.Empty"/>).
         /// </returns>
-        public static CorrelationId GenerateIfEmpty(this CorrelationId correlationId, Func<CorrelationId> factory) =>
-            correlationId == CorrelationId.Empty && factory != null
-                ? factory.Invoke()
-                : correlationId;
+        public static CorrelationId GenerateIfEmpty(this CorrelationId correlationId, Func<CorrelationId>? factory) =>
+            correlationId is object && !correlationId.IsEmpty
+                ? correlationId
+                : factory is null
+                    ? CorrelationId.Empty
+                    : factory.Invoke();
     }
 }

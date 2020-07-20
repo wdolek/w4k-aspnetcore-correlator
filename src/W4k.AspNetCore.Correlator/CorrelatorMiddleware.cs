@@ -37,7 +37,7 @@ namespace W4k.AspNetCore.Correlator
         [SuppressMessage("Microsoft.Design", "CA1062", Justification = "If HTTP context is null, we have bigger problem here.")]
         public async Task Invoke(HttpContext httpContext)
         {
-            string requestHeaderName = httpContext.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
+            string? requestHeaderName = httpContext.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
             CorrelationId correlationId = httpContext.Request.Headers
                 .GetCorrelationId(requestHeaderName)
                 .GenerateIfEmpty(_options.Factory);
@@ -62,11 +62,14 @@ namespace W4k.AspNetCore.Correlator
         private static Task EmitCorrelationId(
             HttpContext httpContext,
             PropagationSettings propagation,
-            string incomingHeaderName,
+            string? incomingHeaderName,
             CorrelationId correlationId)
         {
-            string responseHeaderName = propagation.GetCorrelationHeaderName(incomingHeaderName);
-            httpContext.Response.Headers.AddIfNotSet(responseHeaderName, correlationId);
+            string? responseHeaderName = propagation.GetCorrelationHeaderName(incomingHeaderName);
+            if (!string.IsNullOrEmpty(responseHeaderName))
+            {
+                httpContext.Response.Headers.AddHeaderIfNotSet(responseHeaderName, correlationId);
+            }
 
             return Task.CompletedTask;
         }
