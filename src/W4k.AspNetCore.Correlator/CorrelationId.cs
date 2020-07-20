@@ -73,9 +73,12 @@ namespace W4k.AspNetCore.Correlator
         /// </summary>
         /// <param name="value">Correlation ID value.</param>
         /// <returns>
-        /// Returns new instance of <see cref="CorrelationId"/> or <c>null</c> if value is invalid.
+        /// Returns new instance of <see cref="CorrelationId"/>, <see cref="Empty"/> if <paramref name="value"/> is <c>null</c>.
         /// </returns>
-        public static CorrelationId FromString(string value) => new CorrelationId(value);
+        public static CorrelationId FromString(string value) =>
+            value is null
+                ? Empty
+                : new CorrelationId(value);
 
         /// <summary>
         /// Generates new correlation ID.
