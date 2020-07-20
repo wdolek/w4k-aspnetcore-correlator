@@ -63,10 +63,7 @@ namespace W4k.AspNetCore.Correlator
         /// <returns>
         /// Returns <c>true</c> if values differ, <c>false</c> otherwise.
         /// </returns>
-        public static bool operator !=(CorrelationId? left, CorrelationId? right) =>
-            left is null
-                ? right is null
-                : !left.Equals(right);
+        public static bool operator !=(CorrelationId? left, CorrelationId? right) => !(left == right);
 
         /// <summary>
         /// Creates new correlation ID.
