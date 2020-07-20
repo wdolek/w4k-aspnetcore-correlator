@@ -39,11 +39,9 @@ namespace W4k.AspNetCore.Correlator.Extensions
                 return CorrelationId.Empty;
             }
 
-            var rawValue = headers[headerName].FirstOrDefault();
+            string? rawValue = headers[headerName].FirstOrDefault();
 
-            return string.IsNullOrEmpty(rawValue)
-                ? CorrelationId.Empty
-                : CorrelationId.FromString(rawValue);
+            return CorrelationId.FromString(rawValue);
         }
 
         /// <summary>
