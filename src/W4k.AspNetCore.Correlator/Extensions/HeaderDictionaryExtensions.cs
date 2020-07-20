@@ -19,23 +19,10 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Returns HTTP header name or <c>null</c> if header not found.
         /// </returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="readFrom"/> is <c>null</c>.</exception>
-        public static string GetCorrelationHeaderName(this IHeaderDictionary headers, IEnumerable<string> readFrom)
-        {
-            if (headers is null)
-            {
-                return null;
-            }
-
-            if (readFrom is null)
-            {
-                throw new ArgumentNullException(nameof(readFrom));
-            }
-
-            return readFrom
+        public static string? GetCorrelationHeaderName(this IHeaderDictionary headers, IEnumerable<string> readFrom) =>
+            readFrom
                 .Intersect(headers.Keys, StringComparer.OrdinalIgnoreCase)
                 .FirstOrDefault(h => headers.Count > 0 && !string.IsNullOrEmpty(headers[h][0]));
-        }
 
         /// <summary>
         /// Gets correlation ID from HTTP request.
@@ -45,16 +32,16 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Correlation ID if set, <see cref="CorrelationId.Empty"/> if header is missing or has invalid value.
         /// </returns>
-        public static CorrelationId GetCorrelationId(this IHeaderDictionary headers, string headerName)
+        public static CorrelationId GetCorrelationId(this IHeaderDictionary headers, string? headerName)
         {
-            if (headers is null || string.IsNullOrEmpty(headerName) || !headers.ContainsKey(headerName))
+            if (string.IsNullOrEmpty(headerName) || !headers.ContainsKey(headerName))
             {
                 return CorrelationId.Empty;
             }
 
-            var rawValue = headers[headerName].FirstOrDefault();
+            string? rawValue = headers[headerName].FirstOrDefault();
 
-            return CorrelationId.FromString(rawValue) ?? CorrelationId.Empty;
+            return CorrelationId.FromString(rawValue);
         }
 
         /// <summary>
@@ -66,9 +53,9 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Returns HTTP headers with header set.
         /// </returns>
-        public static IHeaderDictionary AddIfNotSet(this IHeaderDictionary headers, string headerName, string value)
+        public static IHeaderDictionary AddHeaderIfNotSet(this IHeaderDictionary headers, string? headerName, string value)
         {
-            if (headers is null || string.IsNullOrEmpty(headerName) || string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(headerName))
             {
                 return headers;
             }

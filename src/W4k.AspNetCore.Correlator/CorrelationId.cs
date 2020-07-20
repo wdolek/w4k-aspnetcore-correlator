@@ -6,7 +6,7 @@ namespace W4k.AspNetCore.Correlator
     /// <summary>
     /// Correlation ID structure.
     /// </summary>
-    public readonly struct CorrelationId : IEquatable<CorrelationId>
+    public sealed class CorrelationId : IEquatable<CorrelationId>
     {
         /// <summary>
         /// Empty correlation ID.
@@ -14,7 +14,7 @@ namespace W4k.AspNetCore.Correlator
         public static readonly CorrelationId Empty = new CorrelationId(string.Empty);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelationId"/> struct.
+        /// Initializes a new instance of the <see cref="CorrelationId"/> class.
         /// </summary>
         /// <param name="correlationId">Correlation ID value.</param>
         private CorrelationId(string correlationId)
@@ -31,10 +31,16 @@ namespace W4k.AspNetCore.Correlator
         public string Value { get; }
 
         /// <summary>
+        /// Gets a value indicating whether correlation ID is empty.
+        /// </summary>
+        public bool IsEmpty => string.IsNullOrEmpty(Value);
+
+        /// <summary>
         /// Implicit type cast to <see cref="string"/>.
         /// </summary>
         /// <param name="correlationId">Correlation ID to be cast to string.</param>
-        public static implicit operator string(CorrelationId correlationId) => correlationId.Value;
+        public static implicit operator string(CorrelationId correlationId) =>
+            correlationId?.Value ?? string.Empty;
 
         /// <summary>
         /// Performs equal comparison between two values.
@@ -44,7 +50,10 @@ namespace W4k.AspNetCore.Correlator
         /// <returns>
         /// Returns <c>true</c> if both values are equal, <c>false</c> otherwise.
         /// </returns>
-        public static bool operator ==(CorrelationId left, CorrelationId right) => left.Equals(right);
+        public static bool operator ==(CorrelationId? left, CorrelationId? right) =>
+            left is null
+                ? right is null
+                : left.Equals(right);
 
         /// <summary>
         /// Performs equal comparison between two values.
@@ -54,19 +63,19 @@ namespace W4k.AspNetCore.Correlator
         /// <returns>
         /// Returns <c>true</c> if values differ, <c>false</c> otherwise.
         /// </returns>
-        public static bool operator !=(CorrelationId left, CorrelationId right) => !left.Equals(right);
+        public static bool operator !=(CorrelationId? left, CorrelationId? right) => !(left == right);
 
         /// <summary>
         /// Creates new correlation ID.
         /// </summary>
         /// <param name="value">Correlation ID value.</param>
         /// <returns>
-        /// Returns new instance of <see cref="CorrelationId"/> or <c>null</c> if value is invalid.
+        /// Returns new instance of <see cref="CorrelationId"/>, <see cref="Empty"/> if <paramref name="value"/> is <c>null</c>.
         /// </returns>
-        public static CorrelationId? FromString(string value) =>
-            !string.IsNullOrEmpty(value)
-                ? new CorrelationId(value)
-                : (CorrelationId?)null;
+        public static CorrelationId FromString(string? value) =>
+            value is null
+                ? Empty
+                : new CorrelationId(value);
 
         /// <summary>
         /// Generates new correlation ID.
@@ -78,10 +87,15 @@ namespace W4k.AspNetCore.Correlator
             new CorrelationId(Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture));
 
         /// <inheritdoc />
-        public override int GetHashCode() => Value.GetHashCode();
+        public override int GetHashCode() =>
+#if NETSTANDARD2_0
+            Value.GetHashCode();
+#else
+            Value.GetHashCode(StringComparison.OrdinalIgnoreCase);
+#endif
 
         /// <inheritdoc />
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is CorrelationId correlationId && Equals(correlationId);
 
         /// <inheritdoc />
@@ -94,7 +108,7 @@ namespace W4k.AspNetCore.Correlator
         /// <returns>
         /// Returns <c>true</c> if given correlation ID equals, <c>false</c> otherwise.
         /// </returns>
-        public bool Equals(CorrelationId other) =>
-            string.Equals(Value, other.Value, StringComparison.OrdinalIgnoreCase);
+        public bool Equals(CorrelationId? other) =>
+            string.Equals(Value, other?.Value, StringComparison.OrdinalIgnoreCase);
     }
 }

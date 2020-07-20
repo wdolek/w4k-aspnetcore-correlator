@@ -9,7 +9,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
         public void GenerateIfEmpty_WithEmpty_ExpectIdToBeGenerated()
         {
             CorrelationId correlationId = CorrelationId.Empty;
-            var newCorrelationId = correlationId.GenerateIfEmpty(() => CorrelationId.FromString("123").Value);
+            CorrelationId newCorrelationId = correlationId.GenerateIfEmpty(() => CorrelationId.FromString("123"));
 
             Assert.Equal("123", newCorrelationId);
         }
@@ -17,19 +17,10 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
         [Fact]
         public void GenerateIfEmpty_WithNonEmpty_ExpectSameValue()
         {
-            CorrelationId correlationId = CorrelationId.FromString("123").Value;
-            var newCorrelationId = correlationId.GenerateIfEmpty(() => CorrelationId.FromString("345").Value);
+            var correlationId = CorrelationId.FromString("123");
+            CorrelationId newCorrelationId = correlationId.GenerateIfEmpty(() => CorrelationId.FromString("345"));
 
             Assert.Equal("123", newCorrelationId);
-        }
-
-        [Fact]
-        public void GenerateIfEmpty_WithoutFactory_ExpectSameValue()
-        {
-            CorrelationId correlationId = CorrelationId.Empty;
-            var newCorrelationId = correlationId.GenerateIfEmpty(null);
-
-            Assert.Equal(CorrelationId.Empty, newCorrelationId);
         }
     }
 }

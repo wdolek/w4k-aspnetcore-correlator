@@ -36,13 +36,16 @@ namespace W4k.AspNetCore.Correlator
             HttpContext context = _contextAccessor.HttpContext;
             if (context != null)
             {
-                void AddCorrelationId(string headerName) =>
-                    request.Headers.AddIfNotSet(headerName, context.TraceIdentifier);
+                var traceIdentifier = context.TraceIdentifier;
 
+                // set request header based on options (use predefined/incoming)
                 _options.Forward
-                    .OnPredefinedHeader(s => AddCorrelationId(s.HeaderName))
-                    .OnIncomingHeader(
-                        s => AddCorrelationId(context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom)));
+                    .OnPredefinedHeader(s => request.Headers.AddHeaderIfNotSet(s.HeaderName, traceIdentifier))
+                    .OnIncomingHeader(_ =>
+                    {
+                        string? headerName = context.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
+                        request.Headers.AddHeaderIfNotSet(headerName, traceIdentifier);
+                    });
             }
 
             return base.SendAsync(request, cancellationToken);

@@ -18,10 +18,8 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Service collection with components registered.
         /// </returns>
-        public static IServiceCollection AddCorrelator(this IServiceCollection services)
-        {
-            return services.AddCorrelator(_ => { });
-        }
+        public static IServiceCollection AddCorrelator(this IServiceCollection services) =>
+            services.AddCorrelator(_ => { });
 
         /// <summary>
         /// Adds components required by Correlator to service collection.

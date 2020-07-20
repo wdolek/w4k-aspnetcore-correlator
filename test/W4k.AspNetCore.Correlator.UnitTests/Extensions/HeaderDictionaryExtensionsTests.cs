@@ -10,13 +10,6 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 {
     public class HeaderDictionaryExtensionsTests
     {
-        [Fact]
-        public void GetCorrelationHeaderName_WithNull_ExpectArgumentNullException()
-        {
-            Assert.Throws<ArgumentNullException>(
-                () => new Mock<IHeaderDictionary>().Object.GetCorrelationHeaderName(null));
-        }
-
         [Theory]
         [InlineData("X-Correlation-ID", new[] { "X-Correlation-ID" }, "X-Correlation-ID")]
         [InlineData("x-correlation-id", new[] { "X-Correlation-ID" }, "X-Correlation-ID")]
@@ -66,7 +59,6 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
         {
             // arrange
             var headers = new HeaderDictionary(0);
-
             var readFrom = new List<string> { "X-Correlation-ID" };
 
             // act
@@ -121,7 +113,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
             IHeaderDictionary headers = new HeaderDictionary();
 
             // act
-            headers = headers.AddIfNotSet("X-Correlation-ID", "123");
+            headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "123");
 
             // assert
             Assert.True(headers.ContainsKey("X-Correlation-ID"));
@@ -139,7 +131,7 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 
             // act
             // (try to set correlation ID "999")
-            headers = headers.AddIfNotSet("X-Correlation-ID", "999");
+            headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "999");
 
             // assert
             Assert.True(headers.ContainsKey("X-Correlation-ID"));
@@ -148,8 +140,6 @@ namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
 
         public static IEnumerable<object[]> GenerateEmptyHeaders()
         {
-            yield return new object[] { null, "X-Correlation-ID" };
-            yield return new object[] { new HeaderDictionary(0), null };
             yield return new object[] { new HeaderDictionary(0), "X-Correlation-ID" };
 
             // silly header value (can this even happen?!)

@@ -17,7 +17,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// Returns name of header used for emitting correlation ID (either <paramref name="incomingHeaderName"/>
         /// or predefined by <see cref="PropagationSettings"/>) or <c>null</c> if header should not be propagated.
         /// </returns>
-        public static string GetCorrelationHeaderName(this PropagationSettings settings, string incomingHeaderName)
+        public static string? GetCorrelationHeaderName(this PropagationSettings settings, string? incomingHeaderName)
         {
             if (settings == PropagationSettings.NoPropagation)
             {
@@ -64,18 +64,19 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Propagation settings.
         /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="action"/> is <c>null</c>.</exception>
         private static PropagationSettings On(
             this PropagationSettings propagation,
             HeaderPropagation targetPropagation,
             Action<PropagationSettings> action)
         {
+            if (action is null)
+            {
+                throw new ArgumentNullException(nameof(action));
+            }
+
             if (propagation.Settings == targetPropagation)
             {
-                if (action == null)
-                {
-                    throw new ArgumentNullException(nameof(action));
-                }
-
                 action(propagation);
             }
 
