@@ -1,6 +1,6 @@
 # W4k.AspNetCore.Correlator
 
-Correlator helps you with handling correlation ID (known also as request ID):
+Correlator helps you with handling correlation ID (also "request ID"):
 reading, generating new one and forwarding to subsequent requests.
 
 Correlation ID is sent within HTTP headers. If header is not set,
@@ -13,11 +13,15 @@ back to caller within HTTP response headers.
 To forward correlation ID to subsequent request, it is necessary to use
 designated HTTP message handler, see examples below.
 
-## W3: Trace Context
+## W3 Trace Context and .NET Core 3.x
 
-Please be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is not supported,
+Please be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is **not supported**,
 Correlator helps you with older systems using non-standard headers.
 See links below for more alternatives.
+
+Note that from .NET Core 3.x, distributed tracing and trace context is built in. You can
+get more insights from article:
+[Improvements in .NET Core 3.0 for troubleshooting and monitoring distributed apps](https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/).
 
 ## Basic usage
 
@@ -215,10 +219,12 @@ correlatorOptions.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
 - [CorrelationId](https://www.nuget.org/packages/CorrelationId/) by Steve Gordon.
 - [Correlate](https://www.nuget.org/packages/Correlate.AspNetCore/) by Martijn Bodeman.
 
-## Advanced tracing
+## Advanced tracing / further reading
 
 This package is designed to solve simple scenario with reading and writing correlation ID from/to
-HTTP headers. If you are looking for more advanced tracing, consider checking:
-[OpenTracing](https://opentracing.io/) /
-[Zipkin](https://zipkin.io/) /
-[Jaeger](https://www.jaegertracing.io/).
+HTTP headers. If you are looking for more advanced/distributed tracing, consider checking:
+
+- [OpenTelemetry](https://opentelemetry.io/)
+- [OpenTracing](https://opentracing.io/)
+- [Zipkin](https://zipkin.io/)
+- [Jaeger](https://www.jaegertracing.io/)
