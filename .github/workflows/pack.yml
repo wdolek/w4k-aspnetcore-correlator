@@ -23,7 +23,7 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ INPUT_VERSION }} src/W4k.AspNetCore.Correlator
+      run: dotnet pack --configuration Release -p:Version=${{ env.INPUT_VERSION }} src/W4k.AspNetCore.Correlator
     - name: Upload package
       uses: actions/upload-artifact@v2
       with:
