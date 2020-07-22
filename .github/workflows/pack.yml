@@ -1,0 +1,31 @@
+name: Create nupkg
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version: <major>.<minor>.<patch>'
+        required: true
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.302
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+    - name: Pack
+      run: dotnet pack --configuration Release -p:Version=${{ INPUT_VERSION }} src/W4k.AspNetCore.Correlator
+    - name: Upload package
+      uses: actions/upload-artifact@v2
+      with:
+        name: nupkg
+        path: src/W4k.AspNetCore.Correlator/bin/Release/W4k.AspNetCore.Correlator.*.nupkg
