@@ -1,4 +1,4 @@
-name: Create nupkg
+name: Create package
 
 on:
   workflow_dispatch:
@@ -11,21 +11,43 @@ jobs:
   pack:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+
+    - name: Setup node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12'
+
+    - name: Install semver
+      run: |
+        sudo npm i -g semver
+
+    - name: Validate version
+      run: |
+        semver ${{ github.event.inputs.version }}
+        if [ $? != 0 ]; then exit 1; fi
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.302
+
     - name: Install dependencies
       run: dotnet restore
+
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --no-restore --configuration Release
+
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-build --configuration Release --verbosity normal
+
     - name: Pack
-      run: dotnet pack --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
-    - name: Upload package
+      run: dotnet pack --no-build --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
+
+    - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: nupkg
+        name: w4k-aspnetcore-correlator-${{ github.event.inputs.version }}
         path: src/W4k.AspNetCore.Correlator/bin/Release/W4k.AspNetCore.Correlator.*.nupkg
