@@ -14,11 +14,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Application builder with correlator middleware registered.
         /// </returns>
-        public static IApplicationBuilder UseCorrelator(this IApplicationBuilder app)
-        {
+        public static IApplicationBuilder UseCorrelator(this IApplicationBuilder app) =>
             app.UseMiddleware<CorrelatorMiddleware>();
-
-            return app;
-        }
     }
 }
