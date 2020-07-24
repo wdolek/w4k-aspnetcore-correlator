@@ -14,6 +14,7 @@ namespace W4k.AspNetCore.Correlator
     public class CorrelatorMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ICorrelationContextFactory _correlationContextFactory;
         private readonly CorrelatorOptions _options;
 
         /// <summary>
@@ -21,10 +22,17 @@ namespace W4k.AspNetCore.Correlator
         /// </summary>
         /// <param name="next">Delegate representing the next middleware in the request pipeline.</param>
         /// <param name="options">Correlator options.</param>
-        public CorrelatorMiddleware(RequestDelegate next, IOptions<CorrelatorOptions> options)
+        /// <param name="correlationContextFactory">Correlation context factory.</param>
+        public CorrelatorMiddleware(
+            RequestDelegate next,
+            IOptions<CorrelatorOptions> options,
+            ICorrelationContextFactory correlationContextFactory)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _correlationContextFactory = correlationContextFactory;
+
+            _ = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value;
         }
 
         /// <summary>
@@ -37,16 +45,17 @@ namespace W4k.AspNetCore.Correlator
         [SuppressMessage("Microsoft.Design", "CA1062", Justification = "If HTTP context is null, we have bigger problem here.")]
         public async Task Invoke(HttpContext httpContext)
         {
-            string? requestHeaderName = httpContext.Request.Headers.GetCorrelationHeaderName(_options.ReadFrom);
-            CorrelationId correlationId = httpContext.Request.Headers
-                .GetCorrelationId(requestHeaderName)
-                .GenerateIfEmpty(_options.Factory);
+            var correlationContext = _correlationContextFactory.CreateContext(httpContext);
 
             httpContext.Response.OnStarting(
-                state => EmitCorrelationId((HttpContext)state, _options.Emit, requestHeaderName, correlationId),
+                state => EmitCorrelationId(
+                    (HttpContext)state,
+                    _options.Emit,
+                    correlationContext.HeaderName,
+                    correlationContext.CorrelationId),
                 httpContext);
 
-            await _next.Invoke(httpContext.WithCorrelationId(correlationId));
+            await _next.Invoke(httpContext.WithCorrelationId(correlationContext.CorrelationId));
         }
 
         /// <summary>

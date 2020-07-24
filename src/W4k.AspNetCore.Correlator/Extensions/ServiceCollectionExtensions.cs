@@ -39,6 +39,9 @@ namespace W4k.AspNetCore.Correlator.Extensions
             // may be already registered
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+            // TODO: Allow user to register own implementation
+            services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
+
             return services
                 .Configure(configureOptions)
                 .AddTransient<CorrelatorHttpMessageHandler>();
