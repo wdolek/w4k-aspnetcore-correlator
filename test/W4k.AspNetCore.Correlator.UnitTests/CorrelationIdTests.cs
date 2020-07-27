@@ -39,16 +39,5 @@ namespace W4k.AspNetCore.Correlator.UnitTests
             Assert.True(c1 != c2);
             Assert.NotEqual(c1, c2);
         }
-
-        [Fact]
-        public void NewCorrelationId_CallTwice_ExpectDifferentResult()
-        {
-            var c1 = CorrelationId.NewCorrelationId();
-            var c2 = CorrelationId.NewCorrelationId();
-
-            Assert.NotEqual(CorrelationId.Empty, c1);
-            Assert.NotEqual(CorrelationId.Empty, c2);
-            Assert.NotEqual(c1, c2);
-        }
     }
 }

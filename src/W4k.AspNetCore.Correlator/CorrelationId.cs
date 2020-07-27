@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 
 namespace W4k.AspNetCore.Correlator
 {
@@ -76,15 +75,6 @@ namespace W4k.AspNetCore.Correlator
             value is null
                 ? Empty
                 : new CorrelationId(value);
-
-        /// <summary>
-        /// Generates new correlation ID.
-        /// </summary>
-        /// <returns>
-        /// Returns new instance of correlation ID.
-        /// </returns>
-        public static CorrelationId NewCorrelationId() =>
-            new CorrelationId(Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture));
 
         /// <inheritdoc />
         public override int GetHashCode() =>
