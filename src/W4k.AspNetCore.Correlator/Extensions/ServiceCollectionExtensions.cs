@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Extensions
@@ -40,7 +41,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // TODO: Allow user to register own implementation
-            services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
+            services.AddSingleton<ICorrelationContextFactory, DefaultCorrelationContextFactory>();
 
             return services
                 .Configure(configureOptions)

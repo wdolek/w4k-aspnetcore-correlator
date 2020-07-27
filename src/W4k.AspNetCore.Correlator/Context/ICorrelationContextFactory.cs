@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Context
 {
     public interface ICorrelationContextFactory
     {
