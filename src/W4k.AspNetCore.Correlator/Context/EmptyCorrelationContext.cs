@@ -1,6 +1,6 @@
 ﻿namespace W4k.AspNetCore.Correlator.Context
 {
-    public class EmptyCorrelationContext : CorrelationContext
+    public sealed class EmptyCorrelationContext : CorrelationContext
     {
         public static readonly EmptyCorrelationContext Instance = new EmptyCorrelationContext();
 

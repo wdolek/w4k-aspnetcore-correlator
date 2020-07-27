@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Context
@@ -22,12 +21,15 @@ namespace W4k.AspNetCore.Correlator.Context
 
             return (headerName, headerValue, _options.Factory) switch
             {
+                // correlation ID received
                 (string h, string v, _) =>
                     new RequestCorrelationContext(CorrelationId.FromString(v), h),
 
+                // correlation ID not received, to be generated
                 (null, null, Func<HttpContext, CorrelationId> f) =>
                     new GeneratedCorrelationContext(f(httpContext)),
 
+                // nop
                 _ => EmptyCorrelationContext.Instance,
             };
         }
