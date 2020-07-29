@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -14,18 +14,23 @@ namespace W4k.AspNetCore.Correlator
     /// </summary>
     public class CorrelatorHttpMessageHandler : DelegatingHandler
     {
-        private readonly IHttpContextAccessor _contextAccessor;
         private readonly CorrelatorOptions _options;
+        private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
         /// </summary>
-        /// <param name="contextAccessor">HTTP context accessor.</param>
         /// <param name="options">Correlator options.</param>
-        public CorrelatorHttpMessageHandler(IHttpContextAccessor contextAccessor, IOptions<CorrelatorOptions> options)
+        /// <param name="correlationContextAccessor">Correlation context accessor.</param>
+        public CorrelatorHttpMessageHandler(
+            IOptions<CorrelatorOptions> options,
+            ICorrelationContextAccessor correlationContextAccessor)
         {
-            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
-            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+            _correlationContextAccessor = correlationContextAccessor
+                ?? throw new ArgumentNullException(nameof(correlationContextAccessor));
+
+            _ = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value;
         }
 
         /// <inheritdoc />
@@ -33,19 +38,17 @@ namespace W4k.AspNetCore.Correlator
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            HttpContext context = _contextAccessor.HttpContext;
-            if (context != null)
-            {
-                var traceIdentifier = context.TraceIdentifier;
+            var correlationContext = _correlationContextAccessor.CorrelationContext;
+            var correlationId = correlationContext.CorrelationId;
 
-                // set request header based on options (use predefined/incoming)
+            if (!correlationId.IsEmpty)
+            {
                 _options.Forward
-                    .OnPredefinedHeader(s => request.Headers.AddHeaderIfNotSet(s.HeaderName, traceIdentifier))
+                    .OnPredefinedHeader(s => request.Headers.AddHeaderIfNotSet(s.HeaderName, correlationId))
                     .OnIncomingHeader(_ =>
                     {
-                        // TODO: Access correlation context
                         string? headerName = null;
-                        request.Headers.AddHeaderIfNotSet(headerName, traceIdentifier);
+                        request.Headers.AddHeaderIfNotSet(headerName, correlationId);
                     });
             }
 

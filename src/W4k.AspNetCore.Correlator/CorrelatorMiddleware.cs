@@ -17,7 +17,7 @@ namespace W4k.AspNetCore.Correlator
     {
         private readonly RequestDelegate _next;
         private readonly CorrelatorOptions _options;
-        private readonly ICorrelationContextFactory _correlationContextFactory;
+        private readonly ICorrelationContextFactory _contextFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelatorMiddleware"/> class.
@@ -31,7 +31,7 @@ namespace W4k.AspNetCore.Correlator
             ICorrelationContextFactory correlationContextFactory)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _correlationContextFactory = correlationContextFactory
+            _contextFactory = correlationContextFactory
                 ?? throw new ArgumentNullException(nameof(correlationContextFactory));
 
             _ = options ?? throw new ArgumentNullException(nameof(options));
@@ -48,7 +48,7 @@ namespace W4k.AspNetCore.Correlator
         [SuppressMessage("Microsoft.Design", "CA1062", Justification = "If HTTP context is null, we have bigger problem here.")]
         public async Task Invoke(HttpContext httpContext)
         {
-            var correlationContext = _correlationContextFactory.CreateContext(httpContext);
+            var correlationContext = _contextFactory.CreateContext(httpContext);
 
             if (_options.Emit != PropagationSettings.NoPropagation)
             {
