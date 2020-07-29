@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Options;
@@ -19,19 +18,18 @@ namespace W4k.AspNetCore.Correlator.Context
         {
             var (headerName, headerValue) = GetCorrelationHeader(httpContext.Request.Headers, _options.ReadFrom);
 
-            return (headerName, headerValue, _options.Factory) switch
+            if (headerName is null)
             {
-                // correlation ID received
-                (string h, string v, _) =>
-                    new RequestCorrelationContext(CorrelationId.FromString(v), h),
+                var generateCorrelationId = _options.Factory;
+                if (generateCorrelationId is null)
+                {
+                    return EmptyCorrelationContext.Instance;
+                }
 
-                // correlation ID not received, to be generated
-                (null, null, Func<HttpContext, CorrelationId> f) =>
-                    new GeneratedCorrelationContext(f(httpContext)),
+                return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+            }
 
-                // nop
-                _ => EmptyCorrelationContext.Instance,
-            };
+            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
         }
 
         private static (string? HeaderName, string? HeaderValue) GetCorrelationHeader(
