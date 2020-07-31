@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace W4k.AspNetCore.Correlator.Context
+namespace W4k.AspNetCore.Correlator.Context.Types
 {
     public sealed class RequestCorrelationContext : CorrelationContext
     {

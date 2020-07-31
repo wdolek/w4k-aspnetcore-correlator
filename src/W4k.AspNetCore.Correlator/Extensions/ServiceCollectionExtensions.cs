@@ -41,7 +41,12 @@ namespace W4k.AspNetCore.Correlator.Extensions
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             // TODO: Allow user to register own implementation
-            services.AddSingleton<ICorrelationContextFactory, DefaultCorrelationContextFactory>();
+            services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
+
+            // correlation context accessor/injector
+            services.AddSingleton<CorrelationContextContainer>();
+            services.AddSingleton<ICorrelationContextAccessor>(sp => sp.GetRequiredService<CorrelationContextContainer>());
+            services.AddSingleton<ICorrelationContextContainer>(sp => sp.GetRequiredService<CorrelationContextContainer>());
 
             return services
                 .Configure(configureOptions)

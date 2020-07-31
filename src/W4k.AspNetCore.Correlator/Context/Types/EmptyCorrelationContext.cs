@@ -1,4 +1,4 @@
-﻿namespace W4k.AspNetCore.Correlator.Context
+﻿namespace W4k.AspNetCore.Correlator.Context.Types
 {
     public sealed class EmptyCorrelationContext : CorrelationContext
     {

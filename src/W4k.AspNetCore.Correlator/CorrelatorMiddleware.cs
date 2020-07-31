@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -13,11 +14,12 @@ namespace W4k.AspNetCore.Correlator
     /// <summary>
     /// Correlator middleware for reading correlation ID from incoming HTTP request.
     /// </summary>
-    public class CorrelatorMiddleware
+    internal class CorrelatorMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly CorrelatorOptions _options;
         private readonly ICorrelationContextFactory _contextFactory;
+        private readonly ICorrelationContextContainer _contextContainer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelatorMiddleware"/> class.
@@ -25,14 +27,20 @@ namespace W4k.AspNetCore.Correlator
         /// <param name="next">Delegate representing the next middleware in the request pipeline.</param>
         /// <param name="options">Correlator options.</param>
         /// <param name="correlationContextFactory">Correlation context factory.</param>
+        /// <param name="correlationContextContainer">Correlation context container.</param>
         public CorrelatorMiddleware(
             RequestDelegate next,
             IOptions<CorrelatorOptions> options,
-            ICorrelationContextFactory correlationContextFactory)
+            ICorrelationContextFactory correlationContextFactory,
+            ICorrelationContextContainer correlationContextContainer)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
+
             _contextFactory = correlationContextFactory
                 ?? throw new ArgumentNullException(nameof(correlationContextFactory));
+
+            _contextContainer = correlationContextContainer
+                ?? throw new ArgumentNullException(nameof(correlationContextContainer));
 
             _ = options ?? throw new ArgumentNullException(nameof(options));
             _options = options.Value;
@@ -49,15 +57,17 @@ namespace W4k.AspNetCore.Correlator
         public async Task Invoke(HttpContext httpContext)
         {
             var correlationContext = _contextFactory.CreateContext(httpContext);
-
-            if (_options.Emit != PropagationSettings.NoPropagation)
+            using (_contextContainer.CreateScope(correlationContext))
             {
-                httpContext.Response.OnStarting(
-                    state => EmitCorrelationId((HttpContext)state, correlationContext, _options),
-                    httpContext);
-            }
+                if (_options.Emit != PropagationSettings.NoPropagation)
+                {
+                    httpContext.Response.OnStarting(
+                        state => EmitCorrelationId((HttpContext)state, correlationContext, _options),
+                        httpContext);
+                }
 
-            await _next.Invoke(httpContext.WithCorrelationId(correlationContext.CorrelationId));
+                await _next.Invoke(httpContext.WithCorrelationId(correlationContext.CorrelationId));
+            }
         }
 
         /// <summary>

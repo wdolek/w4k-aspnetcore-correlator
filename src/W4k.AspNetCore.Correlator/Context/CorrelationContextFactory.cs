@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Context
 {
-    internal class DefaultCorrelationContextFactory : ICorrelationContextFactory
+    internal class CorrelationContextFactory : ICorrelationContextFactory
     {
         private readonly CorrelatorOptions _options;
 
-        public DefaultCorrelationContextFactory(IOptions<CorrelatorOptions> options)
+        public CorrelationContextFactory(IOptions<CorrelatorOptions> options)
         {
             _options = options.Value;
         }
