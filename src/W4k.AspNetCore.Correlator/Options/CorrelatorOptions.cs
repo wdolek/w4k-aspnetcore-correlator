@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace W4k.AspNetCore.Correlator.Options
 {
@@ -27,7 +28,8 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
         /// </summary>
-        public Func<CorrelationId>? Factory { get; set; } = () => CorrelationId.NewCorrelationId();
+        public Func<HttpContext, CorrelationId>? Factory { get; set; } =
+            (_) => CorrelationId.FromString(Guid.NewGuid().ToString("D"));
 
         /// <summary>
         /// Gets or sets correlation ID propagation settings affecting response headers.

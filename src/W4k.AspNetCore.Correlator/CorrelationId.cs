@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Globalization;
 
 namespace W4k.AspNetCore.Correlator
 {
     /// <summary>
-    /// Correlation ID structure.
+    /// Request correlation ID.
     /// </summary>
     public sealed class CorrelationId : IEquatable<CorrelationId>
     {
@@ -25,9 +24,6 @@ namespace W4k.AspNetCore.Correlator
         /// <summary>
         /// Gets correlation ID value.
         /// </summary>
-        /// <remarks>
-        /// Returns <see cref="Empty"/> if internal value is <c>null</c> (may happen when instantiated via <c>default</c>).
-        /// </remarks>
         public string Value { get; }
 
         /// <summary>
@@ -77,15 +73,6 @@ namespace W4k.AspNetCore.Correlator
                 ? Empty
                 : new CorrelationId(value);
 
-        /// <summary>
-        /// Generates new correlation ID.
-        /// </summary>
-        /// <returns>
-        /// Returns new instance of correlation ID.
-        /// </returns>
-        public static CorrelationId NewCorrelationId() =>
-            new CorrelationId(Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture));
-
         /// <inheritdoc />
         public override int GetHashCode() =>
 #if NETSTANDARD2_0
@@ -101,13 +88,7 @@ namespace W4k.AspNetCore.Correlator
         /// <inheritdoc />
         public override string ToString() => Value;
 
-        /// <summary>
-        /// Indicates whether the current correlation ID is equal to another one.
-        /// </summary>
-        /// <param name="other">Correlation ID to be compared to.</param>
-        /// <returns>
-        /// Returns <c>true</c> if given correlation ID equals, <c>false</c> otherwise.
-        /// </returns>
+        /// <inheritdoc />
         public bool Equals(CorrelationId? other) =>
             string.Equals(Value, other?.Value, StringComparison.OrdinalIgnoreCase);
     }
