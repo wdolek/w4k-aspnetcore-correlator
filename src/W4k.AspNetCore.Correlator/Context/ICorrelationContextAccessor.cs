@@ -1,7 +1,13 @@
 ﻿namespace W4k.AspNetCore.Correlator.Context
 {
+    /// <summary>
+    /// Correlation context accessor.
+    /// </summary>
     public interface ICorrelationContextAccessor
     {
-        CorrelationContext? CorrelationContext { get; }
+        /// <summary>
+        /// Gets current correlation context.
+        /// </summary>
+        CorrelationContext CorrelationContext { get; }
     }
 }
