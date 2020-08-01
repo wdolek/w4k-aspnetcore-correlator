@@ -1,7 +1,9 @@
-﻿namespace W4k.AspNetCore.Correlator.Context
+﻿using System;
+
+namespace W4k.AspNetCore.Correlator.Context
 {
     internal interface ICorrelationContextContainer
     {
-        CorrelationScope CreateScope(CorrelationContext correlationContext);
+        IDisposable CreateScope(CorrelationContext correlationContext);
     }
 }
