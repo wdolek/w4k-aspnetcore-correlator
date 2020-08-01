@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -47,8 +48,8 @@ namespace W4k.AspNetCore.Correlator
                     .OnPredefinedHeader(s => request.Headers.AddHeaderIfNotSet(s.HeaderName, correlationId))
                     .OnIncomingHeader(_ =>
                     {
-                        string? headerName = null;
-                        request.Headers.AddHeaderIfNotSet(headerName, correlationId);
+                        var requestCorrelationContext = correlationContext as RequestCorrelationContext;
+                        request.Headers.AddHeaderIfNotSet(requestCorrelationContext?.Header, correlationId);
                     });
             }
 
