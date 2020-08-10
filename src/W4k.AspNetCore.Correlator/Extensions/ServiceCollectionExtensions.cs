@@ -42,6 +42,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
 
             // TODO: Allow user to register own implementation
             services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
+            services.AddSingleton<ICorrelationEmitter, CorrelationEmitter>();
 
             // correlation context accessor/injector
             services.AddSingleton<CorrelationContextContainer>();
