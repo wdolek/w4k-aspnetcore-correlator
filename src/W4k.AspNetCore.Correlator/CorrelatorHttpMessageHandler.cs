@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,7 @@ namespace W4k.AspNetCore.Correlator
     /// <summary>
     /// Delegating HTTP message handler handling correlation ID in outgoing request.
     /// </summary>
-    public class CorrelatorHttpMessageHandler : DelegatingHandler
+    public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
     {
         private readonly CorrelatorOptions _options;
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
@@ -39,21 +40,49 @@ namespace W4k.AspNetCore.Correlator
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var correlationContext = _correlationContextAccessor.CorrelationContext;
-            var correlationId = correlationContext.CorrelationId;
+            _ = request ?? throw new ArgumentNullException(nameof(request));
 
-            if (!correlationId.IsEmpty)
-            {
-                _options.Forward
-                    .OnPredefinedHeader(s => request.Headers.AddHeaderIfNotSet(s.HeaderName, correlationId))
-                    .OnIncomingHeader(_ =>
-                    {
-                        var requestCorrelationContext = correlationContext as RequestCorrelationContext;
-                        request.Headers.AddHeaderIfNotSet(requestCorrelationContext?.Header, correlationId);
-                    });
-            }
+            HandleCorrelationIdForwarding(request.Headers);
 
             return base.SendAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Handles correlation ID forwarding.
+        /// </summary>
+        /// <param name="requestHeaders">HTTP request headers.</param>
+        /// <returns>
+        /// HTTP request headers containing correlation ID (or unchanged, if forwarding not set).
+        /// </returns>
+        private HttpRequestHeaders HandleCorrelationIdForwarding(HttpRequestHeaders requestHeaders)
+        {
+            var propagation = _options.Forward;
+            if (propagation.Settings == HeaderPropagation.NoPropagation)
+            {
+                return requestHeaders;
+            }
+
+            var correlationContext = _correlationContextAccessor.CorrelationContext;
+
+            return (propagation.Settings, correlationContext) switch
+            {
+                (HeaderPropagation.UsePredefinedHeaderName, _) =>
+                    requestHeaders.AddHeaderIfNotSet(
+                        propagation.HeaderName,
+                        correlationContext.CorrelationId),
+
+                (HeaderPropagation.KeepIncomingHeaderName, RequestCorrelationContext requestCorrelationContext) =>
+                    requestHeaders.AddHeaderIfNotSet(
+                        requestCorrelationContext.Header,
+                        requestCorrelationContext.CorrelationId),
+
+                (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext generatedCorrelationContext) =>
+                    requestHeaders.AddHeaderIfNotSet(
+                        propagation.HeaderName,
+                        generatedCorrelationContext.CorrelationId),
+
+                _ => requestHeaders,
+            };
         }
     }
 }

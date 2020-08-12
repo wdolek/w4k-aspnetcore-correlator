@@ -14,12 +14,6 @@ namespace W4k.AspNetCore.Correlator.Options
             new PropagationSettings(HeaderPropagation.NoPropagation, string.Empty);
 
         /// <summary>
-        /// Propagate header with original name.
-        /// </summary>
-        public static readonly PropagationSettings KeepIncomingHeaderName =
-            new PropagationSettings(HeaderPropagation.KeepIncomingHeaderName, string.Empty);
-
-        /// <summary>
         /// Internal header name.
         /// </summary>
         private readonly string _headerName;
@@ -86,6 +80,18 @@ namespace W4k.AspNetCore.Correlator.Options
 
             return new PropagationSettings(HeaderPropagation.UsePredefinedHeaderName, headerName);
         }
+
+        /// <summary>
+        /// Propagate header with original name.
+        /// </summary>
+        /// <param name="defaultHeaderName">Default header name in case correlation ID has been generated (and not received).</param>
+        /// <returns>
+        /// Propagation settings for keeping incoming header, or using <paramref name="defaultHeaderName"/> if generated.
+        /// </returns>
+        public static PropagationSettings KeepIncomingHeaderName(string? defaultHeaderName = null) =>
+            new PropagationSettings(
+                HeaderPropagation.KeepIncomingHeaderName,
+                defaultHeaderName ?? HttpHeaders.CorrelationId);
 
         /// <inheritdoc />
         public override bool Equals(object obj) =>
