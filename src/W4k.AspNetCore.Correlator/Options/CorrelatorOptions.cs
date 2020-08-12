@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using W4k.AspNetCore.Correlator.Http;
 
 namespace W4k.AspNetCore.Correlator.Options
 {

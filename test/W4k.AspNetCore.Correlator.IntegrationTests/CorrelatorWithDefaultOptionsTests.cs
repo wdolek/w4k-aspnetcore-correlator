@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using W4k.AspNetCore.Correlator.Http;
 using Xunit;
 
 namespace W4k.AspNetCore.Correlator.IntegrationTests

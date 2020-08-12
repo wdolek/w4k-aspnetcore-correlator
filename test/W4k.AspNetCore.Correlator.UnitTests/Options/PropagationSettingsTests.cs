@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 using Xunit;
 

@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace W4k.AspNetCore.Correlator.Extensions
+namespace W4k.AspNetCore.Correlator.Http.Extensions
 {
     /// <summary>
     /// Extensions of <see cref="HttpRequestHeaders"/>.
@@ -16,9 +16,9 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Returns HTTP request headers with header set.
         /// </returns>
-        public static HttpRequestHeaders AddHeaderIfNotSet(this HttpRequestHeaders headers, string? headerName, string value)
+        public static HttpRequestHeaders AddHeaderIfNotSet(this HttpRequestHeaders headers, string? headerName, string? value)
         {
-            if (string.IsNullOrEmpty(headerName))
+            if (string.IsNullOrEmpty(headerName) || string.IsNullOrEmpty(value))
             {
                 return headers;
             }
