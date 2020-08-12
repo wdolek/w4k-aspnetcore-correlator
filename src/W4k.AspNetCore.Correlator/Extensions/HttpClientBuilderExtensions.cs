@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator.Http;
 
 namespace W4k.AspNetCore.Correlator.Extensions
 {

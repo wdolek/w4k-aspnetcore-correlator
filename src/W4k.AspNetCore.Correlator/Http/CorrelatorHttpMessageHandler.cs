@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
-using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Http.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Http
 {
     /// <summary>
     /// Delegating HTTP message handler handling correlation ID in outgoing request.

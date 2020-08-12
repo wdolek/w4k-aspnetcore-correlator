@@ -1,4 +1,5 @@
 ﻿using System;
+using W4k.AspNetCore.Correlator.Http;
 
 namespace W4k.AspNetCore.Correlator.Options
 {
