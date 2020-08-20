@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
-using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
 {
@@ -12,6 +13,7 @@ namespace W4k.AspNetCore.Correlator
     internal class CorrelatorMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly CorrelatorOptions _options;
         private readonly ICorrelationContextFactory _contextFactory;
         private readonly ICorrelationContextContainer _contextContainer;
         private readonly ICorrelationEmitter _emitter;
@@ -20,16 +22,19 @@ namespace W4k.AspNetCore.Correlator
         /// Initializes a new instance of the <see cref="CorrelatorMiddleware"/> class.
         /// </summary>
         /// <param name="next">Delegate representing the next middleware in the request pipeline.</param>
+        /// <param name="options">Correlator options.</param>
         /// <param name="correlationContextFactory">Correlation context factory.</param>
         /// <param name="correlationContextContainer">Correlation context container.</param>
         /// <param name="correlationEmitter">Correlation emitter.</param>
         public CorrelatorMiddleware(
             RequestDelegate next,
+            IOptions<CorrelatorOptions> options,
             ICorrelationContextFactory correlationContextFactory,
             ICorrelationContextContainer correlationContextContainer,
             ICorrelationEmitter correlationEmitter)
         {
             _next = next;
+            _options = options.Value;
             _contextFactory = correlationContextFactory;
             _contextContainer = correlationContextContainer;
             _emitter = correlationEmitter;
@@ -50,7 +55,12 @@ namespace W4k.AspNetCore.Correlator
             {
                 httpContext.Response.OnStarting(ctx => _emitter.Emit((HttpContext)ctx), httpContext);
 
-                await _next.Invoke(httpContext.WithCorrelationId(correlationContext.CorrelationId));
+                if (_options.ReplaceTraceIdentifier && correlationContext.CorrelationId != CorrelationId.Empty)
+                {
+                    httpContext.TraceIdentifier = correlationContext.CorrelationId;
+                }
+
+                await _next.Invoke(httpContext);
             }
         }
     }

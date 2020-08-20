@@ -41,5 +41,10 @@ namespace W4k.AspNetCore.Correlator.Options
         /// Gets or sets correlation ID propagation settings affecting subsequent requests via <see cref="CorrelatorHttpMessageHandler"/>.
         /// </summary>
         public PropagationSettings Forward { get; set; } = PropagationSettings.PropagateAs(HttpHeaders.CorrelationId);
+
+        /// <summary>
+        /// Gets or sets a value indicating whether <see cref="HttpContext.TraceIdentifier"/> is replaced by correlation ID or left intact.
+        /// </summary>
+        public bool ReplaceTraceIdentifier { get; set; } = true;
     }
 }
