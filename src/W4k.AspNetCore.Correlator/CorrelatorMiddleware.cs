@@ -36,7 +36,7 @@ namespace W4k.AspNetCore.Correlator
             ICorrelationContextFactory correlationContextFactory,
             ICorrelationContextContainer correlationContextContainer,
             ICorrelationEmitter correlationEmitter,
-            ILogger logger)
+            ILogger<CorrelatorMiddleware> logger)
         {
             _next = next;
             _options = options.Value;
