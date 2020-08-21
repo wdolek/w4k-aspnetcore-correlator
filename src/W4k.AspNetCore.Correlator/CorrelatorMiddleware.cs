@@ -95,7 +95,7 @@ namespace W4k.AspNetCore.Correlator
         /// </returns>
         private HttpContext ReplaceTraceIdentifier(HttpContext httpContext, CorrelationId correlationId)
         {
-            if (_options.ReplaceTraceIdentifier || correlationId.IsEmpty)
+            if (!_options.ReplaceTraceIdentifier || correlationId.IsEmpty)
             {
                 return httpContext;
             }
