@@ -24,11 +24,6 @@ namespace W4k.AspNetCore.Correlator
         /// <inheritdoc/>
         public Task Emit(HttpContext httpContext)
         {
-            if (_options.Emit.Settings == HeaderPropagation.NoPropagation)
-            {
-                return Task.CompletedTask;
-            }
-
             var correlationContext = _contextAccessor.CorrelationContext;
 
             string? responseHeaderName = GetResponseHeaderName(correlationContext);
