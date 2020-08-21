@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
@@ -53,7 +54,7 @@ namespace W4k.AspNetCore.Correlator
             var correlationContext = _contextFactory.CreateContext(httpContext);
             using (_contextContainer.CreateScope(correlationContext))
             {
-                httpContext.Response.OnStarting(ctx => _emitter.Emit((HttpContext)ctx), httpContext);
+                _emitter.Register(httpContext);
 
                 if (_options.ReplaceTraceIdentifier && correlationContext.CorrelationId != CorrelationId.Empty)
                 {
