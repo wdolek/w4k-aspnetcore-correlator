@@ -60,10 +60,29 @@ namespace W4k.AspNetCore.Correlator
             {
                 var correlationId = correlationContext.CorrelationId;
 
-                RegisterEmitter(_options.Emit, httpContext);
-                ReplaceTraceIdentifier(httpContext, correlationId);
+                // emit correlation ID back to caller in response headers
+                if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
+                {
+                    httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
+                }
 
-                using (BeginCorrelatedLoggingScope(_options.LoggingScope, correlationId))
+                // assign correlation ID to ASP.NET `TraceIdentifier` property
+                // (causes correlation ID to appear in trace logs instead generated trace ID)
+                if (_options.ReplaceTraceIdentifier)
+                {
+                    ReplaceTraceIdentifier(httpContext, correlationId);
+                }
+
+                // create logging scope or await next middleware right away
+                // (state is shared via scope provider with other logger instances)
+                if (_options.LoggingScope.IncludeScope)
+                {
+                    using (BeginCorrelatedLoggingScope(_options.LoggingScope.CorrelationKey, correlationId))
+                    {
+                        await _next.Invoke(httpContext);
+                    }
+                }
+                else
                 {
                     await _next.Invoke(httpContext);
                 }
@@ -71,55 +90,30 @@ namespace W4k.AspNetCore.Correlator
         }
 
         /// <summary>
-        /// Registers correlation emitter to <see cref="HttpResponse.OnStarting(Func{object, Task}, object)"/>.
-        /// </summary>
-        /// <param name="propagationSettings">Header propagation settings.</param>
-        /// <param name="httpContext">Current HTTP context.</param>
-        private void RegisterEmitter(PropagationSettings propagationSettings, HttpContext httpContext)
-        {
-            if (propagationSettings.Settings == HeaderPropagation.NoPropagation)
-            {
-                return;
-            }
-
-            httpContext.Response.OnStarting(ctx => _emitter.Emit((HttpContext)ctx), httpContext);
-        }
-
-        /// <summary>
         /// Replaces <see cref="HttpContext.TraceIdentifier"/> by <see cref="CorrelationId"/> if not empty.
         /// </summary>
         /// <param name="httpContext">Current HTTP context.</param>
         /// <param name="correlationId">Current correlation ID.</param>
-        /// <returns>
-        /// HTTP context where trace identifier is replaced by correlation ID.
-        /// </returns>
-        private HttpContext ReplaceTraceIdentifier(HttpContext httpContext, CorrelationId correlationId)
+        private static void ReplaceTraceIdentifier(HttpContext httpContext, CorrelationId correlationId)
         {
-            if (!_options.ReplaceTraceIdentifier || correlationId.IsEmpty)
+            if (correlationId.IsEmpty)
             {
-                return httpContext;
+                return;
             }
 
             httpContext.TraceIdentifier = correlationId;
-
-            return httpContext;
         }
 
         /// <summary>
         /// Begins logging scope containing correlation ID.
         /// </summary>
-        /// <param name="scopeSettings">Logging scope settings.</param>
+        /// <param name="correlationKey">Logging scope correlation key.</param>
         /// <param name="correlationId">Correlation ID.</param>
         /// <returns>
         /// Returns new logger scope or <c>null</c> if correlation ID should not be included in scope or when is empty.
         /// </returns>
-        private IDisposable? BeginCorrelatedLoggingScope(LoggingScopeSettings scopeSettings, CorrelationId correlationId)
+        private IDisposable? BeginCorrelatedLoggingScope(string correlationKey, CorrelationId correlationId)
         {
-            if (scopeSettings.IncludeScope)
-            {
-                return null;
-            }
-
             if (correlationId.IsEmpty)
             {
                 return null;
@@ -128,7 +122,7 @@ namespace W4k.AspNetCore.Correlator
             return _logger.BeginScope(
                 new Dictionary<string, object>
                 {
-                    [scopeSettings.CorrelationKey] = correlationId,
+                    [correlationKey] = correlationId,
                 });
         }
     }
