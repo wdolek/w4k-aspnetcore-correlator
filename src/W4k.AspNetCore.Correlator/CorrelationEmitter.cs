@@ -11,21 +11,15 @@ namespace W4k.AspNetCore.Correlator
     internal class CorrelationEmitter : ICorrelationEmitter
     {
         private readonly CorrelatorOptions _options;
-        private readonly ICorrelationContextAccessor _contextAccessor;
 
-        public CorrelationEmitter(
-            IOptions<CorrelatorOptions> options,
-            ICorrelationContextAccessor correlationContextAccessor)
+        public CorrelationEmitter(IOptions<CorrelatorOptions> options)
         {
             _options = options.Value;
-            _contextAccessor = correlationContextAccessor;
         }
 
         /// <inheritdoc/>
-        public Task Emit(HttpContext httpContext)
+        public Task Emit(HttpContext httpContext, CorrelationContext correlationContext)
         {
-            var correlationContext = _contextAccessor.CorrelationContext;
-
             string? responseHeaderName = GetResponseHeaderName(correlationContext);
             if (responseHeaderName != null)
             {
