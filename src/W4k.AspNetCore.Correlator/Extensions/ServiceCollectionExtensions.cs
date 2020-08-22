@@ -48,7 +48,7 @@ namespace W4k.AspNetCore.Correlator.Extensions
             // correlation context accessor/injector
             services.AddSingleton<CorrelationContextContainer>();
             services.AddSingleton<ICorrelationContextAccessor>(sp => sp.GetRequiredService<CorrelationContextContainer>());
-            services.AddSingleton<ICorrelationContextContainer>(sp => sp.GetRequiredService<CorrelationContextContainer>());
+            services.AddSingleton<ICorrelationScopeFactory>(sp => sp.GetRequiredService<CorrelationContextContainer>());
 
             return services
                 .Configure(configureOptions)
