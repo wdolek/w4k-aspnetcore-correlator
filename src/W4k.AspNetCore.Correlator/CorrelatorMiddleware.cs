@@ -16,8 +16,7 @@ namespace W4k.AspNetCore.Correlator
     {
         private readonly RequestDelegate _next;
         private readonly CorrelatorOptions _options;
-        private readonly ICorrelationContextFactory _contextFactory;
-        private readonly ICorrelationContextContainer _contextContainer;
+        private readonly ICorrelationScopeFactory _scopeFactory;
         private readonly ICorrelationEmitter _emitter;
         private readonly ILogger _logger;
 
@@ -26,22 +25,19 @@ namespace W4k.AspNetCore.Correlator
         /// </summary>
         /// <param name="next">Delegate representing the next middleware in the request pipeline.</param>
         /// <param name="options">Correlator options.</param>
-        /// <param name="correlationContextFactory">Correlation context factory.</param>
-        /// <param name="correlationContextContainer">Correlation context container.</param>
+        /// <param name="correlationScopeFactory">Correlation scope factory.</param>
         /// <param name="correlationEmitter">Correlation emitter.</param>
         /// <param name="logger">Logger.</param>
         public CorrelatorMiddleware(
             RequestDelegate next,
             IOptions<CorrelatorOptions> options,
-            ICorrelationContextFactory correlationContextFactory,
-            ICorrelationContextContainer correlationContextContainer,
+            ICorrelationScopeFactory correlationScopeFactory,
             ICorrelationEmitter correlationEmitter,
             ILogger<CorrelatorMiddleware> logger)
         {
             _next = next;
             _options = options.Value;
-            _contextFactory = correlationContextFactory;
-            _contextContainer = correlationContextContainer;
+            _scopeFactory = correlationScopeFactory;
             _emitter = correlationEmitter;
             _logger = logger;
         }
@@ -55,37 +51,36 @@ namespace W4k.AspNetCore.Correlator
         /// </returns>
         public async Task Invoke(HttpContext httpContext)
         {
-            var correlationContext = _contextFactory.CreateContext(httpContext);
-            using (_contextContainer.CreateScope(correlationContext))
+            using var correlationScope = _scopeFactory.CreateScope(httpContext);
+            var correlationContext = correlationScope.CorrelationContext;
+
+            // emit correlation ID back to caller in response headers
+            if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
             {
-                var correlationId = correlationContext.CorrelationId;
+                httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
+            }
 
-                // emit correlation ID back to caller in response headers
-                if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
-                {
-                    httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
-                }
+            // assign correlation ID to ASP.NET `TraceIdentifier` property
+            // (causes correlation ID to appear in trace logs instead of generated trace ID)
+            if (_options.ReplaceTraceIdentifier)
+            {
+                ReplaceTraceIdentifier(httpContext, correlationContext.CorrelationId);
+            }
 
-                // assign correlation ID to ASP.NET `TraceIdentifier` property
-                // (causes correlation ID to appear in trace logs instead generated trace ID)
-                if (_options.ReplaceTraceIdentifier)
-                {
-                    ReplaceTraceIdentifier(httpContext, correlationId);
-                }
-
-                // create logging scope or await next middleware right away
-                // (state is shared via scope provider with other logger instances)
-                if (_options.LoggingScope.IncludeScope)
-                {
-                    using (BeginCorrelatedLoggingScope(_options.LoggingScope.CorrelationKey, correlationId))
-                    {
-                        await _next.Invoke(httpContext);
-                    }
-                }
-                else
+            // create logging scope or await next middleware right away
+            // (state is shared via scope provider with other logger instances)
+            if (_options.LoggingScope.IncludeScope)
+            {
+                using (BeginCorrelatedLoggingScope(
+                    _options.LoggingScope.CorrelationKey,
+                    correlationContext.CorrelationId))
                 {
                     await _next.Invoke(httpContext);
                 }
+            }
+            else
+            {
+                await _next.Invoke(httpContext);
             }
         }
 
