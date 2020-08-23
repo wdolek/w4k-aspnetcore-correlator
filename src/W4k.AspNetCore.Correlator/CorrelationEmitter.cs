@@ -20,7 +20,7 @@ namespace W4k.AspNetCore.Correlator
         /// <inheritdoc/>
         public Task Emit(HttpContext httpContext, CorrelationContext correlationContext)
         {
-            string? responseHeaderName = GetResponseHeaderName(correlationContext);
+            string? responseHeaderName = GetResponseHeaderName(_options.Emit, correlationContext);
             if (responseHeaderName != null)
             {
                 httpContext.Response.Headers.AddHeaderIfNotSet(
@@ -31,20 +31,23 @@ namespace W4k.AspNetCore.Correlator
             return Task.CompletedTask;
         }
 
-        private string? GetResponseHeaderName(CorrelationContext correlationContext)
-        {
-            if (_options.Emit.Settings == HeaderPropagation.UsePredefinedHeaderName)
+        private static string? GetResponseHeaderName(
+            PropagationSettings propagation,
+            CorrelationContext correlationContext) =>
+            (propagation.Settings, correlationContext) switch
             {
-                return _options.Emit.HeaderName;
-            }
+                // use predefined header name
+                (HeaderPropagation.UsePredefinedHeaderName, _) => propagation.HeaderName,
 
-            if (_options.Emit.Settings == HeaderPropagation.KeepIncomingHeaderName
-                && correlationContext is RequestCorrelationContext requestCorrelationContext)
-            {
-                return requestCorrelationContext.Header;
-            }
+                // keep incoming header name, correlation ID received
+                (HeaderPropagation.KeepIncomingHeaderName, RequestCorrelationContext requestCorrelationContext) =>
+                    requestCorrelationContext.Header,
 
-            return null;
-        }
+                // keep incoming header name, correlation ID generated
+                (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext _) => propagation.HeaderName,
+
+                // no propagation or not received and not generated
+                _ => null
+            };
     }
 }
