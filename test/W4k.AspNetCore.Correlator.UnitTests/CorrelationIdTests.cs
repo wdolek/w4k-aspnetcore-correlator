@@ -39,5 +39,30 @@ namespace W4k.AspNetCore.Correlator.UnitTests
             Assert.True(c1 != c2);
             Assert.NotEqual(c1, c2);
         }
+        [Fact]
+        public void Empty_ExpectTrueIfEmpty()
+        {
+            var correlationId = CorrelationId.Empty;
+
+            Assert.True(correlationId.IsEmpty);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void FromEmptyString_ExpectTrueIfEmpty(string value)
+        {
+            var correlationId = CorrelationId.FromString(value);
+
+            Assert.True(correlationId.IsEmpty);
+        }
+
+        [Fact]
+        public void FromString_ExpectNotToBeEmpty()
+        {
+            var correlationId = CorrelationId.FromString("123");
+
+            Assert.False(correlationId.IsEmpty);
+        }
     }
 }
