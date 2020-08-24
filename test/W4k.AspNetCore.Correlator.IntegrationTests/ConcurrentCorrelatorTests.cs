@@ -11,24 +11,24 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 {
     public sealed class ConcurrentCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
     {
-        private static readonly Random Random = new Random(12345);
-
         private readonly ITestOutputHelper _output;
+        private readonly int _concurrency;
 
         public ConcurrentCorrelatorTests(ITestOutputHelper output)
         {
             _output = output;
+
+            ThreadPool.GetMaxThreads(out var _, out var completionPortThreads);
+            _concurrency = Math.Max(Environment.ProcessorCount, completionPortThreads) * 4;
         }
 
         [Fact]
         public async Task CorrelationCorrectForEachRequest()
         {
-            // make sure we make machine sweat
-            var concurrency = Environment.ProcessorCount * 10;
-            _output.WriteLine($"'Concurrency' level: {concurrency} (number of request tasks to be executed)");
+            _output.WriteLine($"'Concurrency' level: {_concurrency} (number of request tasks to be executed)");
 
             var tasks = Enumerable
-                .Range(0, concurrency)
+                .Range(0, _concurrency)
                 .Select(_ => CreateCorrelatedRequest())
                 .Select((t) => SendRequest(t.Request, t.CorrelationId))
                 .ToArray();
@@ -57,12 +57,8 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
         {
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
-            await Task.Delay(Random.Next(127));
-
             string headerValue = response.Headers.GetValues("X-CID").FirstOrDefault();
             string bodyValue = await response.Content.ReadAsStringAsync();
-
-            await Task.Delay(Random.Next(255));
 
             return new CorrelationTestContext
             {
