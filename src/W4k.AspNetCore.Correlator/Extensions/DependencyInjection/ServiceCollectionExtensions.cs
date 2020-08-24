@@ -1,12 +1,10 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.Extensions
+namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extensions of <see cref="IServiceCollection"/>.
@@ -31,24 +29,27 @@ namespace W4k.AspNetCore.Correlator.Extensions
         /// <returns>
         /// Service collection with components registered.
         /// </returns>
-        public static IServiceCollection AddCorrelator(this IServiceCollection services, Action<CorrelatorOptions> configureOptions)
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="configureOptions"/> is <c>null</c>.</exception>
+        public static IServiceCollection AddCorrelator(
+            this IServiceCollection services,
+            Action<CorrelatorOptions> configureOptions)
         {
             if (configureOptions is null)
             {
                 throw new ArgumentNullException(nameof(configureOptions));
             }
 
-            // may be already registered
-            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             // TODO: Allow user to register own implementation
             services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
             services.AddSingleton<ICorrelationEmitter, CorrelationEmitter>();
 
-            // correlation context accessor/injector
             services.AddSingleton<CorrelationContextContainer>();
-            services.AddSingleton<ICorrelationContextAccessor>(sp => sp.GetRequiredService<CorrelationContextContainer>());
-            services.AddSingleton<ICorrelationScopeFactory>(sp => sp.GetRequiredService<CorrelationContextContainer>());
+
+            services.AddSingleton<ICorrelationContextAccessor>(
+                sp => sp.GetRequiredService<CorrelationContextContainer>());
+
+            services.AddSingleton<ICorrelationScopeFactory>(
+                sp => sp.GetRequiredService<CorrelationContextContainer>());
 
             return services
                 .Configure(configureOptions)
