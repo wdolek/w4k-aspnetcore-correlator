@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 
 namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
 {
@@ -9,7 +10,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCorrelator();
+            services.AddDefaultCorrelator();
         }
 
         public void Configure(IApplicationBuilder app)

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Http;
 
-namespace W4k.AspNetCore.Correlator.Extensions
+namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extensions of <see cref="IHttpClientBuilder"/>.
