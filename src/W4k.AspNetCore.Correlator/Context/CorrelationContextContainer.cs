@@ -15,19 +15,13 @@ namespace W4k.AspNetCore.Correlator.Context
 
         private readonly ICorrelationContextFactory _correlationContextFactory;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelationContextContainer"/> class.
-        /// </summary>
-        /// <param name="correlationContextFactory">Correlation context factory.</param>
         public CorrelationContextContainer(ICorrelationContextFactory correlationContextFactory)
         {
             _correlationContextFactory = correlationContextFactory;
         }
 
-        /// <inheritdoc/>
         public CorrelationContext CorrelationContext => LocalContext.Value ?? EmptyCorrelationContext.Instance;
 
-        /// <inheritdoc/>
         public ICorrelationScope CreateScope(HttpContext httpContext)
         {
             LocalContext.Value = _correlationContextFactory.CreateContext(httpContext);
@@ -35,7 +29,6 @@ namespace W4k.AspNetCore.Correlator.Context
             return new CorrelationScope(this);
         }
 
-        /// <inheritdoc/>
         public void Dispose()
         {
             LocalContext.Value = null;

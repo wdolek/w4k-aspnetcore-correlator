@@ -2,21 +2,12 @@
 
 namespace W4k.AspNetCore.Correlator.Http.Extensions
 {
-    /// <summary>
-    /// Extensions of <see cref="HttpRequestHeaders"/>.
-    /// </summary>
     internal static class HttpRequestHeadersExtensions
     {
-        /// <summary>
-        /// Adds header value if not already set.
-        /// </summary>
-        /// <param name="headers">HTTP request headers.</param>
-        /// <param name="headerName">Header name.</param>
-        /// <param name="value">Header value.</param>
-        /// <returns>
-        /// Returns HTTP request headers with header set.
-        /// </returns>
-        public static HttpRequestHeaders AddHeaderIfNotSet(this HttpRequestHeaders headers, string? headerName, string? value)
+        public static HttpRequestHeaders AddHeaderIfNotSet(
+            this HttpRequestHeaders headers,
+            string? headerName,
+            string? value)
         {
             if (string.IsNullOrEmpty(headerName) || string.IsNullOrEmpty(value))
             {

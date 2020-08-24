@@ -17,7 +17,6 @@ namespace W4k.AspNetCore.Correlator
             _options = options.Value;
         }
 
-        /// <inheritdoc/>
         public Task Emit(HttpContext httpContext, CorrelationContext correlationContext)
         {
             string? responseHeaderName = GetResponseHeaderName(_options.Emit, correlationContext);
