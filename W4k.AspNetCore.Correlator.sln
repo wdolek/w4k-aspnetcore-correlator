@@ -28,6 +28,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{260DCE5E-0649-40BF-9E55-84DFEBFC4F78}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{5CA4490C-CA01-4C12-98B2-695FA3D2B821}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{59A6F617-4EF1-40BD-8759-280E90DDB789}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\pack.yml = .github\workflows\pack.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +103,8 @@ Global
 		{74E1A843-6D1A-457A-9F1A-C89A368F59EE} = {C0698901-3482-428B-8863-D631F0304244}
 		{80908A90-2E8C-416C-91AF-FBA9A23D58D3} = {C0698901-3482-428B-8863-D631F0304244}
 		{0FD3E847-FE2A-49B9-B87E-6F15226AFE6F} = {260DCE5E-0649-40BF-9E55-84DFEBFC4F78}
+		{5CA4490C-CA01-4C12-98B2-695FA3D2B821} = {8FE80DF2-87C8-4639-AFB8-C97980565E70}
+		{59A6F617-4EF1-40BD-8759-280E90DDB789} = {5CA4490C-CA01-4C12-98B2-695FA3D2B821}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A4C3F87-5A3E-4AD2-AD75-AAE43EB7227A}
