@@ -12,25 +12,52 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds components required by Correlator to service collection.
+        /// Adds default components required by Correlator to services collection.
         /// </summary>
-        /// <param name="services">Service collection.</param>
+        /// <param name="services">Services collection.</param>
         /// <returns>
-        /// Service collection with components registered.
+        /// Services collection.
         /// </returns>
-        public static IServiceCollection AddCorrelator(this IServiceCollection services) =>
+        public static IServiceCollection AddDefaultCorrelator(this IServiceCollection services) =>
+            services.AddDefaultCorrelator(_ => { });
+
+        /// <summary>
+        /// Adds default components required by Correlator to services collection.
+        /// </summary>
+        /// <param name="services">Services collection.</param>
+        /// <param name="configureOptions">Configure options callback.</param>
+        /// <returns>
+        /// Services collection.
+        /// </returns>
+        public static IServiceCollection AddDefaultCorrelator(
+            this IServiceCollection services,
+            Action<CorrelatorOptions> configureOptions) =>
+            services
+                .AddCorrelator(configureOptions)
+                .WithCorrelationContextFactory<CorrelationContextFactory>()
+                .WithCorrelationEmitter<CorrelationEmitter>()
+                .Services;
+
+        /// <summary>
+        /// Adds components required by Correlator to services collection.
+        /// </summary>
+        /// <param name="services">Services collection.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        public static ICorrelatorBuilder AddCorrelator(this IServiceCollection services) =>
             services.AddCorrelator(_ => { });
 
         /// <summary>
-        /// Adds components required by Correlator to service collection.
+        /// Adds components required by Correlator to services collection.
         /// </summary>
-        /// <param name="services">Service collection.</param>
+        /// <param name="services">Services collection.</param>
         /// <param name="configureOptions">Configure options callback.</param>
         /// <returns>
-        /// Service collection with components registered.
+        /// Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="configureOptions"/> is <c>null</c>.</exception>
-        public static IServiceCollection AddCorrelator(
+        public static ICorrelatorBuilder AddCorrelator(
             this IServiceCollection services,
             Action<CorrelatorOptions> configureOptions)
         {
@@ -39,21 +66,15 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configureOptions));
             }
 
-            // TODO: Allow user to register own implementation
-            services.AddSingleton<ICorrelationContextFactory, CorrelationContextFactory>();
-            services.AddSingleton<ICorrelationEmitter, CorrelationEmitter>();
+            services.Configure(configureOptions)
+                .AddTransient<CorrelatorHttpMessageHandler>()
+                .AddSingleton<CorrelationContextContainer>()
+                .AddSingleton<ICorrelationContextAccessor>(
+                    sp => sp.GetRequiredService<CorrelationContextContainer>())
+                .AddSingleton<ICorrelationScopeFactory>(
+                    sp => sp.GetRequiredService<CorrelationContextContainer>());
 
-            services.AddSingleton<CorrelationContextContainer>();
-
-            services.AddSingleton<ICorrelationContextAccessor>(
-                sp => sp.GetRequiredService<CorrelationContextContainer>());
-
-            services.AddSingleton<ICorrelationScopeFactory>(
-                sp => sp.GetRequiredService<CorrelationContextContainer>());
-
-            return services
-                .Configure(configureOptions)
-                .AddTransient<CorrelatorHttpMessageHandler>();
+            return new CorrelatorBuilder(services);
         }
     }
 }

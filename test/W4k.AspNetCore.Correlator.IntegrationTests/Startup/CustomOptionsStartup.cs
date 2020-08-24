@@ -11,7 +11,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
     public class CustomOptionsStartup
     {
         public void ConfigureServices(IServiceCollection services) =>
-            services.AddCorrelator(
+            services.AddDefaultCorrelator(
                 o =>
                 {
                     // disable correlation ID factory

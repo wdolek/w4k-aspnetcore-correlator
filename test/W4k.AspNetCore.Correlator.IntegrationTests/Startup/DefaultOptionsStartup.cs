@@ -10,7 +10,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCorrelator();
+            services.AddDefaultCorrelator();
         }
 
         public void Configure(IApplicationBuilder app)
