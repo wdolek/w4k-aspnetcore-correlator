@@ -19,7 +19,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
             _output = output;
 
             ThreadPool.GetMaxThreads(out var _, out var completionPortThreads);
-            _concurrency = Math.Max(Environment.ProcessorCount, completionPortThreads) * 10;
+            _concurrency = Math.Max(Environment.ProcessorCount, completionPortThreads) * 4;
         }
 
         [Fact]
