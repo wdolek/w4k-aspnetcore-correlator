@@ -14,7 +14,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
         {
             services.AddCorrelator()
                 .WithCorrelationContextFactory<ThrowingCorrelationContextFactory>()
-                .WithCorrelationEmitter<CorrelationEmitter>();
+                .WithDefaultCorrelationEmitter();
         }
 
         public void Configure(IApplicationBuilder app)
