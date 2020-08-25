@@ -27,7 +27,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
             string correlationIdEmitted = response.Headers.GetValues("X-CID").FirstOrDefault();
             Assert.Equal("123", correlationIdEmitted);
 
-            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
+            string correlationId = await response.Content.ReadAsStringAsync();
             Assert.Equal("123", correlationId);
         }
 
@@ -44,7 +44,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
             // assert
             Assert.False(response.Headers.Contains("X-Dummy-Correlation-Id"));
 
-            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
+            string correlationId = await response.Content.ReadAsStringAsync();
             Assert.Equal("", correlationId);
         }
     }

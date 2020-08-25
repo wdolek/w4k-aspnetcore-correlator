@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Context;
@@ -39,10 +40,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
             {
                 var correlationId = correlationContextAccessor.CorrelationContext.CorrelationId;
 
-                context.Response.Headers.Add("X-Test-Correlation-ID", (string)correlationId);
                 context.Response.Headers.Add("Content-Type", "text/plain");
-
                 await context.Response.WriteAsync(correlationId);
+                await Task.Delay(127);
             });
         }
     }
