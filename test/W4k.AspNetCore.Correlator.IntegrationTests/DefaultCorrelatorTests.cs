@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,9 +22,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 
             // act
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
-            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
 
             // assert
+            string correlationId = await response.Content.ReadAsStringAsync();
             Assert.Equal("123", correlationId);
         }
 
@@ -37,9 +36,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
 
             // act
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
-            string correlationId = response.Headers.GetValues("X-Test-Correlation-ID").FirstOrDefault();
 
             // assert
+            string correlationId = await response.Content.ReadAsStringAsync();
             Assert.NotEmpty(correlationId);
             Assert.True(Guid.TryParse(correlationId, out Guid _));
         }

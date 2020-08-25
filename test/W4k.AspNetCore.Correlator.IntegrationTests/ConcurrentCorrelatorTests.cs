@@ -17,9 +17,7 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests
         public ConcurrentCorrelatorTests(ITestOutputHelper output)
         {
             _output = output;
-
-            ThreadPool.GetMaxThreads(out var _, out var completionPortThreads);
-            _concurrency = Math.Max(Environment.ProcessorCount, completionPortThreads) * 4;
+            _concurrency = Environment.ProcessorCount * 4;
         }
 
         [Fact]

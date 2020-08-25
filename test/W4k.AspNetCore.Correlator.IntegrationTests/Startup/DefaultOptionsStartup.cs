@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Extensions;
@@ -21,10 +22,9 @@ namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
                 // by default, correlation ID is written to `HttpContext.TraceIdentifier`
                 var correlationId = context.TraceIdentifier;
 
-                context.Response.Headers.Add("X-Test-Correlation-ID", correlationId);
                 context.Response.Headers.Add("Content-Type", "text/plain");
-
                 await context.Response.WriteAsync(correlationId);
+                await Task.Delay(127);
             });
         }
     }
