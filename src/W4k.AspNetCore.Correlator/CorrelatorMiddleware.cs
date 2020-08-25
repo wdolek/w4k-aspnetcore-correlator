@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -31,34 +31,48 @@ namespace W4k.AspNetCore.Correlator
             _logger = logger;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1031", Justification = "Catch anything to prevent request to fail just for correlation")]
         public async Task Invoke(HttpContext httpContext)
         {
-            using var correlationScope = _scopeFactory.CreateScope(httpContext);
-            var correlationContext = correlationScope.CorrelationContext;
+            ICorrelationScope? correlationScope = null;
+            try
+            {
+                correlationScope = _scopeFactory.CreateScope(httpContext);
+            }
+            catch
+            {
+                await _next.Invoke(httpContext);
+                return;
+            }
 
+            using (correlationScope)
+            {
+                await Invoke(httpContext, correlationScope.CorrelationContext);
+            }
+        }
+
+        private async Task Invoke(HttpContext httpContext, CorrelationContext correlationContext)
+        {
             // emit correlation ID back to caller in response headers
             if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
             {
-                httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
+                httpContext.Response.OnStarting(() => EmitCorrelation(httpContext, correlationContext));
             }
+
+            var correlationId = correlationContext.CorrelationId;
 
             // assign correlation ID to ASP.NET `TraceIdentifier` property
             // (causes correlation ID to appear in trace logs instead of generated trace ID)
-            if (_options.ReplaceTraceIdentifier)
+            if (_options.ReplaceTraceIdentifier && !correlationId.IsEmpty)
             {
-                ReplaceTraceIdentifier(httpContext, correlationContext.CorrelationId);
+                httpContext.TraceIdentifier = correlationId;
             }
 
             // create logging scope or await next middleware right away
             // (state is shared via scope provider with other logger instances)
-            if (_options.LoggingScope.IncludeScope)
+            if (_options.LoggingScope.IncludeScope && !correlationId.IsEmpty)
             {
-                using (BeginCorrelatedLoggingScope(
-                    _options.LoggingScope.CorrelationKey,
-                    correlationContext.CorrelationId))
-                {
-                    await _next.Invoke(httpContext);
-                }
+                await InvokeWithLoggingScope(httpContext, _options.LoggingScope.CorrelationKey, correlationId);
             }
             else
             {
@@ -66,28 +80,35 @@ namespace W4k.AspNetCore.Correlator
             }
         }
 
-        private static void ReplaceTraceIdentifier(HttpContext httpContext, CorrelationId correlationId)
+        private async Task InvokeWithLoggingScope(
+            HttpContext httpContext,
+            string correlationKey,
+            CorrelationId correlationId)
         {
-            if (correlationId.IsEmpty)
+            var state = new Dictionary<string, object>
             {
-                return;
-            }
+                [correlationKey] = correlationId,
+            };
 
-            httpContext.TraceIdentifier = correlationId;
+            using (_logger.BeginScope(state))
+            {
+                await _next.Invoke(httpContext);
+            }
         }
 
-        private IDisposable? BeginCorrelatedLoggingScope(string correlationKey, CorrelationId correlationId)
+        [SuppressMessage("Microsoft.Design", "CA1031", Justification = "Catch anything to prevent request to fail when emitting correlation")]
+        private Task EmitCorrelation(HttpContext httpContext, CorrelationContext correlationContext)
         {
-            if (correlationId.IsEmpty)
+            try
             {
-                return null;
+                _emitter.Emit(httpContext, correlationContext);
+            }
+            catch
+            {
+                // nop
             }
 
-            return _logger.BeginScope(
-                new Dictionary<string, object>
-                {
-                    [correlationKey] = correlationId,
-                });
+            return Task.CompletedTask;
         }
     }
 }
