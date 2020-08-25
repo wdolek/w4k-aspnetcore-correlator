@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using W4k.AspNetCore.Correlator.Context;
 
 namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
@@ -43,6 +44,16 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Registers default implementation of correlation context factory.
+        /// </summary>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        public static ICorrelatorBuilder WithDefaultCorrelationContextFactory(this ICorrelatorBuilder builder) =>
+            builder.WithCorrelationContextFactory<CorrelationContextFactory>();
+
+        /// <summary>
         /// Registers correlation emitter.
         /// </summary>
         /// <remarks>
@@ -73,5 +84,15 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 
             return builder;
         }
+
+        /// <summary>
+        /// Registers correlation emitter.
+        /// </summary>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
+            builder.WithCorrelationEmitter<CorrelationEmitter>();
     }
 }
