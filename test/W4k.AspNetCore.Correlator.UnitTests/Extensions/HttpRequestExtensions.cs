@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using Moq;
 
-namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
+namespace W4k.AspNetCore.Correlator.Extensions
 {
     public static class HttpRequestExtensions
     {

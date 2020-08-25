@@ -8,11 +8,10 @@ using Microsoft.Extensions.Options;
 using Moq;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
-using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.UnitTests.Http
+namespace W4k.AspNetCore.Correlator.Http
 {
     public class CorrelatorHttpMessageHandlerTests
     {

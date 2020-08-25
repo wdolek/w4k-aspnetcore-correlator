@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
-using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.UnitTests.Context
+namespace W4k.AspNetCore.Correlator.Context
 {
     public class CorrelationContextContainerTests
     {

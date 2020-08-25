@@ -7,7 +7,7 @@ using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.IntegrationTests.Startup
+namespace W4k.AspNetCore.Correlator.Startup
 {
     public class CustomOptionsStartup
     {
