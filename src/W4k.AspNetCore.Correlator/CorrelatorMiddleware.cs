@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -31,21 +30,9 @@ namespace W4k.AspNetCore.Correlator
             _logger = logger;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1031", Justification = "Catch anything to prevent request to fail just for correlation")]
         public async Task Invoke(HttpContext httpContext)
         {
-            ICorrelationScope? correlationScope = null;
-            try
-            {
-                correlationScope = _scopeFactory.CreateScope(httpContext);
-            }
-            catch
-            {
-                await _next.Invoke(httpContext);
-                return;
-            }
-
-            using (correlationScope)
+            using (var correlationScope = _scopeFactory.CreateScope(httpContext))
             {
                 await Invoke(httpContext, correlationScope.CorrelationContext);
             }
@@ -56,7 +43,7 @@ namespace W4k.AspNetCore.Correlator
             // emit correlation ID back to caller in response headers
             if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
             {
-                httpContext.Response.OnStarting(() => EmitCorrelation(httpContext, correlationContext));
+                httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
             }
 
             var correlationId = correlationContext.CorrelationId;
@@ -94,21 +81,6 @@ namespace W4k.AspNetCore.Correlator
             {
                 await _next.Invoke(httpContext);
             }
-        }
-
-        [SuppressMessage("Microsoft.Design", "CA1031", Justification = "Catch anything to prevent request to fail when emitting correlation")]
-        private Task EmitCorrelation(HttpContext httpContext, CorrelationContext correlationContext)
-        {
-            try
-            {
-                _emitter.Emit(httpContext, correlationContext);
-            }
-            catch
-            {
-                // nop
-            }
-
-            return Task.CompletedTask;
         }
     }
 }
