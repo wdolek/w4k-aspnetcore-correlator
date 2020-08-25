@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using W4k.AspNetCore.Correlator.IntegrationTests.Startup;
+using W4k.AspNetCore.Correlator.Startup;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.IntegrationTests
+namespace W4k.AspNetCore.Correlator
 {
     public sealed class CustomCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
     {

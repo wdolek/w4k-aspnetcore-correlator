@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
-using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Http.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Http
 {
     internal class CorrelationEmitter : ICorrelationEmitter
     {
@@ -19,7 +19,7 @@ namespace W4k.AspNetCore.Correlator
 
         public Task Emit(HttpContext httpContext, CorrelationContext correlationContext)
         {
-            string? responseHeaderName = GetResponseHeaderName(_options.Emit, correlationContext);
+            var responseHeaderName = GetResponseHeaderName(_options.Emit, correlationContext);
             if (responseHeaderName != null)
             {
                 httpContext.Response.Headers.AddHeaderIfNotSet(

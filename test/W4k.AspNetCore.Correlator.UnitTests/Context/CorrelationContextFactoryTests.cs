@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.UnitTests.Context
+namespace W4k.AspNetCore.Correlator.Context
 {
     public class CorrelationContextFactoryTests
     {

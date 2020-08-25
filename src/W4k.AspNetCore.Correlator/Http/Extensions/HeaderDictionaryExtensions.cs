@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
-namespace W4k.AspNetCore.Correlator.Extensions
+namespace W4k.AspNetCore.Correlator.Http.Extensions
 {
     internal static class HeaderDictionaryExtensions
     {

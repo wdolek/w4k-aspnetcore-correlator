@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace W4k.AspNetCore.Correlator.UnitTests
+namespace W4k.AspNetCore.Correlator
 {
     public class CorrelationIdTests
     {

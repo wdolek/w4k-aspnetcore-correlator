@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using W4k.AspNetCore.Correlator.Context;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Http
 {
     /// <summary>
     /// Correlation ID emitter, handles emitting correlation ID back to caller within response.

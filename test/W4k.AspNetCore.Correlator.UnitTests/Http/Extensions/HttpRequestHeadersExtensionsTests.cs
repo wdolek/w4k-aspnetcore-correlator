@@ -1,9 +1,8 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
-using W4k.AspNetCore.Correlator.Http.Extensions;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.UnitTests.Extensions
+namespace W4k.AspNetCore.Correlator.Http.Extensions
 {
     public class HttpRequestHeadersExtensionsTests
     {
