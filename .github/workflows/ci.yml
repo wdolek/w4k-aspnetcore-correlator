@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ]
     paths-ignore:
+      - 'docs/**'
       - 'examples/**'
       - '*.md'
   pull_request:
