@@ -8,12 +8,12 @@
         /// <summary>
         /// <c>X-CorrelationId</c> header name.
         /// </summary>
-        public static readonly string CorrelationId = "X-Correlation-ID";
+        public static readonly string CorrelationId = "X-Correlation-Id";
 
         /// <summary>
         /// <c>X-RequestId</c> header name.
         /// </summary>
-        public static readonly string RequestId = "X-Request-ID";
+        public static readonly string RequestId = "X-Request-Id";
 
         /// <summary>
         /// <c>Request-Id</c> header name.

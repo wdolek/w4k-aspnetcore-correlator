@@ -1,230 +1,113 @@
 # W4k.AspNetCore.Correlator
 
-Correlator helps you with handling correlation ID (also "request ID"):
-reading, generating new one and forwarding to subsequent requests.
+![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg)
 
-Correlation ID is sent within HTTP headers. If header is not set,
-Correlator will happily generate new one for you (ASP.NET itself generates
-`TraceIdentifier` - and it is still possible to stick with its value).
+Correlator helps you with handling correlation ID (also "request ID"): reading, generating new one and forwarding
+to subsequent requests.
 
-Apart of accepting or generating correlation ID, it is also possible to emit correlation ID
-back to caller within HTTP response headers.
+Correlation ID is sent within HTTP headers. If header is not set, Correlator will happily generate new one for you.
 
-To forward correlation ID to subsequent request, it is necessary to use
-designated HTTP message handler, see examples below.
+Apart of accepting or generating correlation ID, it is also possible to return correlation ID back to caller,
+so in case when correlation ID is generated, caller is aware of that value.
+
+To forward correlation ID to subsequent request, it is necessary to use designated HTTP message handler, see
+examples below.
 
 ## W3 Trace Context and .NET Core 3.x
 
-Please be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is **not supported**,
-Correlator helps you with older systems using non-standard headers.
-See links below for more alternatives.
+Please be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is **not supported** out of the box,
+Correlator helps you with simple non-standard headers.
 
-Note that from .NET Core 3.x, distributed tracing and trace context is built in. You can
-get more insights from article:
+Note that with .NET Core 3.x, distributed tracing and trace context is built in. You can get more insights from article:
 [Improvements in .NET Core 3.0 for troubleshooting and monitoring distributed apps](https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/).
 
 ## Basic usage
 
-Correlator consists of two components. Middleware which reads (generates if missing)
-correlation ID, and HTTP message handler which adds your correlation to outbound requests.
-
-Following examples demonstrate how to wire everything up.
+Following example demonstrates how to receive correlation ID.
 
 ### Startup class
-
-Register components and add `CorrelatorMiddleware` to application pipeline:
 
 ```csharp
 public class MyLittleStartup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCorrelator();
-
-        // other stuff
-        // ...
+        services.AddDefaultCorrelator();
     }
 
     public void Configure(IApplicationBuilder app)
     {
         // register as first middleware
+        // (or as soon as possible to benefit from having correlation ID)
         app.UseCorrelator();
-
-        // other stuff
-        // ...
 
         app.UseMvc();
     }
 }
 ```
 
-### Forwarding correlation ID
+### Accessing correlation ID
 
-Add `CorrelatorHttpMessageHandler` to HTTP client's message handler pipeline like this:
-
-```csharp
-// named HTTP client
-services
-    .AddHttpClient("DummyClient")
-    .WithCorrelation();
-
-// typed HTTP client
-services
-    .AddHttpClient<FooClient>()
-    .WithCorrelation();
-
-// registering HTTP message handler manually
-services
-    .AddHttpClient("FizzClient")
-    .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
-```
-
-NB! `.WithCorrelation()` is extension method of `IHttpClientBuilder`, it is available
-for named or typed HTTP clients. See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#configure-the-httpmessagehandler)" for more details.
-
-### Accessing correlation ID within application
-
-Correlation ID of current request is always available from `HttpContext.TraceIdentifier`.
-Even if you disable generating of correlation ID, ASP.NET itself already sets its value.
-
-To be able to access `HttpContext` from your component, you need to inject `IHttpContextAccessor`.
+Correlation ID of current request is available via `ICorrelationContextAccessor.CorrelationContext`:
 
 ```csharp
-using Microsoft.AspNetCore.Http;
+using W4k.AspNetCore.Correlator;
+using W4k.AspNetCore.Correlator.Context;
 
 public class MyLittleService
 {
-    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly ICorrelationContextAccessor _contextAccessor;
 
-    public MyLittleService(IHttpContextAccessor contextAccessor)
+    public MyLittleService(ICorrelationContextAccessor contextAccessor)
     {
-        _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+        _contextAccessor = contextAccessor;
     }
 
     public async Task DoMagicalStuff()
     {
-        HttpContext context = _contextAccessor.HttpContext;
-        string correlationId = context?.TraceIdentifier;
-        
-        // We found a Correlation ID, of Candy Mountain. Candy Mountain, Charlie.
+        CorrelationId correlationId = _contextAccessor.CorrelationContext.CorrelationId;
+
         // ...
     }
 }
 ```
 
-## Configuration
+## Forwarding correlation ID
 
-By default, correlator behaves following way:
+In order to pass correlation ID to subsequent requests, additional HTTP message handler has to be registered.
 
-- Headers used for accepting correlation ID are: `Request-Id`, `X-Correlation-Id` and `X-Request-Id`
-- If correlation ID header is missing or has empty value, new correlation ID is generated in form of GUID
-- Correlation ID is forwarded to subsequent requests using `CorrelatorHttpMessageHandler` (as `X-Correlation-ID`)
-- Correlation ID is not set to HTTP response headers
-
-To adjust setting, use `AddCorrelator` overload:
+Add `CorrelatorHttpMessageHandler` to HTTP client's message handler pipeline like this:
 
 ```csharp
-services.AddCorrelator(
-    correlatorOptions =>
+public class MyLittleStartup
+{
+    public void ConfigureServices(IServiceCollection services)
     {
-        // disable correlation ID factory, stick with ASP.NET value
-        correlatorOptions.Factory = null;
+        // named HTTP client
+        services
+            .AddHttpClient("DummyClient")
+            .WithCorrelation();
 
-        // read only custom header
-        correlatorOptions.ReadFrom.Clear();
-        correlatorOptions.ReadFrom.Add("X-CID");
+        // typed HTTP client
+        services
+            .AddHttpClient<FooClient>()
+            .WithCorrelation();
 
-        // include correlation ID in response
-        correlatorOptions.Emit = PropagationSettings.PropagateAs("X-RID");
+        // registering HTTP message handler manually
+        services
+            .AddHttpClient("FizzClient")
+            .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
+    }
 
-        // forward via message handler, using same header name ("X-CID")
-        correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName;
-    });
+    // ...
+}
 ```
 
-### Correlation ID factory (`Factory`)
+See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#configure-the-httpmessagehandler)" for more details about usage of HTTP message handler.
 
-Property `CorrelatorOptions.Factory`, of type `Func<CorrelationId>`.
+## Documentation
 
-If set to `null` then generating of correlation ID is disabled and ASP.NET value is used instead.
-For more details look up for `HttpContext.TraceIdentifier`.
-
-```csharp
-// default
-correlatorOptions.Factory = () => CorrelationId.NewCorrelationId();
-
-// custom (don't even try this, this is just demonstration)
-correlatorOptions.Factory = () => CorrelationId.FromString("hello world!").Value;
-
-// disable (stick with ASP.NET TraceIdentifier)
-correlatorOptions.Factory = null;
-```
-
-### Read from headers (`ReadFrom`)
-
-Property `CorrelatorOptions.ReadFrom`, of type `ICollection<string>`.
-
-Note that order matters - first header satisfying match is returned.
-
-```csharp
-// add to defaults
-correlatorOptions.Add("X-Yet-Another-Request-ID");
-
-// read only from given header
-correlatorOptions.Clear();
-correlatorOptions.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
-```
-
-### Correlation ID propagation (`Emit`, `Forward`)
-
-There are two directions to propagate correlation ID:
-
-1. `CorrelatorOptions.Emit`: Include correlation ID of request in response headers
-2. `CorrelatorOptions.Forward`: Forward correlation ID to subsequent requests using `CorrelatorHttpMessageHandler`
-
-#### No propagation
-
-Correlation ID is not set.
-
-```csharp
-// don't expose correlation ID in HTTP response
-correlatorOptions.Emit = PropagationSettings.NoPropagation;
-
-// don't forward correlation ID to subsequent requests
-correlatorOptions.Forward = PropagationSettings.NoPropagation;
-```
-
-#### Use incoming header name
-
-Correlation ID is propagated with same header name as it was read from.
-
-```csharp
-// if correlation was taken from 'X-My-Custom-Correlation-Id', it is exposed with same header
-correlatorOptions.Emit = PropagationSettings.KeepIncomingHeaderName;
-correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName;
-```
-
-#### Predefined header name
-
-Correlation ID is propagated with predefined header name.
-
-```csharp
-// if correlation was read from 'X-My-Custom-Correlation-Id', it is exposed as 'X-Correlation-Id'
-correlatorOptions.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
-correlatorOptions.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
-```
-
-## Alternative packages
-
-- [CorrelationId](https://www.nuget.org/packages/CorrelationId/) by Steve Gordon.
-- [Correlate](https://www.nuget.org/packages/Correlate.AspNetCore/) by Martijn Bodeman.
-
-## Advanced tracing / further reading
-
-This package is designed to solve simple scenario with reading and writing correlation ID from/to
-HTTP headers. If you are looking for more advanced/distributed tracing, consider checking:
-
-- [OpenTelemetry](https://opentelemetry.io/)
-- [OpenTracing](https://opentracing.io/)
-- [Zipkin](https://zipkin.io/)
-- [Jaeger](https://www.jaegertracing.io/)
+- [Configuration](docs/configuration.md): detailed description of configuration
+- [Dependency injection](docs/registration.md): additional ways how to register Correlator into DI
+- [Component description](docs/components.md)
+- [Alternative packages and further reading](docs/alternatives.md)

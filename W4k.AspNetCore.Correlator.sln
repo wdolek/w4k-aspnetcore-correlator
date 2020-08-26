@@ -36,6 +36,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\pack.yml = .github\workflows\pack.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F009A71B-E880-438C-8AE4-3DD8D970E130}"
+	ProjectSection(SolutionItems) = preProject
+		docs\alternatives.md = docs\alternatives.md
+		docs\components.md = docs\components.md
+		docs\configuration.md = docs\configuration.md
+		docs\registration.md = docs\registration.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
 
