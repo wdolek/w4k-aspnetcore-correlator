@@ -1,6 +1,6 @@
 # W4k.AspNetCore.Correlator
 
-![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg)
+![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg) [![NuGet Badge](https://buildstats.info/nuget/W4k.AspNetCore.Correlator)](https://www.nuget.org/packages/W4k.AspNetCore.Correlator/)
 
 Correlator helps you with handling correlation ID (also "request ID"): reading, generating new one and forwarding
 to subsequent requests.
