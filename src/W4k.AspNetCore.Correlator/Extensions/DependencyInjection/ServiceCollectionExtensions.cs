@@ -68,10 +68,12 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 
             services.AddOptions<CorrelatorOptions>()
                 .Configure(configureOptions)
-                .Validate(o =>
-                {
-                    return o.ReadFrom.Count > 0;
-                });
+                .Validate(
+                    o =>
+                    {
+                        return o.ReadFrom.Count > 0;
+                    },
+                    $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
 
             services.AddTransient<CorrelatorHttpMessageHandler>()
                 .AddSingleton<CorrelationContextContainer>()
