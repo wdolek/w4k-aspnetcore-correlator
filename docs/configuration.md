@@ -2,10 +2,11 @@
 
 By default, Correlator is configured following way:
 
-- Headers used for accepting correlation ID are (in order):
+- Accepting Correlation ID from following headers:
   - `Request-Id`
   - `X-Correlation-Id`
   - `X-Request-Id`
+- By default, when there are multiple correlation headers sent, it is not guaranteed which one is going to be read
 - When request correlation is missing or has empty value, new correlation ID is generated in form of GUID
 - Correlation ID is forwarded to subsequent requests via `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
 - Correlation ID is not set to HTTP response headers
@@ -23,7 +24,7 @@ services.AddDefaultCorrelator(
         // - you are getting correlation ID only from incoming request
         correlatorOptions.Factory = null;
 
-        // expect correlation ID in this header instead
+        // expect correlation ID in "X-CID" header only
         correlatorOptions.ReadFrom.Clear();
         correlatorOptions.ReadFrom.Add("X-CID");
 
@@ -43,7 +44,7 @@ services.AddDefaultCorrelator(
     });
 ```
 
-### Correlation ID factory (`Factory`)
+### Correlation ID factory
 
 Property `CorrelatorOptions.Factory`, of type `Func<HttpContext, CorrelationId>`.
 
@@ -57,15 +58,15 @@ correlatorOptions.Factory =
 
 // custom (don't try this at home!)
 correlatorOptions.Factory =
-    (_) => CorrelationId.FromString("hello world!").Value;
+    (_) => CorrelationId.FromString("hello world!");
 
 // disable generating
 correlatorOptions.Factory = null;
 ```
 
-### Read from headers (`ReadFrom`)
+### Read from headers
 
-Property `CorrelatorOptions.ReadFrom`, of type `SortedSet<string>`.
+Property `CorrelatorOptions.ReadFrom`, of type `ICollection<string>`.
 
 First header satisfying match is returned.
 
@@ -78,7 +79,9 @@ correlatorOptions.Clear();
 correlatorOptions.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
 ```
 
-### Correlation ID propagation (`Emit`, `Forward`)
+If you are sure about correlation header name, feel free to use just that and avoid unnecessary lookup in request headers.
+
+### Correlation ID propagation
 
 There are two directions to propagate correlation ID:
 
@@ -108,7 +111,7 @@ correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
 ```
 
 Notice that `KeepIncomingHeaderName(string = null)` has argument. When Correlation ID is not received, there's
-obviously no way how to determine "incoming header" - and this is the place where you can help Correlator to know
+obviously no way how to determine _incoming header_ - and this is the place where you can help Correlator to know
 how to propagate correlation.
 
 Default value of fallback header name is `"X-Correlation-Id"`.
@@ -118,7 +121,7 @@ Default value of fallback header name is `"X-Correlation-Id"`.
 Correlation ID is propagated with predefined header name.
 
 ```csharp
-// if correlation was read from 'X-My-Custom-Correlation-Id', it is exposed as 'X-Correlation-Id'
+// no matter how we got Correlation ID, it is exposed as 'X-Correlation-Id'
 correlatorOptions.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
 correlatorOptions.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
 ```
