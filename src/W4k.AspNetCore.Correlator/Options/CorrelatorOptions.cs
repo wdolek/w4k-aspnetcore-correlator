@@ -11,13 +11,10 @@ namespace W4k.AspNetCore.Correlator.Options
     public sealed class CorrelatorOptions
     {
         /// <summary>
-        /// Gets list of header names to be used when reading correlation ID from request headers.
+        /// Gets collection of header names to be used when reading correlation ID from request headers.
         /// </summary>
-        /// <remarks>
-        /// Order of entries matters! First header with non-empty value is used.
-        /// </remarks>
-        public SortedSet<string> ReadFrom { get; } =
-            new SortedSet<string>(
+        public ICollection<string> ReadFrom { get; } =
+            new HashSet<string>(
                 new[]
                 {
                     HttpHeaders.AspNetRequestId,

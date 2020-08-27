@@ -32,24 +32,27 @@ namespace W4k.AspNetCore.Correlator.Context
         }
 
         private static (string? HeaderName, string? HeaderValue) GetCorrelationHeader(
-            IHeaderDictionary headers,
-            SortedSet<string> readFrom)
+            IHeaderDictionary requestHeaders,
+            ICollection<string> expectedHeaders)
         {
-            if (headers.Count == 0)
+            if (requestHeaders.Count == 0)
             {
                 return default;
             }
 
-            foreach (var keyValuePair in headers)
+            // lookup expected header in request headers
+            // (expecting that there are going to be more request headers than we have configured for expectation)
+            foreach (var header in expectedHeaders)
             {
-                if (!readFrom.Contains(keyValuePair.Key))
+                if (!requestHeaders.ContainsKey(header))
                 {
                     continue;
                 }
 
-                if (keyValuePair.Value.Count > 0)
+                var values = requestHeaders[header];
+                if (values.Count > 0 && !string.IsNullOrEmpty(values[0]))
                 {
-                    return (keyValuePair.Key, keyValuePair.Value[0]);
+                    return (header, values[0]);
                 }
             }
 
