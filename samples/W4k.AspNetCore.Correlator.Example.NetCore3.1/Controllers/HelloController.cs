@@ -17,7 +17,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore31.Controllers
             _logger = logger;
         }
 
-        [HttpGet("~/")]
+        [HttpGet]
         public ActionResult Hello()
         {
             _logger.LogInformation("Entering hello");
