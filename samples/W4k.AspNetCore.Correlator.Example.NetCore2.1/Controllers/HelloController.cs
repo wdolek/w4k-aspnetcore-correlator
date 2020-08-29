@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using W4k.AspNetCore.Correlator.Context;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore3x.Controllers
+namespace W4k.AspNetCore.Correlator.Example.NetCore21.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -17,7 +17,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore3x.Controllers
             _logger = logger;
         }
 
-        [HttpGet("~/")]
+        [HttpGet]
         public ActionResult Hello()
         {
             _logger.LogInformation("Entering hello");
@@ -27,7 +27,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore3x.Controllers
                 ? "<correlation missing>"
                 : correlationId;
 
-            _logger.LogInformation($"Correlation: {correlationId}");
+            _logger.LogInformation("Request almost finished, correlation: {correlationId}", correlationId);
 
             return Ok(result);
         }

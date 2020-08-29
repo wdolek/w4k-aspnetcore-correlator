@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore30
+namespace W4k.AspNetCore.Correlator.Example.NetCore31
 {
     public class Program
     {
