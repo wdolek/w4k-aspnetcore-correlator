@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
+using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
@@ -33,10 +33,14 @@ namespace W4k.AspNetCore.Correlator
 
         public async Task Invoke(HttpContext httpContext)
         {
+            _logger.CorrelatedRequestBegin();
+
             using (var correlationScope = _scopeFactory.CreateScope(httpContext))
             {
                 await Invoke(httpContext, correlationScope.CorrelationContext);
             }
+
+            _logger.CorrelatedRequestEnd();
         }
 
         private async Task Invoke(HttpContext httpContext, CorrelationContext correlationContext)
@@ -53,6 +57,7 @@ namespace W4k.AspNetCore.Correlator
             // (causes correlation ID to appear in trace logs instead of generated trace ID)
             if (_options.ReplaceTraceIdentifier && !correlationId.IsEmpty)
             {
+                _logger.ReplacingTraceIdentifier(httpContext.TraceIdentifier);
                 httpContext.TraceIdentifier = correlationId;
             }
 
@@ -73,12 +78,7 @@ namespace W4k.AspNetCore.Correlator
             string correlationKey,
             CorrelationId correlationId)
         {
-            var state = new Dictionary<string, object>
-            {
-                [correlationKey] = correlationId,
-            };
-
-            using (_logger.BeginScope(state))
+            using (_logger.BeginScope(new CorrelatedLoggerState(correlationKey, correlationId)))
             {
                 await _next.Invoke(httpContext);
             }

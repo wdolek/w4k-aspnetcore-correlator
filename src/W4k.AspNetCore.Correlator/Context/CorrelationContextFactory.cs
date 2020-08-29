@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
+using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Context
@@ -9,25 +11,35 @@ namespace W4k.AspNetCore.Correlator.Context
     internal class CorrelationContextFactory : ICorrelationContextFactory
     {
         private readonly CorrelatorOptions _options;
+        private readonly ILogger<CorrelationContextFactory> _logger;
 
-        public CorrelationContextFactory(IOptions<CorrelatorOptions> options)
+        public CorrelationContextFactory(
+            IOptions<CorrelatorOptions> options,
+            ILogger<CorrelationContextFactory> logger)
         {
             _options = options.Value;
+            _logger = logger;
         }
 
         public CorrelationContext CreateContext(HttpContext httpContext)
         {
             var (headerName, headerValue) = GetCorrelationHeader(httpContext.Request.Headers, _options.ReadFrom);
-
             if (headerName is null)
             {
-                var generateCorrelationId = _options.Factory;
+                _logger.NoCorrelationHeaderReceived();
 
-                return generateCorrelationId is null
-                    ? EmptyCorrelationContext.Instance
-                    : (CorrelationContext)new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+                var generateCorrelationId = _options.Factory;
+                if (generateCorrelationId is null)
+                {
+                    _logger.NoCorrelationIdFactoryConfigured();
+                    return EmptyCorrelationContext.Instance;
+                }
+
+                _logger.GeneratingCorrelationId();
+                return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
             }
 
+            _logger.CorrelationIdReceived(headerName, headerValue!);
             return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
         }
 
