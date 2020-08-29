@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
@@ -9,6 +10,13 @@ namespace W4k.AspNetCore.Correlator.Http
 {
     public class CorrelationEmitterTests
     {
+        private readonly NullLogger<CorrelationEmitter> _logger;
+
+        public CorrelationEmitterTests()
+        {
+            _logger = new NullLogger<CorrelationEmitter>();
+        }
+
         [Fact]
         public async Task Emits_WhenKeepingIncomingHeader_ExpectCorrelationIdEmittedWithIncomingHeader()
         {
@@ -23,7 +31,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 headerName);
 
             // act
-            var emitter = new CorrelationEmitter(options);
+            var emitter = new CorrelationEmitter(options, _logger);
             await emitter
                 .Emit(httpContext, correlationContext)
                 .ConfigureAwait(false);
@@ -45,7 +53,7 @@ namespace W4k.AspNetCore.Correlator.Http
             var correlationContext = new GeneratedCorrelationContext(CorrelationId.FromString("123"));
 
             // act
-            var emitter = new CorrelationEmitter(options);
+            var emitter = new CorrelationEmitter(options, _logger);
             await emitter
                 .Emit(httpContext, correlationContext)
                 .ConfigureAwait(false);
@@ -70,7 +78,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 incomingHeader);
 
             // act
-            var emitter = new CorrelationEmitter(options);
+            var emitter = new CorrelationEmitter(options, _logger);
             await emitter
                 .Emit(httpContext, correlationContext)
                 .ConfigureAwait(false);
@@ -94,7 +102,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 incomingHeader);
 
             // act
-            var emitter = new CorrelationEmitter(options);
+            var emitter = new CorrelationEmitter(options, _logger);
             await emitter
                 .Emit(httpContext, correlationContext)
                 .ConfigureAwait(false);
