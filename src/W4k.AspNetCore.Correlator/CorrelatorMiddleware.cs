@@ -90,12 +90,7 @@ namespace W4k.AspNetCore.Correlator
             string correlationKey,
             CorrelationId correlationId)
         {
-            var state = new Dictionary<string, object>
-            {
-                [correlationKey] = correlationId,
-            };
-
-            using (_logger.BeginScope(state))
+            using (_logger.BeginScope(new CorrelatedLoggerState(correlationKey, correlationId)))
             {
                 await _next.Invoke(httpContext);
             }
