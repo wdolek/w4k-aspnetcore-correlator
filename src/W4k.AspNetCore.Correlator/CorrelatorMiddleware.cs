@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
+using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator
@@ -33,10 +35,23 @@ namespace W4k.AspNetCore.Correlator
 
         public async Task Invoke(HttpContext httpContext)
         {
+            _logger.CorrelatedRequestBegin();
+
             using (var correlationScope = _scopeFactory.CreateScope(httpContext))
             {
+                if (ReferenceEquals(correlationScope.CorrelationContext, EmptyCorrelationContext.Instance))
+                {
+                    _logger.CorrelationIdMissing(httpContext.TraceIdentifier);
+                }
+                else
+                {
+                    _logger.CorrelationIdReceived(correlationScope.CorrelationContext.CorrelationId);
+                }
+
                 await Invoke(httpContext, correlationScope.CorrelationContext);
             }
+
+            _logger.CorrelatedRequestEnd();
         }
 
         private async Task Invoke(HttpContext httpContext, CorrelationContext correlationContext)
@@ -44,6 +59,7 @@ namespace W4k.AspNetCore.Correlator
             // emit correlation ID back to caller in response headers
             if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
             {
+                _logger.WritingCorrelatedResponse();
                 httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
             }
 
@@ -53,6 +69,7 @@ namespace W4k.AspNetCore.Correlator
             // (causes correlation ID to appear in trace logs instead of generated trace ID)
             if (_options.ReplaceTraceIdentifier && !correlationId.IsEmpty)
             {
+                _logger.ReplacingTraceIdentifier(httpContext.TraceIdentifier);
                 httpContext.TraceIdentifier = correlationId;
             }
 
