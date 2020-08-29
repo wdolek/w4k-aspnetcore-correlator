@@ -28,7 +28,7 @@ namespace W4k.AspNetCore.Correlator.Logging
 
         private static readonly Action<ILogger, string, Exception> LogReplacingTraceIdentifier =
             LoggerMessage.Define<string>(
-                LogLevel.Debug,
+                LogLevel.Information,
                 ReplacingTraceIdentifierEvent,
                 "Replacing TraceIdentifier ({TraceIdentifier}) by correlation ID");
 
