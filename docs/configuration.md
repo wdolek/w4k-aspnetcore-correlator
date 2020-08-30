@@ -40,7 +40,7 @@ services.AddDefaultCorrelator(
         ReplaceTraceIdentifier = false,
 
         // create logging scope with given key
-        LoggingScope = LoggingScopeSettings.IncludeLoggingScope("correlation"),
+        LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation"),
     });
 ```
 

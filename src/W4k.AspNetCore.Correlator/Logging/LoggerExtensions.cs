@@ -3,60 +3,42 @@ using Microsoft.Extensions.Logging;
 
 namespace W4k.AspNetCore.Correlator.Logging
 {
-    internal static class LoggerExtensions
+    internal static partial class LoggerExtensions
     {
-        private static readonly Action<ILogger, Exception> _correlatedRequestBegin =
+        private static readonly EventId CorrelatedRequestBeginEvent =
+            new EventId(101, nameof(LoggerExtensions.CorrelatedRequestBegin));
+
+        private static readonly EventId CorrelatedRequestEndEvent =
+            new EventId(102, nameof(LoggerExtensions.CorrelatedRequestEnd));
+
+        private static readonly EventId ReplacingTraceIdentifierEvent =
+            new EventId(103, nameof(LoggerExtensions.ReplacingTraceIdentifier));
+
+        private static readonly Action<ILogger, Exception> LogCorrelatedRequestBegin =
             LoggerMessage.Define(
                 LogLevel.Debug,
-                LogEventIds.CorrelatedRequestBegin,
+                CorrelatedRequestBeginEvent,
                 "Correlated request started");
 
-        private static readonly Action<ILogger, Exception> _correlatedRequestEnd =
+        private static readonly Action<ILogger, Exception> LogCorrelatedRequestEnd =
             LoggerMessage.Define(
                 LogLevel.Debug,
-                LogEventIds.CorrelatedRequestEnd,
+                CorrelatedRequestEndEvent,
                 "Correlated request finished");
 
-        private static readonly Action<ILogger, string, Exception> _correlationIdMissing =
+        private static readonly Action<ILogger, string, Exception> LogReplacingTraceIdentifier =
             LoggerMessage.Define<string>(
-                LogLevel.Warning,
-                LogEventIds.CorrelationIdMissing,
-                "No correlation ID received/generated, request trace: {TraceIdentifier}");
-
-        private static readonly Action<ILogger, CorrelationId, Exception> _correlationIdReceived =
-            LoggerMessage.Define<CorrelationId>(
                 LogLevel.Information,
-                LogEventIds.CorrelationIdReceived,
-                "Correlation ID received/generated, correlation: {CorrelationId}");
-
-        private static readonly Action<ILogger, Exception> _writingCorrelatedResponse =
-            LoggerMessage.Define(
-                LogLevel.Debug,
-                LogEventIds.WritingCorrelatedResponse,
-                "Writing correlation ID to response headers");
-
-        private static readonly Action<ILogger, string, Exception> _replacingTraceIdentifier =
-            LoggerMessage.Define<string>(
-                LogLevel.Debug,
-                LogEventIds.ReplacingTraceIdentifier,
+                ReplacingTraceIdentifierEvent,
                 "Replacing TraceIdentifier ({TraceIdentifier}) by correlation ID");
 
         public static void CorrelatedRequestBegin(this ILogger logger) =>
-            _correlatedRequestBegin(logger, null!);
+            LogCorrelatedRequestBegin(logger, null!);
 
         public static void CorrelatedRequestEnd(this ILogger logger) =>
-            _correlatedRequestEnd(logger, null!);
-
-        public static void CorrelationIdMissing(this ILogger logger, string traceIdentifier) =>
-            _correlationIdMissing(logger, traceIdentifier, null!);
-
-        public static void CorrelationIdReceived(this ILogger logger, CorrelationId correlationId) =>
-            _correlationIdReceived(logger, correlationId, null!);
-
-        public static void WritingCorrelatedResponse(this ILogger logger) =>
-            _writingCorrelatedResponse(logger, null!);
+            LogCorrelatedRequestEnd(logger, null!);
 
         public static void ReplacingTraceIdentifier(this ILogger logger, string traceIdentifier) =>
-            _replacingTraceIdentifier(logger, traceIdentifier, null!);
+            LogReplacingTraceIdentifier(logger, traceIdentifier, null!);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
@@ -13,6 +14,7 @@ namespace W4k.AspNetCore.Correlator.Context
         private const string CustomHeader = "X-Custom-Request-Id";
 
         private readonly CorrelatorOptions _baseOptions;
+        private readonly NullLogger<CorrelationContextFactory> _logger;
 
         public CorrelationContextFactoryTests()
         {
@@ -21,6 +23,8 @@ namespace W4k.AspNetCore.Correlator.Context
             _baseOptions.ReadFrom.Clear();
             _baseOptions.ReadFrom.Add(HttpHeaders.CorrelationId);
             _baseOptions.ReadFrom.Add(CustomHeader);
+
+            _logger = new NullLogger<CorrelationContextFactory>();
         }
 
         [Theory]
@@ -41,7 +45,7 @@ namespace W4k.AspNetCore.Correlator.Context
             };
 
             // act
-            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions));
+            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions), _logger);
             var correlationContext = factory.CreateContext(httpContext);
 
             // assert
@@ -60,7 +64,7 @@ namespace W4k.AspNetCore.Correlator.Context
             _baseOptions.Factory = _ => CorrelationId.FromString(correlationId);
 
             // act
-            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions));
+            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions), _logger);
             var correlationContext = factory.CreateContext(httpContext);
 
             // assert
@@ -77,7 +81,7 @@ namespace W4k.AspNetCore.Correlator.Context
             _baseOptions.Factory = null;
 
             // act
-            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions));
+            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions), _logger);
             var correlationContext = factory.CreateContext(httpContext);
 
             // assert
@@ -103,7 +107,7 @@ namespace W4k.AspNetCore.Correlator.Context
             _baseOptions.Factory = null;
 
             // act
-            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions));
+            var factory = new CorrelationContextFactory(new OptionsWrapper<CorrelatorOptions>(_baseOptions), _logger);
             var correlationContext = factory.CreateContext(httpContext);
 
             // assert
