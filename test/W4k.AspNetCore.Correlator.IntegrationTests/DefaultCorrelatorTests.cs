@@ -42,5 +42,23 @@ namespace W4k.AspNetCore.Correlator
             Assert.NotEmpty(correlationId);
             Assert.True(Guid.TryParse(correlationId, out Guid _));
         }
+
+        [Fact]
+        public async Task CorrelationIdNotFound()
+        {
+            // arrange
+            var request = new HttpRequestMessage(HttpMethod.Get, "/");
+            request.Headers.Add("X-Dummy-Correlation-Id", "123");
+
+            // act
+            HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
+
+            // assert
+            Assert.False(response.Headers.Contains("X-Dummy-Correlation-Id"));
+
+            string correlationId = await response.Content.ReadAsStringAsync();
+            Assert.NotEqual("123", correlationId);
+            Assert.True(Guid.TryParse(correlationId, out Guid _));
+        }
     }
 }

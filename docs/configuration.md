@@ -8,9 +8,9 @@ By default, Correlator is configured following way:
   - `X-Request-Id`
 - By default, when there are multiple correlation headers sent, it is not guaranteed which one is going to be read
 - When request correlation is missing or has empty value, new correlation ID is generated in form of GUID
-- Correlation ID is forwarded to subsequent requests via `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
+- Correlation ID is forwarded to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
 - Correlation ID is not set to HTTP response headers
-- Correlation ID replaces [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
+- Correlation ID does not replace [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
 - Correlation ID is not added to logger scope
 
 To adjust setting, use `AddDefaultCorrelator` or `AddCorrelator` overload:
@@ -36,8 +36,8 @@ services.AddDefaultCorrelator(
         // - when correlation ID not received and generated, sending it as "X-Correlation-Id"
         correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
 
-        // don't write correlation ID to HttpContext.TraceIdentifier
-        ReplaceTraceIdentifier = false,
+        // replace `HttpContext.TraceIdentifier`
+        ReplaceTraceIdentifier = true,
 
         // create logging scope with given key
         LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation"),
@@ -140,10 +140,12 @@ Either:
 - `NoScope`: logging scope is not created
 - `IncludeLoggingScope(string)`: logging scope is created, correlation ID is saved with provided key
 
+Use scope for structured logging.
+
 ```csharp
 // no logging scope
 correlatorOptions.LoggingScope = LoggingScopeSettings.NoScope;
 
-// logging scope with: correlation = <Correlation ID>
-correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("correlation");
+// logging scope with: Correlation = <Correlation ID>
+correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
 ```

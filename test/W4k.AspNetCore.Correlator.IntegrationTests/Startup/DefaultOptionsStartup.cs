@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 
@@ -14,13 +15,12 @@ namespace W4k.AspNetCore.Correlator.Startup
             services.AddDefaultCorrelator();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
         {
             app.UseCorrelator();
             app.Use(async (context, next) =>
             {
-                // by default, correlation ID is written to `HttpContext.TraceIdentifier`
-                var correlationId = context.TraceIdentifier;
+                var correlationId = correlationContextAccessor.CorrelationContext.CorrelationId;
 
                 context.Response.Headers.Add("Content-Type", "text/plain");
                 await context.Response.WriteAsync(correlationId);
