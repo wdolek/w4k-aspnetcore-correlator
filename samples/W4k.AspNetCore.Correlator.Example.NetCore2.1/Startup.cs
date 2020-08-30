@@ -25,7 +25,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore21
             {
                 options.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
                 options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
-                options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("correlation");
+                options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
             });
 
             services
