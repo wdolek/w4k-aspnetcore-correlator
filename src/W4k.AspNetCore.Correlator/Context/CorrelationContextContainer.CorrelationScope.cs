@@ -1,9 +1,6 @@
 ﻿namespace W4k.AspNetCore.Correlator.Context
 {
-    /// <summary>
-    /// Default implementation of correlation context container.
-    /// </summary>
-    internal sealed partial class CorrelationContextContainer
+    internal partial class CorrelationContextContainer
     {
         internal class CorrelationScope : ICorrelationScope
         {
