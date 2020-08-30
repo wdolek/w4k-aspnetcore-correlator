@@ -7,7 +7,7 @@ using Xunit;
 
 namespace W4k.AspNetCore.Correlator
 {
-    public sealed class CustomCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
+    public class CustomCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
     {
         [Fact]
         public async Task CorrelationIdReadFromRequest()

@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 
 namespace W4k.AspNetCore.Correlator
 {
-    public sealed class ConcurrentCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
+    public class ConcurrentCorrelatorTests : CorrelatorTestsBase<CustomOptionsStartup>
     {
         private readonly ITestOutputHelper _output;
         private readonly int _concurrency;

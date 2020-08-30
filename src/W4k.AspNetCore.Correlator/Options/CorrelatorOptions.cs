@@ -6,7 +6,7 @@ using W4k.AspNetCore.Correlator.Http;
 namespace W4k.AspNetCore.Correlator.Options
 {
     /// <summary>
-    /// Correlator (middleware) options.
+    /// Correlator options.
     /// </summary>
     public sealed class CorrelatorOptions
     {
