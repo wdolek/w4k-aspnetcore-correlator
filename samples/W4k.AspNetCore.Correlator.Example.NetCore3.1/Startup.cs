@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using W4k.AspNetCore.Correlator.Extensions;
+using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore30
+namespace W4k.AspNetCore.Correlator.Example.NetCore31
 {
     public class Startup
     {
@@ -14,24 +14,23 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore30
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // add correlator with additional setting
-            services.AddCorrelator(options =>
+            services.AddDefaultCorrelator(options =>
             {
-                // forward, return using `Request-Id` HTTP header
-                options.Forward = PropagationSettings.PropagateAs("Request-Id");
-                options.Emit = PropagationSettings.PropagateAs("Request-Id");
+                options.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
+                options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
+                options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
             });
 
-            // add named HTTP client
             services
                 .AddHttpClient("DummyClient")
                 .WithCorrelation();
+
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // use Correlator middleware
             app.UseCorrelator();
 
             if (env.IsDevelopment())
@@ -43,10 +42,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore30
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }

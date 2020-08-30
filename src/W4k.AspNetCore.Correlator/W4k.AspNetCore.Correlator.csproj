@@ -43,8 +43,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Http" Version="[2.1.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="[2.2.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="[2.2.0,)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="[2.1.0,)" Condition="'$(TargetFramework)'=='netstandard2.0'" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="[2.2.0,)" Condition="'$(TargetFramework)'=='netstandard2.1'" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="[2.2.0,)" Condition="'$(TargetFramework)'=='netstandard2.1'" />
     <PackageReference Include="Microsoft.SourceLink.Github" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>

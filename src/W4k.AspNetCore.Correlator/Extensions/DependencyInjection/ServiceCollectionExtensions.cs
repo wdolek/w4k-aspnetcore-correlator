@@ -66,14 +66,18 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configureOptions));
             }
 
-            services.AddOptions<CorrelatorOptions>()
-                .Configure(configureOptions)
-                .Validate(
-                    o =>
-                    {
-                        return o.ReadFrom.Count > 0;
-                    },
-                    $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
+            var optionsBuilder = services
+                .AddOptions<CorrelatorOptions>()
+                .Configure(configureOptions);
+
+#if NETSTANDARD2_1
+            optionsBuilder.Validate(
+                options =>
+                {
+                    return options.ReadFrom.Count > 0;
+                },
+                $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
+#endif
 
             services.AddTransient<CorrelatorHttpMessageHandler>()
                 .AddSingleton<CorrelationContextContainer>()
