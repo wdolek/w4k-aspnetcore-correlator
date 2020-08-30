@@ -6,7 +6,7 @@ using W4k.AspNetCore.Correlator.Http;
 namespace W4k.AspNetCore.Correlator.Options
 {
     /// <summary>
-    /// Correlator (middleware) options.
+    /// Correlator options.
     /// </summary>
     public sealed class CorrelatorOptions
     {
@@ -42,7 +42,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets or sets a value indicating whether <see cref="HttpContext.TraceIdentifier"/> is replaced by correlation ID or left intact.
         /// </summary>
-        public bool ReplaceTraceIdentifier { get; set; } = true;
+        public bool ReplaceTraceIdentifier { get; set; } = false;
 
         /// <summary>
         /// Gets or sets logging scope settings.

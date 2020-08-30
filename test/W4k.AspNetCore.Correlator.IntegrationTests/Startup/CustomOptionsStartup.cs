@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
@@ -26,19 +25,19 @@ namespace W4k.AspNetCore.Correlator.Startup
                     // do not emit correlation ID
                     o.Emit = PropagationSettings.KeepIncomingHeaderName();
 
-                    // don't overwrite `HttpContext.TraceIdentifier` by correlation ID
-                    o.ReplaceTraceIdentifier = false;
+                    // overwrite `HttpContext.TraceIdentifier` by correlation ID
+                    o.ReplaceTraceIdentifier = true;
 
                     // enable logging scope containing correlation ID
-                    o.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("correlation");
+                    o.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
                 });
 
-        public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseCorrelator();
             app.Use(async (context, next) =>
             {
-                var correlationId = correlationContextAccessor.CorrelationContext.CorrelationId;
+                var correlationId = context.TraceIdentifier;
 
                 context.Response.Headers.Add("Content-Type", "text/plain");
                 await context.Response.WriteAsync(correlationId);
