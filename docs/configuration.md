@@ -5,7 +5,7 @@ By default, Correlator is configured following way:
 - Accepting Correlation ID from following headers (in order):
   - `X-Correlation-Id`
   - `X-Request-Id`
-  - `Request-Id` (Usually set by ASP.NET)
+  - `Request-Id` (set by ASP.NET)
 - Correlation ID is forwarded to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
 - Correlation ID is not set to HTTP response headers
 - Correlation ID does not replace [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
@@ -149,4 +149,27 @@ correlatorOptions.LoggingScope = LoggingScopeSettings.NoScope;
 
 // logging scope with: Correlation = <Correlation ID>
 correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
+```
+
+## Silencing logger
+
+If you find Correlator to be too chatty, you can always silence logging by:
+
+```
+{
+  "Logging": {
+    "LogLevel": {
+      /* ... */
+      "W4k.AspNetCore.Correlator": "None"
+    }
+  }
+}
+```
+
+Or if you use Serilog:
+
+```
+Log.Logger = new LoggerConfiguration()
+    // ...
+    .MinimumLevel.Override("W4k.AspNetCore.Correlator", LogEventLevel.Fatal);
 ```
