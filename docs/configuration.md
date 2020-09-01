@@ -5,15 +5,14 @@ By default, Correlator is configured following way:
 - Accepting Correlation ID from following headers (in order):
   - `X-Correlation-Id`
   - `X-Request-Id`
-  - `Request-Id`
-- Correlator tries to find correlation header in on order of values `CorrelatorOptions.From`
-- When request correlation is missing or has empty value:
-  - If `Request-Id` is not present: new correlation ID is generated in form of GUID
-  - If `Request-Id` is set by ASP.NET: value of `Request-Id` is used
+  - `Request-Id` (Usually set by ASP.NET)
 - Correlation ID is forwarded to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
 - Correlation ID is not set to HTTP response headers
 - Correlation ID does not replace [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
 - Correlation ID is not added to logger scope
+
+**NB!** ASP.NET adds `Request-Id` automatically - if not, provided factory is going to be used.
+`Request-Id` header should be/is added when diagnostics is enabled.
 
 To adjust setting, use `AddDefaultCorrelator` or `AddCorrelator` overload:
 
