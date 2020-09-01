@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Moq;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
@@ -17,12 +16,10 @@ namespace W4k.AspNetCore.Correlator.Http
     {
         private static readonly CorrelationId TestCorrelationId = CorrelationId.FromString("123");
 
-        private readonly CorrelatorOptions _baseOptions;
         private readonly Mock<ICorrelationContextAccessor> _correlationContextAccessor;
 
         public CorrelatorHttpMessageHandlerTests()
         {
-            _baseOptions = new CorrelatorOptions();
             _correlationContextAccessor = new Mock<ICorrelationContextAccessor>();
         }
 
@@ -33,8 +30,8 @@ namespace W4k.AspNetCore.Correlator.Http
             // arrange
             var incomingHeader = HttpHeaders.RequestId;
             var outgoindHeader = "X-MyRequest-Id";
+            var propagationSettings = PropagationSettings.PropagateAs(outgoindHeader);
 
-            _baseOptions.Forward = PropagationSettings.PropagateAs(outgoindHeader);
             _correlationContextAccessor
                 .Setup(a => a.CorrelationContext)
                 .Returns(correlationContext);
@@ -45,7 +42,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(outgoindHeader));
             }
 
-            var handler = CreateMessageHandler(_baseOptions, _correlationContextAccessor, AssertRequest);
+            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
@@ -59,8 +56,8 @@ namespace W4k.AspNetCore.Correlator.Http
         {
             // arrange
             var incomingHeader = HttpHeaders.RequestId;
+            var propagationSettings = PropagationSettings.KeepIncomingHeaderName();
 
-            _baseOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
             _correlationContextAccessor
                 .Setup(a => a.CorrelationContext)
                 .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
@@ -71,7 +68,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
             };
 
-            var handler = CreateMessageHandler(_baseOptions, _correlationContextAccessor, AssertRequest);
+            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
@@ -85,8 +82,8 @@ namespace W4k.AspNetCore.Correlator.Http
         {
             // arrange
             var incomingHeader = HttpHeaders.RequestId;
+            var propagationSettings = PropagationSettings.KeepIncomingHeaderName(incomingHeader);
 
-            _baseOptions.Forward = PropagationSettings.KeepIncomingHeaderName(incomingHeader);
             _correlationContextAccessor
                 .Setup(a => a.CorrelationContext)
                 .Returns(new GeneratedCorrelationContext(TestCorrelationId));
@@ -97,7 +94,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
             };
 
-            var handler = CreateMessageHandler(_baseOptions, _correlationContextAccessor, AssertRequest);
+            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
@@ -111,8 +108,8 @@ namespace W4k.AspNetCore.Correlator.Http
         {
             // arrange
             var incomingHeader = HttpHeaders.RequestId;
+            var propagationSettings = PropagationSettings.NoPropagation;
 
-            _baseOptions.Forward = PropagationSettings.NoPropagation;
             _correlationContextAccessor
                 .Setup(a => a.CorrelationContext)
                 .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
@@ -126,7 +123,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 }
             };
 
-            var handler = CreateMessageHandler(_baseOptions, _correlationContextAccessor, AssertRequest);
+            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
@@ -149,13 +146,11 @@ namespace W4k.AspNetCore.Correlator.Http
         }
 
         private static CorrelatorHttpMessageHandler CreateMessageHandler(
-            CorrelatorOptions options,
+            PropagationSettings propagationSettings,
             Mock<ICorrelationContextAccessor> contextAccessor,
             Action<HttpRequestMessage> assertRequest)
         {
-            var optionsWrapper = new OptionsWrapper<CorrelatorOptions>(options);
-
-            return new CorrelatorHttpMessageHandler(optionsWrapper, contextAccessor.Object)
+            return new CorrelatorHttpMessageHandler(propagationSettings, contextAccessor.Object)
             {
                 InnerHandler = new TestDelegatingHandler(assertRequest)
             };

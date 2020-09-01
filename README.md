@@ -97,6 +97,12 @@ public class MyLittleStartup
         services
             .AddHttpClient("FizzClient")
             .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
+
+        // registering HTTP client with custom settings
+        // (global options - CorrelatorOptions.Forward - won't be used)
+        services
+            .AddHttpClient<LegacyClient>()
+            .WithCorrelation(PropagationSettings.PropagateAs("X-Legacy-Correlation-Id"));
     }
 
     // ...

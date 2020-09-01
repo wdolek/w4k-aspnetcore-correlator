@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http.Extensions;
@@ -16,23 +15,21 @@ namespace W4k.AspNetCore.Correlator.Http
     /// </summary>
     public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
     {
-        private readonly CorrelatorOptions _options;
+        private readonly PropagationSettings _settings;
         private readonly ICorrelationContextAccessor _correlationContextAccessor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
         /// </summary>
-        /// <param name="options">Correlator options.</param>
+        /// <param name="settings">Propagation settings.</param>
         /// <param name="correlationContextAccessor">Correlation context accessor.</param>
         public CorrelatorHttpMessageHandler(
-            IOptions<CorrelatorOptions> options,
+            PropagationSettings settings,
             ICorrelationContextAccessor correlationContextAccessor)
         {
+            _settings = settings;
             _correlationContextAccessor = correlationContextAccessor
                 ?? throw new ArgumentNullException(nameof(correlationContextAccessor));
-
-            _ = options ?? throw new ArgumentNullException(nameof(options));
-            _options = options.Value;
         }
 
         /// <inheritdoc />
@@ -56,19 +53,18 @@ namespace W4k.AspNetCore.Correlator.Http
         /// </returns>
         private HttpRequestHeaders HandleCorrelationIdForwarding(HttpRequestHeaders requestHeaders)
         {
-            var propagation = _options.Forward;
-            if (propagation.Settings == HeaderPropagation.NoPropagation)
+            if (_settings.Settings == HeaderPropagation.NoPropagation)
             {
                 return requestHeaders;
             }
 
             var correlationContext = _correlationContextAccessor.CorrelationContext;
 
-            return (propagation.Settings, correlationContext) switch
+            return (_settings.Settings, correlationContext) switch
             {
                 (HeaderPropagation.UsePredefinedHeaderName, _) =>
                     requestHeaders.AddHeaderIfNotSet(
-                        propagation.HeaderName,
+                        _settings.HeaderName,
                         correlationContext.CorrelationId),
 
                 (HeaderPropagation.KeepIncomingHeaderName, RequestCorrelationContext requestCorrelationContext) =>
@@ -78,7 +74,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
                 (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext generatedCorrelationContext) =>
                     requestHeaders.AddHeaderIfNotSet(
-                        propagation.HeaderName,
+                        _settings.HeaderName,
                         generatedCorrelationContext.CorrelationId),
 
                 _ => requestHeaders,
