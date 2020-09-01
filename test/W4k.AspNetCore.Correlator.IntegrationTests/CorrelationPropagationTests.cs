@@ -121,11 +121,7 @@ namespace W4k.AspNetCore.Correlator
         {
             public void ConfigureServices(IServiceCollection services)
             {
-                services.AddDefaultCorrelator(o =>
-                {
-                    o.ReadFrom.Clear();
-                    o.ReadFrom.Add("X-Request-Id");
-                });
+                services.AddDefaultCorrelator();
             }
 
             public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
