@@ -8,6 +8,11 @@ namespace W4k.AspNetCore.Correlator.Options
     public readonly struct LoggingScopeSettings : IEquatable<LoggingScopeSettings>
     {
         /// <summary>
+        /// Default logging scope.
+        /// </summary>
+        private const string DefaultLoggingScope = "Correlation";
+
+        /// <summary>
         /// Configure no scope - correlation ID won't be added to logger scope.
         /// </summary>
         public static readonly LoggingScopeSettings NoScope = new LoggingScopeSettings(false, string.Empty);
@@ -63,7 +68,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// New instance of logging scope settings.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="correlationKey"/> is <c>null</c> or empty string.</exception>
-        public static LoggingScopeSettings IncludeLoggingScope(string correlationKey)
+        public static LoggingScopeSettings IncludeLoggingScope(string correlationKey = DefaultLoggingScope)
         {
             if (string.IsNullOrEmpty(correlationKey))
             {
