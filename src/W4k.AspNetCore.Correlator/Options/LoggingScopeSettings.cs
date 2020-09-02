@@ -8,14 +8,14 @@ namespace W4k.AspNetCore.Correlator.Options
     public readonly struct LoggingScopeSettings : IEquatable<LoggingScopeSettings>
     {
         /// <summary>
-        /// Default logging scope.
-        /// </summary>
-        private const string DefaultLoggingScope = "Correlation";
-
-        /// <summary>
         /// Configure no scope - correlation ID won't be added to logger scope.
         /// </summary>
         public static readonly LoggingScopeSettings NoScope = new LoggingScopeSettings(false, string.Empty);
+
+        /// <summary>
+        /// Default logging scope.
+        /// </summary>
+        private const string DefaultLoggingScope = "Correlation";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggingScopeSettings"/> struct.

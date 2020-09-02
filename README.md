@@ -23,8 +23,6 @@ Note that with .NET Core 3.x, distributed tracing and trace context is built in.
 
 ## Basic usage
 
-Following example demonstrates how to receive correlation ID.
-
 ### Startup class
 
 ```csharp
