@@ -21,6 +21,9 @@ namespace W4k.AspNetCore.Correlator.Logging
         private static readonly EventId GeneratingCorrelationIdEvent =
             new EventId(205, nameof(GeneratingCorrelationId));
 
+        private static readonly EventId InvalidCorrelationValueEvent =
+            new EventId(206, nameof(InvalidCorrelationValue));
+
         private static readonly Action<ILogger, Exception> LogNoHeaderReceived =
             LoggerMessage.Define(
                 LogLevel.Warning,
@@ -51,6 +54,12 @@ namespace W4k.AspNetCore.Correlator.Logging
                 GeneratingCorrelationIdEvent,
                 "Generating new correlation ID for request");
 
+        private static readonly Action<ILogger, string, string, Exception> LogInvalidCorrelationValue =
+            LoggerMessage.Define<string, string>(
+                LogLevel.Warning,
+                InvalidCorrelationValueEvent,
+                "Correlation header ({Header}) value is invalid with: {Reason}");
+
         public static void NoHeaderReceived(this ILogger logger) =>
             LogNoHeaderReceived(logger, null!);
 
@@ -65,5 +74,8 @@ namespace W4k.AspNetCore.Correlator.Logging
 
         public static void GeneratingCorrelationId(this ILogger logger) =>
             LogGeneratingCorrelationId(logger, null!);
+
+        public static void InvalidCorrelationValue(this ILogger logger, string header, string reason) =>
+            LogInvalidCorrelationValue(logger, header, reason, null!);
     }
 }

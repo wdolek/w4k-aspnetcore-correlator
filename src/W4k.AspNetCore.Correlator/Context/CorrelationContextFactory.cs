@@ -5,19 +5,30 @@ using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
+using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Context
 {
     internal class CorrelationContextFactory : ICorrelationContextFactory
     {
         private readonly CorrelatorOptions _options;
+        private readonly ICorrelationValidator? _validator;
         private readonly ILogger<CorrelationContextFactory> _logger;
 
         public CorrelationContextFactory(
             IOptions<CorrelatorOptions> options,
             ILogger<CorrelationContextFactory> logger)
+            : this(options, null, logger)
+        {
+        }
+
+        public CorrelationContextFactory(
+            IOptions<CorrelatorOptions> options,
+            ICorrelationValidator? validator,
+            ILogger<CorrelationContextFactory> logger)
         {
             _options = options.Value;
+            _validator = validator;
             _logger = logger;
         }
 
@@ -37,6 +48,16 @@ namespace W4k.AspNetCore.Correlator.Context
 
                 _logger.GeneratingCorrelationId();
                 return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+            }
+
+            if (_validator != null)
+            {
+                var validationResult = _validator.Validate(headerValue);
+                if (!validationResult.IsValid)
+                {
+                    _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
+                    return new InvalidCorrelationContext(headerName, validationResult);
+                }
             }
 
             _logger.CorrelationIdReceived(headerName, headerValue!);
