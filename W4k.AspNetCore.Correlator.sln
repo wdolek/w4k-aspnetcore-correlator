@@ -21,6 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8F
 		ca.ruleset = ca.ruleset
 		LICENSE = LICENSE
 		README.md = README.md
+		run-bench.bat = run-bench.bat
 		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
@@ -48,7 +49,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{9EDC1077-4896-40B8-9D5C-D259D9B82890}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.Benchmarks", "benchmarks\W4k.AspNetCore.Correlator.Benchmarks\W4k.AspNetCore.Correlator.Benchmarks.csproj", "{E664BDE9-C851-4D1C-87DB-05995AA6440F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.Benchmarks", "benchmarks\W4k.AspNetCore.Correlator.Benchmarks\W4k.AspNetCore.Correlator.Benchmarks.csproj", "{E664BDE9-C851-4D1C-87DB-05995AA6440F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
