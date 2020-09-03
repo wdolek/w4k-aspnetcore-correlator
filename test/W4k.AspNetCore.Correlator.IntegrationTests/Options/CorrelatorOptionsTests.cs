@@ -7,7 +7,7 @@ using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator.Options
 {
     public class CorrelatorOptionsTests
     {
