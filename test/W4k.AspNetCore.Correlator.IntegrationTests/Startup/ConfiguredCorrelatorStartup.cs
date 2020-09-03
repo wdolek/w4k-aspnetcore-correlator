@@ -8,7 +8,7 @@ using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Startup
 {
-    public class CustomOptionsStartup
+    public class ConfiguredCorrelatorStartup
     {
         public void ConfigureServices(IServiceCollection services) =>
             services.AddDefaultCorrelator(
@@ -40,7 +40,7 @@ namespace W4k.AspNetCore.Correlator.Startup
                 var correlationId = context.TraceIdentifier;
 
                 context.Response.Headers.Add("Content-Type", "text/plain");
-                await context.Response.WriteAsync(correlationId);
+                await context.Response.WriteAsync(correlationId, context.RequestAborted);
                 await Task.Delay(127);
             });
         }

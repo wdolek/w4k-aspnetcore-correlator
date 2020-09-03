@@ -7,7 +7,7 @@ using Xunit;
 
 namespace W4k.AspNetCore.Correlator
 {
-    public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultOptionsStartup>
+    public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultCorrelatorStartup>
     {
         [Theory]
         [InlineData("Request-Id")]
