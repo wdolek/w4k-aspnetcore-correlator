@@ -44,7 +44,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{F009A71B-E
 		docs\registration.md = docs\registration.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.Example.NetCore2.1", "samples\W4k.AspNetCore.Correlator.Example.NetCore2.1\W4k.AspNetCore.Correlator.Example.NetCore2.1.csproj", "{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.Example.NetCore2.1", "samples\W4k.AspNetCore.Correlator.Example.NetCore2.1\W4k.AspNetCore.Correlator.Example.NetCore2.1.csproj", "{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{9EDC1077-4896-40B8-9D5C-D259D9B82890}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "W4k.AspNetCore.Correlator.Benchmarks", "benchmarks\W4k.AspNetCore.Correlator.Benchmarks\W4k.AspNetCore.Correlator.Benchmarks.csproj", "{E664BDE9-C851-4D1C-87DB-05995AA6440F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +120,18 @@ Global
 		{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D}.Release|x64.Build.0 = Release|Any CPU
 		{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D}.Release|x86.ActiveCfg = Release|Any CPU
 		{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D}.Release|x86.Build.0 = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|x64.Build.0 = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Debug|x86.Build.0 = Debug|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|x64.ActiveCfg = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|x64.Build.0 = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|x86.ActiveCfg = Release|Any CPU
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +144,7 @@ Global
 		{5CA4490C-CA01-4C12-98B2-695FA3D2B821} = {8FE80DF2-87C8-4639-AFB8-C97980565E70}
 		{59A6F617-4EF1-40BD-8759-280E90DDB789} = {5CA4490C-CA01-4C12-98B2-695FA3D2B821}
 		{BDA21198-DAEC-48BB-AE3E-B96ADF3F821D} = {260DCE5E-0649-40BF-9E55-84DFEBFC4F78}
+		{E664BDE9-C851-4D1C-87DB-05995AA6440F} = {9EDC1077-4896-40B8-9D5C-D259D9B82890}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A4C3F87-5A3E-4AD2-AD75-AAE43EB7227A}

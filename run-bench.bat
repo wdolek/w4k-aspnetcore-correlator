@@ -1,0 +1,1 @@
+dotnet run -c:Release -p benchmarks/W4k.AspNetCore.Correlator.Benchmarks/ -- -f W4k.AspNetCore.Correlator.Benchmarks.* --join --allStats
