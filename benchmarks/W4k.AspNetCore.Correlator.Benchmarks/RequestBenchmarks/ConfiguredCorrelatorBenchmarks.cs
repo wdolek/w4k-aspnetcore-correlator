@@ -8,17 +8,17 @@ using Microsoft.AspNetCore.TestHost;
 using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
 using W4k.AspNetCore.Correlator.Benchmarks.Startup;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks
+namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks
 {
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-    public class ValidatingCorrelatorBenchmarks : IDisposable
+    public class ConfiguredCorrelatorBenchmarks : IDisposable
     {
         private readonly TestServer _server;
         private readonly HttpClient _client;
 
-        public ValidatingCorrelatorBenchmarks()
+        public ConfiguredCorrelatorBenchmarks()
         {
-            _server = new TestServer(new WebHostBuilder().UseStartup<ValidatingCorrelatorStartup>());
+            _server = new TestServer(new WebHostBuilder().UseStartup<ConfiguredCorrelatorStartup>());
             _client = _server.CreateClient();
         }
 

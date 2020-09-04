@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
 using W4k.AspNetCore.Correlator.Benchmarks.Startup;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks
+namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks
 {
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
