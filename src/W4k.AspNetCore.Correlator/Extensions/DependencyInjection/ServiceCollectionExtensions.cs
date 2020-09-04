@@ -78,7 +78,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                 $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
 #endif
 
-            services.AddTransient<CorrelatorHttpMessageHandler>()
+            services
                 .AddSingleton<CorrelationContextContainer>()
                 .AddSingleton<ICorrelationContextAccessor>(
                     sp => sp.GetRequiredService<CorrelationContextContainer>())
