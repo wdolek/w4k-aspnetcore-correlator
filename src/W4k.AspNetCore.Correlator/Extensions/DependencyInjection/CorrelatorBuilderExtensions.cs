@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
+using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 {
@@ -17,15 +19,15 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <remarks>
         /// Provided implementation of correlation context factory is registered as singleton.
         /// </remarks>
-        /// <typeparam name="TImpl">Implementing type of correlation context factory.</typeparam>
+        /// <typeparam name="T">Implementing type of correlation context factory.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
         /// Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation context factory second time.</exception>
-        public static ICorrelatorBuilder WithCorrelationContextFactory<TImpl>(this ICorrelatorBuilder builder)
-            where TImpl : class, ICorrelationContextFactory
+        public static ICorrelatorBuilder WithCorrelationContextFactory<T>(this ICorrelatorBuilder builder)
+            where T : class, ICorrelationContextFactory
         {
             if (builder is null)
             {
@@ -38,7 +40,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                     $"Correlation context factory ({typeof(ICorrelationContextFactory).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
-            builder.Services.AddSingleton<ICorrelationContextFactory, TImpl>();
+            builder.Services.AddSingleton<ICorrelationContextFactory, T>();
 
             return builder;
         }
@@ -59,15 +61,15 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <remarks>
         /// Provided implementation of correlation emitter is registered as singleton.
         /// </remarks>
-        /// <typeparam name="TImpl">Implementing type of correlation emitter.</typeparam>
+        /// <typeparam name="T">Implementing type of correlation emitter.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
         /// Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation emitter second time.</exception>
-        public static ICorrelatorBuilder WithCorrelationEmitter<TImpl>(this ICorrelatorBuilder builder)
-            where TImpl : class, ICorrelationEmitter
+        public static ICorrelatorBuilder WithCorrelationEmitter<T>(this ICorrelatorBuilder builder)
+            where T : class, ICorrelationEmitter
         {
             if (builder is null)
             {
@@ -80,7 +82,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                     $"Correlation emitter ({typeof(ICorrelationEmitter).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
-            builder.Services.AddSingleton<ICorrelationEmitter, TImpl>();
+            builder.Services.AddSingleton<ICorrelationEmitter, T>();
 
             return builder;
         }
@@ -94,5 +96,28 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
             builder.WithCorrelationEmitter<CorrelationEmitter>();
+
+        /// <summary>
+        /// Registers correlation validator.
+        /// </summary>
+        /// <typeparam name="T">Implementing type of correlation validator.</typeparam>
+        /// <param name="builder">Correlator builder.</param>
+        /// <param name="validator">Instance of correlation validator.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
+            where T : ICorrelationValidator
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.Services.TryAddSingleton<ICorrelationValidator>(validator);
+
+            return builder;
+        }
     }
 }

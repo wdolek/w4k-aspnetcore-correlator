@@ -16,9 +16,9 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">Services collection.</param>
         /// <returns>
-        /// Services collection.
+        /// Correlator builder.
         /// </returns>
-        public static IServiceCollection AddDefaultCorrelator(this IServiceCollection services) =>
+        public static ICorrelatorBuilder AddDefaultCorrelator(this IServiceCollection services) =>
             services.AddDefaultCorrelator(_ => { });
 
         /// <summary>
@@ -27,16 +27,15 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <param name="services">Services collection.</param>
         /// <param name="configureOptions">Configure options callback.</param>
         /// <returns>
-        /// Services collection.
+        /// Correlator builder.
         /// </returns>
-        public static IServiceCollection AddDefaultCorrelator(
+        public static ICorrelatorBuilder AddDefaultCorrelator(
             this IServiceCollection services,
             Action<CorrelatorOptions> configureOptions) =>
             services
                 .AddCorrelator(configureOptions)
                 .WithCorrelationContextFactory<CorrelationContextFactory>()
-                .WithCorrelationEmitter<CorrelationEmitter>()
-                .Services;
+                .WithCorrelationEmitter<CorrelationEmitter>();
 
         /// <summary>
         /// Adds components required by Correlator to services collection.

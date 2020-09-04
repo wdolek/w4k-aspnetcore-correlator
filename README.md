@@ -109,6 +109,26 @@ public class MyLittleStartup
 
 See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#configure-the-httpmessagehandler)" for more details about usage of HTTP message handler.
 
+## Validation of correlation ID
+
+It is possible to validate correlation ID value and prevent invalid value to spread. By default, validation is
+turned off. In order to turn validation on, implementation of `ICorrelationValidator` musth be registered.
+
+Correlator is shipped with lightweight validator, `CorrelationValueLengthValidator`, which decides whether received
+value is valid simply based on its length.
+
+To enable validation, register instance of validator following way:
+```
+public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddDefaultCorrelator()
+        .WithValidator(new CorrelationValueLengthValidator(128));
+}
+```
+
+Validator is registered as singleton.
+
 ## Documentation
 
 - [Configuration](docs/configuration.md): detailed description of configuration

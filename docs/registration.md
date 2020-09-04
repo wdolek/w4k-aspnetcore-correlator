@@ -53,3 +53,8 @@ Both `ICorrelationContextFactory` and `ICorrelationEmitter` are registered as si
 
 Note that only one component can be registered. Any attempt to register another implementation of same interface will
 end up with exception.
+
+Optionally, you can register correlation validator:
+```
+builder.WithValidator(new CorrelationValueLengthValidator(128));
+```
