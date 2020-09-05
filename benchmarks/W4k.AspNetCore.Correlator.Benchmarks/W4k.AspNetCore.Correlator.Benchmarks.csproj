@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
+    <PackageReference Include="Correlate.AspNetCore" Version="3.2.0" />
     <PackageReference Include="CorrelationId" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.7" />
   </ItemGroup>
