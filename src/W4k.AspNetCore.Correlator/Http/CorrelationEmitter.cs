@@ -54,7 +54,7 @@ namespace W4k.AspNetCore.Correlator.Http
                 (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext _) => propagation.HeaderName,
 
                 // no propagation, not received and not generated, received invalid value
-                _ => null
+                _ => null,
             };
     }
 }

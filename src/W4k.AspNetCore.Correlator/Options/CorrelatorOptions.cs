@@ -40,7 +40,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets or sets a value indicating whether <see cref="HttpContext.TraceIdentifier"/> is replaced by correlation ID or left intact.
         /// </summary>
-        public bool ReplaceTraceIdentifier { get; set; } = false;
+        public bool ReplaceTraceIdentifier { get; set; }
 
         /// <summary>
         /// Gets or sets logging scope settings.
