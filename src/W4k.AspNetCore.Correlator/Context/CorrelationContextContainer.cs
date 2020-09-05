@@ -5,7 +5,7 @@ using W4k.AspNetCore.Correlator.Context.Types;
 
 namespace W4k.AspNetCore.Correlator.Context
 {
-    internal partial class CorrelationContextContainer
+    internal class CorrelationContextContainer
         : ICorrelationScopeFactory, ICorrelationContextAccessor, IDisposable
     {
         private static readonly AsyncLocal<CorrelationContext?> LocalContext = new AsyncLocal<CorrelationContext?>();
