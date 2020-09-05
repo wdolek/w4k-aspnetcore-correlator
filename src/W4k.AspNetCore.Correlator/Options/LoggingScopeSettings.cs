@@ -18,6 +18,11 @@ namespace W4k.AspNetCore.Correlator.Options
         private const string DefaultLoggingScope = "Correlation";
 
         /// <summary>
+        /// Internal correlation scope key.
+        /// </summary>
+        private readonly string _correlationKey;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LoggingScopeSettings"/> struct.
         /// </summary>
         /// <param name="includeScope">Indicates whether correlation ID should be added to logger scope.</param>
@@ -25,7 +30,7 @@ namespace W4k.AspNetCore.Correlator.Options
         private LoggingScopeSettings(bool includeScope, string key)
         {
             IncludeScope = includeScope;
-            CorrelationKey = key;
+            _correlationKey = key;
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets logger scope key of correlation ID.
         /// </summary>
-        public string CorrelationKey { get; }
+        public string CorrelationKey => _correlationKey ?? DefaultLoggingScope;
 
         /// <summary>
         /// Performs equal comparison between two values.

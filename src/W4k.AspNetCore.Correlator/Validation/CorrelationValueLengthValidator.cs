@@ -6,7 +6,7 @@
     /// <remarks>
     /// Empty value is considered invalid.
     /// </remarks>
-    public class CorrelationValueLengthValidator : ICorrelationValidator
+    public sealed class CorrelationValueLengthValidator : ICorrelationValidator
     {
         private readonly ushort _length;
 
@@ -22,12 +22,12 @@
         /// <inheritdoc/>
         public ValidationResult Validate(string? value)
         {
-            if (value is null)
+            if (string.IsNullOrEmpty(value))
             {
-                return ValidationResult.Invalid("Given value is null");
+                return ValidationResult.Invalid("Value is null or empty");
             }
 
-            return value.Length <= _length
+            return value!.Length <= _length
                 ? ValidationResult.Valid
                 : ValidationResult.Invalid($"Received value of length: {value.Length}, expecting max length {_length}");
         }

@@ -89,10 +89,14 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <returns>
         /// Propagation settings for keeping incoming header, or using <paramref name="defaultHeaderName"/> if generated.
         /// </returns>
-        public static PropagationSettings KeepIncomingHeaderName(string? defaultHeaderName = null) =>
-            new PropagationSettings(
-                HeaderPropagation.KeepIncomingHeaderName,
-                defaultHeaderName ?? HttpHeaders.CorrelationId);
+        public static PropagationSettings KeepIncomingHeaderName(string? defaultHeaderName = null)
+        {
+            defaultHeaderName = string.IsNullOrEmpty(defaultHeaderName)
+                ? HttpHeaders.CorrelationId
+                : defaultHeaderName;
+
+            return new PropagationSettings(HeaderPropagation.KeepIncomingHeaderName, defaultHeaderName!);
+        }
 
         /// <inheritdoc />
         public override bool Equals(object obj) =>
