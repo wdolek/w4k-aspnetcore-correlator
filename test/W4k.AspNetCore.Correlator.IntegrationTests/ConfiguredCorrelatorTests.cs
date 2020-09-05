@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace W4k.AspNetCore.Correlator
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
             // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(response.Headers.Contains("X-CID"));
 
             string correlationIdEmitted = response.Headers.GetValues("X-CID").FirstOrDefault();

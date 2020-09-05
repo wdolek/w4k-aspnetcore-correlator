@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -76,6 +77,7 @@ namespace W4k.AspNetCore.Correlator
             var receivedValue = await response.Content.ReadAsStringAsync();
 
             // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal($"X-Request-Id:{correlation}", receivedValue);
         }
 

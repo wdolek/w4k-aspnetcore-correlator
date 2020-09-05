@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace W4k.AspNetCore.Correlator
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
             // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             string correlationId = await response.Content.ReadAsStringAsync();
             Assert.Equal("123", correlationId);
         }
@@ -38,6 +41,8 @@ namespace W4k.AspNetCore.Correlator
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
             // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             string correlationId = await response.Content.ReadAsStringAsync();
             Assert.NotEmpty(correlationId);
             Assert.True(Guid.TryParse(correlationId, out Guid _));
@@ -54,6 +59,7 @@ namespace W4k.AspNetCore.Correlator
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
             // assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.False(response.Headers.Contains("X-Dummy-Correlation-Id"));
 
             string correlationId = await response.Content.ReadAsStringAsync();
