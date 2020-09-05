@@ -14,8 +14,7 @@ Correlation Context Factory returns base type `CorrelationContext`, which is the
 - `EmptyCorrelationContext`: No correlation received nor generated - we don't know correlation
 - `GeneratedCorrelationContext`: No correlation received, but generated using factory method (see options)
 - `RequestCorrelationContext`: Correlation ID received
-
-**Important**: When providing own implementation, make sure it does not throw any exception!
+- `InvalidCorrelationContext`: Correlation received, but invalid
 
 ## Correlation Emitter
 
@@ -27,7 +26,16 @@ to subsequent requests. Setting response headers is done by registering emitter 
 Task Emit(HttpContext httpContext, CorrelationContext correlationContext)
 ```
 
-**Important**: When providing own implementation, make sure it does not throw any exception!
+## Correlation validator
+
+Correlation validator, implementing `ICorrelationValidator`, if registered - check whether incoming raw
+value of correlation header is valid.
+
+If value is invalid `InvalidCorrelationContext` is created by context factory instead of `RequestCorrelationContext`.
+
+```csharp
+ValidationResult Validate(string? value);
+```
 
 ## Correlator HTTP Message Handler
 

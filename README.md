@@ -117,21 +117,18 @@ turned off. In order to turn validation on, implementation of `ICorrelationValid
 Correlator is shipped with lightweight validator, `CorrelationValueLengthValidator`, which decides whether received
 value is valid simply based on its length.
 
-To enable validation, register instance of validator following way:
 ```
 public void ConfigureServices(IServiceCollection services)
 {
     services
         .AddDefaultCorrelator()
-        .WithValidator(new CorrelationValueLengthValidator(128));
+        .WithValidator(new CorrelationValueLengthValidator(64));
 }
 ```
 
-Validator is registered as singleton.
-
 ## Documentation
 
-- [Configuration](docs/configuration.md): detailed description of configuration
-- [Dependency injection](docs/registration.md): additional ways how to register Correlator into DI
-- [Component description](docs/components.md)
+- [Detailed configuration](docs/configuration.md) description
+- [Dependency injection](docs/registration.md) registration
+- [Components](docs/components.md) description
 - [Alternative packages and further reading](docs/alternatives.md)
