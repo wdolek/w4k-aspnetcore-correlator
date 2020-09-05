@@ -37,6 +37,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks
         }
 
         [Benchmark]
+        [BenchmarkCategory("Short")]
         public async Task CorrelatorRequest()
         {
             var requestMessage = RequestFactory.CreateCorrelatedRequest();
@@ -44,9 +45,42 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks
         }
 
         [Benchmark]
+        [BenchmarkCategory("Short")]
         public async Task CorrelationIdRequest()
         {
             var requestMessage = RequestFactory.CreateCorrelatedRequest();
+            await _correlationId.HttpClient.SendAsync(requestMessage);
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("Long")]
+        public async Task CorrelatorRequestWithAdditionalHeaders()
+        {
+            var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
+            await _correlator.HttpClient.SendAsync(requestMessage);
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("Long")]
+        public async Task CorrelationIdRequestWithAdditionalHeaders()
+        {
+            var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
+            await _correlationId.HttpClient.SendAsync(requestMessage);
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("None")]
+        public async Task CorrelatorRequestWithoutCorrelation()
+        {
+            var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
+            await _correlator.HttpClient.SendAsync(requestMessage);
+        }
+
+        [Benchmark]
+        [BenchmarkCategory("None")]
+        public async Task CorrelationIdRequestWithoutCorrelation()
+        {
+            var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
             await _correlationId.HttpClient.SendAsync(requestMessage);
         }
 
