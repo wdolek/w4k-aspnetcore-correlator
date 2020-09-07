@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Validation;
@@ -107,6 +106,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
         public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
             where T : ICorrelationValidator
         {
@@ -115,7 +115,13 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            builder.Services.TryAddSingleton<ICorrelationValidator>(validator);
+            if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationValidator)))
+            {
+                throw new InvalidOperationException(
+                    $"Correlation validator ({typeof(ICorrelationValidator).FullName} -> {typeof(T).FullName}) has been already registered, only one validator is supported.");
+            }
+
+            builder.Services.AddSingleton<ICorrelationValidator>(validator);
 
             return builder;
         }
