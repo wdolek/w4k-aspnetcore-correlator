@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Moq;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
+using W4k.AspNetCore.Correlator.Validation;
 using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Context
@@ -87,6 +89,79 @@ namespace W4k.AspNetCore.Correlator.Context
             // assert
             Assert.IsType<EmptyCorrelationContext>(correlationContext);
             Assert.True(correlationContext.CorrelationId.IsEmpty);
+        }
+
+        [Fact]
+        public void CreateContext_WhenValidValue_ExpectRequestCorrelationContext()
+        {
+            // arrange
+            var correlationId = "valid_correlation";
+            var httpContext = new DefaultHttpContext
+            {
+                Request =
+                {
+                    Headers =
+                    {
+                        [HttpHeaders.CorrelationId] = correlationId,
+                    }
+                }
+            };
+
+            var validationResult = ValidationResult.Valid;
+            var validator = new Mock<ICorrelationValidator>();
+
+            validator
+                .Setup(v => v.Validate(It.Is<string>(v => string.Equals(correlationId, v))))
+                .Returns(validationResult);
+
+            // act
+            var factory = new CorrelationContextFactory(
+                new OptionsWrapper<CorrelatorOptions>(_baseOptions),
+                validator.Object,
+                _logger);
+
+            var correlationContext = factory.CreateContext(httpContext);
+
+            // assert
+            var requestCorrelationContext = Assert.IsType<RequestCorrelationContext>(correlationContext);
+            Assert.Equal(correlationId, correlationContext.CorrelationId.Value);
+        }
+
+        [Fact]
+        public void CreateContext_WhenInvalidValue_ExpectInvalidCorrelationContext()
+        {
+            // arrange
+            var correlationId = "invalid_correlation";
+            var httpContext = new DefaultHttpContext
+            {
+                Request =
+                {
+                    Headers =
+                    {
+                        [HttpHeaders.CorrelationId] = correlationId,
+                    }
+                }
+            };
+
+            var validationResult = ValidationResult.Invalid("invalid");
+            var validator = new Mock<ICorrelationValidator>();
+
+            validator
+                .Setup(v => v.Validate(It.Is<string>(v => string.Equals(correlationId, v))))
+                .Returns(validationResult);
+
+            // act
+            var factory = new CorrelationContextFactory(
+                new OptionsWrapper<CorrelatorOptions>(_baseOptions),
+                validator.Object,
+                _logger);
+
+            var correlationContext = factory.CreateContext(httpContext);
+
+            // assert
+            var invalidCorrelationContext = Assert.IsType<InvalidCorrelationContext>(correlationContext);
+            Assert.True(correlationContext.CorrelationId.IsEmpty);
+            Assert.Equal(invalidCorrelationContext.ValidationResult, validationResult);
         }
 
         [Fact]
