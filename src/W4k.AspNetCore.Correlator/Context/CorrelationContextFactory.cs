@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,20 +34,10 @@ namespace W4k.AspNetCore.Correlator.Context
 
         public CorrelationContext CreateContext(HttpContext httpContext)
         {
-            var (headerName, headerValue) = GetCorrelationHeader(httpContext.Request.Headers, _options.ReadFrom);
-            if (headerName is null)
+            if (!TryGetCorrelationHeader(httpContext.Request.Headers, out var headerName, out var headerValue))
             {
                 _logger.NoCorrelationHeaderReceived();
-
-                var generateCorrelationId = _options.Factory;
-                if (generateCorrelationId is null)
-                {
-                    _logger.NoCorrelationIdFactoryConfigured();
-                    return EmptyCorrelationContext.Instance;
-                }
-
-                _logger.GeneratingCorrelationId();
-                return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+                return HandleEmptyValue(httpContext);
             }
 
             if (_validator != null)
@@ -64,18 +54,18 @@ namespace W4k.AspNetCore.Correlator.Context
             return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
         }
 
-        private static (string? HeaderName, string? HeaderValue) GetCorrelationHeader(
+        private bool TryGetCorrelationHeader(
             IHeaderDictionary requestHeaders,
-            ICollection<string> expectedHeaders)
+            [NotNullWhen(true)] out string? headerName,
+            [NotNullWhen(true)] out string? headerValue)
         {
             if (requestHeaders.Count == 0)
             {
-                return default;
+                headerName = headerValue = null;
+                return false;
             }
 
-            // lookup expected header in request headers
-            // (expecting that there are going to be more request headers than we have configured for expectation)
-            foreach (var header in expectedHeaders)
+            foreach (var header in _options.ReadFrom)
             {
                 if (!requestHeaders.ContainsKey(header))
                 {
@@ -85,11 +75,28 @@ namespace W4k.AspNetCore.Correlator.Context
                 var values = requestHeaders[header];
                 if (values.Count > 0 && !string.IsNullOrEmpty(values[0]))
                 {
-                    return (header, values[0]);
+                    headerName = header;
+                    headerValue = values[0];
+
+                    return true;
                 }
             }
 
-            return default;
+            headerName = headerValue = null;
+            return false;
+        }
+
+        private CorrelationContext HandleEmptyValue(HttpContext httpContext)
+        {
+            var generateCorrelationId = _options.Factory;
+            if (generateCorrelationId is null)
+            {
+                _logger.NoCorrelationIdFactoryConfigured();
+                return EmptyCorrelationContext.Instance;
+            }
+
+            _logger.GeneratingCorrelationId();
+            return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
         }
     }
 }

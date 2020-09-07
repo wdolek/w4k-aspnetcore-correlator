@@ -63,3 +63,6 @@ builder.WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
 `ICorrelationValidator` is registered as singleton.
+
+Note that you can register only one validator! If you need to use multiple validators, implement composite validator
+yourself.
