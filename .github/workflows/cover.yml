@@ -15,19 +15,28 @@ jobs:
       with:
         dotnet-version: 3.1.x
 
-    - name: Install Report Generator
+    - name: Install reportgenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
     - name: Build
-      run: |
-        cd test/W4k.AspNetCore.Correlator.UnitTests
-        dotnet build --configuration Debug
-        cd ${{ github.workspace }}
+      run: dotnet build
+
+    - run: cd test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Test coverage
       run: |
-        chmod +x ./run-test-coverage.sh
-        ./run-test-coverage.sh
+        dotnet test \
+          /p:CollectCoverage=true \
+          /p:CoverletOutputFormat=cobertura \
+          /p:Exclude="[xunit*]\*" \
+          /p:CoverletOutput=./TestResults/
+
+    - name: Generate report
+      run: |
+        reportgenerator \
+          -reports:TestResults/coverage.cobertura.xml \
+          -targetdir:./TestResults/html \
+          -reporttypes:HTML
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
