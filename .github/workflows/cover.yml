@@ -3,7 +3,7 @@ name: Test coverage
 on: workflow_dispatch
 
 jobs:
-  pack:
+  cover:
     runs-on: ubuntu-latest
     steps:
 
@@ -18,11 +18,11 @@ jobs:
     - name: Install Report Generator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
-    - name: Install dependencies
-      run: dotnet restore
-
     - name: Build
-      run: dotnet build --no-restore --configuration Debug
+      run: |
+        cd test/W4k.AspNetCore.Correlator.UnitTests
+        dotnet build --configuration Debug
+        cd ${{ github.workspace }}
 
     - name: Test coverage
       run: |
