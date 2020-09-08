@@ -1,4 +1,4 @@
-name: Create package
+name: Test coverage
 
 on: workflow_dispatch
 
