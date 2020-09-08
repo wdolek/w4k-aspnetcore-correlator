@@ -1,0 +1,36 @@
+name: Test coverage
+
+on: workflow_dispatch
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+
+    - name: Install Report Generator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Debug
+
+    - name: Test coverage
+      run: |
+        chmod +x ./run-test-coverage.sh
+        ./run-test-coverage.sh
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: w4k-aspnetcore-correlator-test-coverage-${{ github.sha }}
+        path: test/W4k.AspNetCore.Correlator.UnitTests/TestResults
