@@ -132,3 +132,7 @@ public void ConfigureServices(IServiceCollection services)
 - [Dependency injection](docs/registration.md) registration
 - [Components](docs/components.md) description
 - [Alternative packages and further reading](docs/alternatives.md)
+
+---
+
+Icon made by [Kiranshastry](https://www.flaticon.com/authors/kiranshastry) from [Flaticon, www.flaticon.com](https://www.flaticon.com/)

@@ -28,9 +28,11 @@
       for forwarding correlation ID to subsequent requests.
     </Description>
     <PackageId>W4k.AspNetCore.Correlator</PackageId>
-    <PackageTags>aspnetcore, correlation, correlation-id, correlationid, request-id, requestid</PackageTags>
+    <PackageTags>aspnetcore, correlation, correlationid, correlate, requestid, tracing</PackageTags>
     <PackageProjectUrl>https://github.com/wdolek/w4k-aspnetcore-correlator</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://github.com/wdolek/w4k-aspnetcore-correlator/blob/master/images/correlator_128px.png</PackageIconUrl>
+    <PackageIcon>_img/correlator_128px.png</PackageIcon>
     <RepositoryUrl>https://github.com/wdolek/w4k-aspnetcore-correlator.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -65,5 +67,10 @@
   <PropertyGroup>
     <CodeAnalysisRuleSet>$(ProjectDir)../../ca.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(ProjectDir)../../images/correlator_128px.png" Pack="true" PackagePath="_img/" Visible="false" />
+    <None Include="$(ProjectDir)../../images/LICENSE" Pack="true" PackagePath="_img/" Visible="false" />
+  </ItemGroup>
 
 </Project>
