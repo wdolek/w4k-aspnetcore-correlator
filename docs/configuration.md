@@ -1,16 +1,18 @@
 ## Configuration
 
-By default, Correlator is configured following way:
+By _default_, Correlator is configured following way:
 
-- Accepting Correlation ID from following headers (in order):
+- **Accepting** Correlation ID from following headers (in order):
   - `X-Correlation-Id`
   - `X-Request-Id`
   - `Request-Id` (set by ASP.NET when sending request with `HttpClient`)
-- Correlation ID is forwarded to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
-- Correlation ID is not set to HTTP response headers
-- Correlation ID does not replace [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
-- Correlation ID is not added to logger scope
-- Correlation logging scope is `"Correlation"` by default
+- Correlation ID **is forwarded** to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
+- Correlation ID **is not set** to HTTP response headers
+- Correlation ID **does not replace** [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
+- Correlation ID **is not added** to logger scope
+- Correlation **logging scope is** (after enabling) `"Correlation"`
+
+### Adjusting default configuration
 
 To adjust setting, use `AddDefaultCorrelator` or `AddCorrelator` overload:
 
@@ -20,10 +22,11 @@ services.AddDefaultCorrelator(
     {
         // disable correlation ID factory
         // - correlation ID won't be generated
-        // - you are getting correlation ID only from incoming request
+        // --> if correlation ID not received, empty value is used
         correlatorOptions.Factory = null;
 
         // expect correlation ID in "X-CID" header only
+        // (clearing default headers first, then adding single entry)
         correlatorOptions.ReadFrom.Clear();
         correlatorOptions.ReadFrom.Add("X-CID");
 
@@ -32,7 +35,7 @@ services.AddDefaultCorrelator(
 
         // forward via message handler
         // - when correlation ID received, using same header name ("X-CID")
-        // - when correlation ID not received and generated, sending it as "X-Correlation-Id"
+        // - when correlation ID not received and generated, sending it with default header
         correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
 
         // replace `HttpContext.TraceIdentifier`
@@ -43,12 +46,11 @@ services.AddDefaultCorrelator(
     });
 ```
 
-### Correlation ID factory
+### Correlation ID factory (function)
 
 Property `CorrelatorOptions.Factory`, of type `Func<HttpContext, CorrelationId>`.
 
-If set to `null`, generating of correlation ID is disabled - you now rely on caller that correlation ID is always
-present in request.
+If set to `null`, generating of correlation ID is disabled.
 
 ```csharp
 // default
@@ -67,10 +69,10 @@ correlatorOptions.Factory = null;
 
 Property `CorrelatorOptions.ReadFrom`, of type `ICollection<string>`.
 
-First header satisfying match is returned.
+First header satisfying match is read. Collection must not be empty.
 
 ```csharp
-// add to defaults
+// add after default headers
 correlatorOptions.Add("X-Yet-Another-Request-ID");
 
 // read only from given header
@@ -109,7 +111,7 @@ correlatorOptions.Emit = PropagationSettings.KeepIncomingHeaderName();
 correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
 ```
 
-Notice that `KeepIncomingHeaderName(string = null)` has argument. When Correlation ID is not received, there's
+Notice argument of `KeepIncomingHeaderName(string)`. When Correlation ID is not received, there's
 obviously no way how to determine _incoming header_ - and this is the place where you can help Correlator to know
 how to propagate correlation.
 
