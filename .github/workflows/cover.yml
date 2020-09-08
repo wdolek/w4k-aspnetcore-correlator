@@ -23,20 +23,11 @@ jobs:
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Test coverage
-      run: >
-        dotnet test
-          /p:CollectCoverage=true
-          /p:CoverletOutputFormat=cobertura
-          /p:Exclude="[xunit*]\*"
-          /p:CoverletOutput=./TestResults/
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[xunit*]\*" /p:CoverletOutput=./TestResults/
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Generate report
-      run: >
-        reportgenerator
-          -reports:TestResults/coverage.cobertura.xml
-          -targetdir:./TestResults/html
-          -reporttypes:HTML
+      run: reportgenerator -reports:TestResults/coverage.cobertura.xml -targetdir:./TestResults/html -reporttypes:HTML
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Upload artifact
