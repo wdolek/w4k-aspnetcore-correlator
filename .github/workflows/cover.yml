@@ -17,21 +17,17 @@ jobs:
 
     - name: Install reportgenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
-    
-    - name: Build project
-      run: dotnet build
-      working-directory: src/W4k.AspNetCore.Correlator
 
     - name: Test coverage
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/" -verbosity:diagnostic -bl:./TestResults/msbuild.binlog -noconsolelogger
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/"
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Generate report
-      run: reportgenerator -reports:TestResults/coverage.cobertura.xml -targetdir:./TestResults/html -reporttypes:HTML
+      run: reportgenerator -reports:TestResults/coverage.cobertura.xml -targetdir:"./TestResults/html" -reporttypes:HTML
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: w4k-aspnetcore-correlator-test-coverage-${{ github.sha }}
+        name: w4k-aspnetcore-correlator-test-results-${{ github.sha }}
         path: test/W4k.AspNetCore.Correlator.UnitTests/TestResults
