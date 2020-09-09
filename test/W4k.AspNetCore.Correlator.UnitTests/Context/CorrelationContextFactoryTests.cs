@@ -161,6 +161,7 @@ namespace W4k.AspNetCore.Correlator.Context
             // assert
             var invalidCorrelationContext = Assert.IsType<InvalidCorrelationContext>(correlationContext);
             Assert.True(correlationContext.CorrelationId.IsEmpty);
+            Assert.Equal(HttpHeaders.CorrelationId, invalidCorrelationContext.Header);
             Assert.Equal(invalidCorrelationContext.ValidationResult, validationResult);
         }
 
