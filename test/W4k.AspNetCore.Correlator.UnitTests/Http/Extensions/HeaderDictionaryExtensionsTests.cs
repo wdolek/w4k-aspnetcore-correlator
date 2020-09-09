@@ -36,5 +36,20 @@ namespace W4k.AspNetCore.Correlator.Http.Extensions
             Assert.True(headers.ContainsKey("X-Correlation-ID"));
             Assert.Equal("123", headers["X-Correlation-ID"]);
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void AddIfNoSet_WhenHeaderNameIsEmpty_ExpectNoChange(string headerName)
+        {
+            // arrange
+            IHeaderDictionary headers = new HeaderDictionary();
+
+            // act
+            headers = headers.AddHeaderIfNotSet(headerName, "123");
+
+            // assert
+            Assert.Empty(headers);
+        }
     }
 }
