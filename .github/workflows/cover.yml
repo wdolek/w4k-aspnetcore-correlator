@@ -17,13 +17,13 @@ jobs:
 
     - name: Install reportgenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
-
-    - name: Build
+    
+    - name: Build project
       run: dotnet build
-      working-directory: test/W4k.AspNetCore.Correlator.UnitTests
+      working-directory: src/W4k.AspNetCore.Correlator
 
     - name: Test coverage
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[xunit*]\*" /p:CoverletOutput=./TestResults/
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/" -verbosity:diagnostic -bl:./TestResults/msbuild.binlog -noconsolelogger
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Generate report
