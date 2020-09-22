@@ -19,7 +19,7 @@ jobs:
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
     - name: Test coverage
-      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/"
+      run: dotnet test --nologo -f netcoreapp3.1 /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/"
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Generate report

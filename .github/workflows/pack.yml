@@ -41,7 +41,7 @@ jobs:
       run: dotnet build --no-restore --configuration Release
 
     - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal
+      run: dotnet test --no-build --configuration Release --verbosity normal --nologo -f netcoreapp3.1
 
     - name: Pack
       run: dotnet pack --no-build --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
