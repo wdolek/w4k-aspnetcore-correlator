@@ -18,7 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8F
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		ca.ruleset = ca.ruleset
 		LICENSE = LICENSE
 		README.md = README.md
 		run-bench-cmp.bat = run-bench-cmp.bat
