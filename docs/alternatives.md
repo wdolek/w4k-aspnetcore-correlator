@@ -2,6 +2,7 @@
 
 - [CorrelationId](https://www.nuget.org/packages/CorrelationId/) by Steve Gordon.
 - [Correlate](https://www.nuget.org/packages/Correlate.AspNetCore/) by Martijn Bodeman.
+- [AspNet.CorrelationIdGenerator](https://www.nuget.org/packages/AspNet.CorrelationIdGenerator) by Mark Gossa.
 
 ## Distributed tracing
 
