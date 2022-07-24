@@ -70,7 +70,7 @@ override W4k.AspNetCore.Correlator.CorrelationId.GetHashCode() -> int
 override W4k.AspNetCore.Correlator.CorrelationId.ToString() -> string!
 override W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.GetHashCode() -> int
-override W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(object! obj) -> bool
+override W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Options.PropagationSettings.GetHashCode() -> int
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.GetHashCode() -> int

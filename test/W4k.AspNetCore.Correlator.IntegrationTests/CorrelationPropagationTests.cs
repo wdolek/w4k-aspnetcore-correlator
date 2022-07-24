@@ -16,7 +16,7 @@ using Xunit;
 
 namespace W4k.AspNetCore.Correlator
 {
-    public class CorrelationPropagationTests : IDisposable
+    public sealed class CorrelationPropagationTests : IDisposable
     {
         private readonly IHost _hostAlpha;
         private readonly IHost _hostBeta;
@@ -108,7 +108,7 @@ namespace W4k.AspNetCore.Correlator
             public void Configure(IApplicationBuilder app, IHttpClientFactory httpClientFactory)
             {
                 app.UseCorrelator();
-                app.Use(async (context, next) =>
+                app.Run(async (context) =>
                 {
                     var response = await httpClientFactory.CreateClient(BetaClientName).GetAsync("/");
                     var receivedValue = await response.Content.ReadAsStringAsync();
@@ -129,7 +129,7 @@ namespace W4k.AspNetCore.Correlator
             public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
             {
                 app.UseCorrelator();
-                app.Use(async (context, next) =>
+                app.Run(async (context) =>
                 {
                     context.Response.Headers.Add("Content-Type", "text/plain");
 

@@ -55,7 +55,7 @@ namespace W4k.AspNetCore.Correlator
         {
             HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
-            string headerValue = response.Headers.GetValues("X-CID").FirstOrDefault();
+            string headerValue = response.Headers.GetValues("X-CID").First();
             string bodyValue = await response.Content.ReadAsStringAsync();
 
             return new CorrelationTestContext

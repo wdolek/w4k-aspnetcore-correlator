@@ -26,7 +26,7 @@ namespace W4k.AspNetCore.Correlator
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(response.Headers.Contains("X-CID"));
 
-            string correlationIdEmitted = response.Headers.GetValues("X-CID").FirstOrDefault();
+            string correlationIdEmitted = response.Headers.GetValues("X-CID").First();
             Assert.Equal("123", correlationIdEmitted);
 
             string correlationId = await response.Content.ReadAsStringAsync();

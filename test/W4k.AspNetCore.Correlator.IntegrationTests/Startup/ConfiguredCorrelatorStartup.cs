@@ -35,12 +35,13 @@ namespace W4k.AspNetCore.Correlator.Startup
         public void Configure(IApplicationBuilder app)
         {
             app.UseCorrelator();
-            app.Use(async (context, next) =>
+            app.Run(async (context) =>
             {
                 var correlationId = context.TraceIdentifier;
 
                 context.Response.Headers.Add("Content-Type", "text/plain");
                 await context.Response.WriteAsync(correlationId, context.RequestAborted);
+                
                 await Task.Delay(127);
             });
         }

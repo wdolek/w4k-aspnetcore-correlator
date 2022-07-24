@@ -9,49 +9,48 @@ using Microsoft.AspNetCore.TestHost;
 using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
 using W4k.AspNetCore.Correlator.Benchmarks.Startup;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks
+namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
+
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+public sealed class NoCorrelatorBenchmarks : IDisposable
 {
-    [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-    [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-    public class NoCorrelatorBenchmarks : IDisposable
+    private readonly TestServer _server;
+    private readonly HttpClient _client;
+
+    public NoCorrelatorBenchmarks()
     {
-        private readonly TestServer _server;
-        private readonly HttpClient _client;
+        _server = new TestServer(new WebHostBuilder().UseStartup<NoCorrelatorStartup>());
+        _client = _server.CreateClient();
+    }
 
-        public NoCorrelatorBenchmarks()
-        {
-            _server = new TestServer(new WebHostBuilder().UseStartup<NoCorrelatorStartup>());
-            _client = _server.CreateClient();
-        }
+    [Benchmark(Baseline = true)]
+    [BenchmarkCategory("Short")]
+    public async Task CorrelatedRequest()
+    {
+        var requestMessage = RequestFactory.CreateCorrelatedRequest();
+        await _client.SendAsync(requestMessage);
+    }
 
-        [Benchmark(Baseline = true)]
-        [BenchmarkCategory("Short")]
-        public async Task CorrelatedRequest()
-        {
-            var requestMessage = RequestFactory.CreateCorrelatedRequest();
-            await _client.SendAsync(requestMessage);
-        }
+    [Benchmark]
+    [BenchmarkCategory("Long")]
+    public async Task CorrelatedRequestWithAdditionalHeaders()
+    {
+        var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
+        await _client.SendAsync(requestMessage);
+    }
 
-        [Benchmark]
-        [BenchmarkCategory("Long")]
-        public async Task CorrelatedRequestWithAdditionalHeaders()
-        {
-            var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
-            await _client.SendAsync(requestMessage);
-        }
+    [Benchmark]
+    [BenchmarkCategory("None")]
+    public async Task RequestWithoutCorrelation()
+    {
+        var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
+        await _client.SendAsync(requestMessage);
+    }
 
-        [Benchmark]
-        [BenchmarkCategory("None")]
-        public async Task RequestWithoutCorrelation()
-        {
-            var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
-            await _client.SendAsync(requestMessage);
-        }
-
-        public void Dispose()
-        {
-            _client?.Dispose();
-            _server?.Dispose();
-        }
+    public void Dispose()
+    {
+        _client?.Dispose();
+        _server?.Dispose();
     }
 }
