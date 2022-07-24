@@ -40,4 +40,4 @@ jobs:
     - name: Test
       env:
         DOTNET_ROLL_FORWARD: Major
-      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f netcoreapp3.1
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net6.0

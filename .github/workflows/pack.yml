@@ -34,6 +34,11 @@ jobs:
       with:
         dotnet-version: 3.1.x
 
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
     - name: Install dependencies
       run: dotnet restore
 
@@ -41,7 +46,7 @@ jobs:
       run: dotnet build --nologo --no-restore --configuration Release
 
     - name: Test
-      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f netcoreapp3.1
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net6.0
 
     - name: Pack
       run: dotnet pack --nologo --no-build --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
