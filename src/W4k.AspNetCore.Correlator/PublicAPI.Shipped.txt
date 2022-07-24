@@ -52,9 +52,11 @@ W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.CorrelationKey.get -> string!
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.Equals(W4k.AspNetCore.Correlator.Options.LoggingScopeSettings other) -> bool
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.IncludeScope.get -> bool
+W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.LoggingScopeSettings() -> void
 W4k.AspNetCore.Correlator.Options.PropagationSettings
 W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(W4k.AspNetCore.Correlator.Options.PropagationSettings other) -> bool
 W4k.AspNetCore.Correlator.Options.PropagationSettings.HeaderName.get -> string!
+W4k.AspNetCore.Correlator.Options.PropagationSettings.PropagationSettings() -> void
 W4k.AspNetCore.Correlator.Options.PropagationSettings.Settings.get -> W4k.AspNetCore.Correlator.Options.HeaderPropagation
 W4k.AspNetCore.Correlator.Validation.CorrelationValueLengthValidator
 W4k.AspNetCore.Correlator.Validation.CorrelationValueLengthValidator.CorrelationValueLengthValidator(ushort length) -> void
@@ -65,12 +67,13 @@ W4k.AspNetCore.Correlator.Validation.ValidationResult
 W4k.AspNetCore.Correlator.Validation.ValidationResult.Equals(W4k.AspNetCore.Correlator.Validation.ValidationResult other) -> bool
 W4k.AspNetCore.Correlator.Validation.ValidationResult.IsValid.get -> bool
 W4k.AspNetCore.Correlator.Validation.ValidationResult.Reason.get -> string!
+W4k.AspNetCore.Correlator.Validation.ValidationResult.ValidationResult() -> void
 override W4k.AspNetCore.Correlator.CorrelationId.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.CorrelationId.GetHashCode() -> int
 override W4k.AspNetCore.Correlator.CorrelationId.ToString() -> string!
 override W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.GetHashCode() -> int
-override W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(object! obj) -> bool
+override W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Options.PropagationSettings.GetHashCode() -> int
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.GetHashCode() -> int

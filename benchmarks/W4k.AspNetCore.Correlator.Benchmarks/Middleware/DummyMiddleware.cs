@@ -1,20 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.Middleware
+namespace W4k.AspNetCore.Correlator.Benchmarks.Middleware;
+
+internal class DummyMiddleware
 {
-    internal class DummyMiddleware
+    private readonly RequestDelegate _next;
+
+    public DummyMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public DummyMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
-
-        public async Task Invoke(HttpContext httpContext)
-        {
-            await _next(httpContext);
-        }
+    public async Task Invoke(HttpContext httpContext)
+    {
+        await _next(httpContext);
     }
 }

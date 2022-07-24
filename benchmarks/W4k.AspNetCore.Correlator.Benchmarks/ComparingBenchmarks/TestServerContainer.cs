@@ -2,24 +2,23 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.TestHost;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks
+namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
+
+internal class TestServerContainer : IDisposable
 {
-    internal class TestServerContainer : IDisposable
+    private readonly TestServer _server;
+
+    public TestServerContainer(TestServer server)
     {
-        private readonly TestServer _server;
+        _server = server;
+        HttpClient = _server.CreateClient();
+    }
 
-        public TestServerContainer(TestServer server)
-        {
-            _server = server;
-            HttpClient = _server.CreateClient();
-        }
+    public HttpClient HttpClient { get; }
 
-        public HttpClient HttpClient { get; }
-
-        public void Dispose()
-        {
-            HttpClient?.Dispose();
-            _server?.Dispose();
-        }
+    public void Dispose()
+    {
+        HttpClient?.Dispose();
+        _server?.Dispose();
     }
 }

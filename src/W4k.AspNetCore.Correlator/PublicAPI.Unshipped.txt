@@ -1,3 +1,0 @@
-W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.LoggingScopeSettings() -> void
-W4k.AspNetCore.Correlator.Options.PropagationSettings.PropagationSettings() -> void
-W4k.AspNetCore.Correlator.Validation.ValidationResult.ValidationResult() -> void

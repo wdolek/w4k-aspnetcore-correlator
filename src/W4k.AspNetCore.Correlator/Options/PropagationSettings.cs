@@ -99,7 +99,7 @@ namespace W4k.AspNetCore.Correlator.Options
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj) =>
+        public override bool Equals(object? obj) =>
             obj is PropagationSettings other && Equals(other);
 
         /// <inheritdoc />
