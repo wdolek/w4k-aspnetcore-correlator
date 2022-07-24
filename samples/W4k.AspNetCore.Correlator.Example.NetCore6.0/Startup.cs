@@ -6,7 +6,7 @@ using W4k.AspNetCore.Correlator.Extensions;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore50
+namespace W4k.AspNetCore.Correlator.Example.NetCore60
 {
     public class Startup
     {
