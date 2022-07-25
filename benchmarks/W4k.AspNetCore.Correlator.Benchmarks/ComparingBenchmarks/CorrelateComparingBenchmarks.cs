@@ -19,7 +19,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 
 [BenchmarkCategory("Comparison", "Correlate")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-public sealed class CorrelateComparingBenchmarks : IDisposable
+public class CorrelateComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
     private readonly TestServerContainer _correlationId;

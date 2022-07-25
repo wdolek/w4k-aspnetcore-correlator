@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AspNet.CorrelationIdGenerator.ApplicationBuilderExtensions;
+using AspNet.CorrelationIdGenerator.ServiceCollectionExtensions;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using CorrelationId;
-using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -16,25 +16,26 @@ using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 
-[BenchmarkCategory("Comparison", "CorrelationId")]
+[BenchmarkCategory("Comparison", "AspNet.CorrelationIdGenerator")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-public class CorrelationIdComparingBenchmarks : IDisposable
+public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
-    private readonly TestServerContainer _correlationId;
+    private readonly TestServerContainer _correlationIdGenerator;
 
-    public CorrelationIdComparingBenchmarks()
+    public CorrelationIdGeneratorComparingBenchmarks()
     {
         _correlator =
             new TestServerContainer(
                 new TestServer(
                     new WebHostBuilder().UseStartup<CorrelatorStartup>()));
 
-        _correlationId =
+        _correlationIdGenerator =
             new TestServerContainer(
                 new TestServer(
-                    new WebHostBuilder().UseStartup<CorrelationIdStartup>()));
+                    new WebHostBuilder().UseStartup<CorrelationIdGeneratorStartup>()));
     }
+
 
     [Benchmark]
     [BenchmarkCategory("Short")]
@@ -46,10 +47,10 @@ public class CorrelationIdComparingBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("Short")]
-    public async Task CorrelationIdRequest()
+    public async Task CorrelateRequest()
     {
         var requestMessage = RequestFactory.CreateCorrelatedRequest();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlationIdGenerator.HttpClient.SendAsync(requestMessage);
     }
 
     [Benchmark]
@@ -62,10 +63,10 @@ public class CorrelationIdComparingBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("Long")]
-    public async Task CorrelationIdRequestWithAdditionalHeaders()
+    public async Task CorrelateRequestWithAdditionalHeaders()
     {
         var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlationIdGenerator.HttpClient.SendAsync(requestMessage);
     }
 
     [Benchmark]
@@ -78,16 +79,16 @@ public class CorrelationIdComparingBenchmarks : IDisposable
 
     [Benchmark]
     [BenchmarkCategory("None")]
-    public async Task CorrelationIdRequestWithoutCorrelation()
+    public async Task CorrelateRequestWithoutCorrelation()
     {
         var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlationIdGenerator.HttpClient.SendAsync(requestMessage);
     }
 
     public void Dispose()
     {
         _correlator?.Dispose();
-        _correlationId?.Dispose();
+        _correlationIdGenerator?.Dispose();
     }
 
     private class CorrelatorStartup
@@ -96,13 +97,12 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         {
             services.AddDefaultCorrelator(options =>
             {
-                options.ReadFrom.Clear();
-                options.ReadFrom.Add("X-Correlation-Id");
+                options.Factory = (_) =>
+                    CorrelationId.FromString(Guid.NewGuid().ToString());
 
-                options.Factory = (_) => CorrelationId.FromString("le_correlation");
-                options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
+                options.Emit = PropagationSettings.NoPropagation;
                 options.ReplaceTraceIdentifier = false;
-                options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
+                options.LoggingScope = LoggingScopeSettings.NoScope;
             });
         }
 
@@ -113,27 +113,16 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         }
     }
 
-    private class CorrelationIdStartup
+    private class CorrelationIdGeneratorStartup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDefaultCorrelationId(options =>
-            {
-                options.CorrelationIdGenerator = () => "le_correlation";
-                options.AddToLoggingScope = true;
-                options.LoggingScopeKey = "Correlation";
-                options.EnforceHeader = false;
-                options.IgnoreRequestHeader = false;
-                options.IncludeInResponse = true;
-                options.RequestHeader = "X-Correlation-Id";
-                options.ResponseHeader = "X-Correlation-Id";
-                options.UpdateTraceIdentifier = false;
-            });
+            services.AddCorrelationIdGenerator();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseCorrelationId();
+            app.AddCorrelationIdMiddleware();
             app.UseMiddleware<DummyMiddleware>();
         }
     }
