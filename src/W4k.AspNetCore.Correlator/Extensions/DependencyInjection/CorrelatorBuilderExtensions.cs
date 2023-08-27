@@ -28,14 +28,11 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         public static ICorrelatorBuilder WithCorrelationContextFactory<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationContextFactory
         {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ThrowHelper.ThrowIfNull(builder, nameof(builder));
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationContextFactory)))
             {
-                throw new InvalidOperationException(
+                ThrowHelper.ThrowInvalidOp(
                     $"Correlation context factory ({typeof(ICorrelationContextFactory).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
@@ -70,14 +67,11 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         public static ICorrelatorBuilder WithCorrelationEmitter<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationEmitter
         {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ThrowHelper.ThrowIfNull(builder, nameof(builder));
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationEmitter)))
             {
-                throw new InvalidOperationException(
+                ThrowHelper.ThrowInvalidOp(
                     $"Correlation emitter ({typeof(ICorrelationEmitter).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
@@ -105,19 +99,17 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <returns>
         /// Correlator builder.
         /// </returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> or <paramref name="validator"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
         public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
             where T : ICorrelationValidator
         {
-            if (builder is null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ThrowHelper.ThrowIfNull(builder, nameof(builder));
+            ThrowHelper.ThrowIfNull(validator, nameof(validator));
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationValidator)))
             {
-                throw new InvalidOperationException(
+                ThrowHelper.ThrowInvalidOp(
                     $"Correlation validator ({typeof(ICorrelationValidator).FullName} -> {typeof(T).FullName}) has been already registered, only one validator is supported.");
             }
 

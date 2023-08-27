@@ -77,7 +77,7 @@ namespace W4k.AspNetCore.Correlator.Options
         {
             if (string.IsNullOrEmpty(correlationKey))
             {
-                throw new ArgumentNullException(nameof(correlationKey));
+                ThrowHelper.ThrowArgNull(nameof(correlationKey));
             }
 
             return new LoggingScopeSettings(true, correlationKey);

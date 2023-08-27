@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace W4k.AspNetCore.Correlator.Context
+﻿namespace W4k.AspNetCore.Correlator.Context
 {
     /// <summary>
     /// Base correlation context classs.
@@ -13,7 +11,8 @@ namespace W4k.AspNetCore.Correlator.Context
         /// <param name="correlationId">Correlation ID.</param>
         protected CorrelationContext(CorrelationId correlationId)
         {
-            CorrelationId = correlationId ?? throw new ArgumentNullException(nameof(correlationId));
+            ThrowHelper.ThrowIfNull(correlationId, nameof(correlationId));
+            CorrelationId = correlationId;
         }
 
         /// <summary>

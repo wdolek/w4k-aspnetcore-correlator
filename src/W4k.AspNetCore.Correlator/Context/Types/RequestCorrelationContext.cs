@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace W4k.AspNetCore.Correlator.Context.Types
+﻿namespace W4k.AspNetCore.Correlator.Context.Types
 {
     /// <summary>
     /// Correlation context with correlation ID received from HTTP request.
@@ -15,7 +13,8 @@ namespace W4k.AspNetCore.Correlator.Context.Types
         public RequestCorrelationContext(CorrelationId correlationId, string originHeader)
             : base(correlationId)
         {
-            Header = originHeader ?? throw new ArgumentNullException(nameof(originHeader));
+            ThrowHelper.ThrowIfNull(originHeader, nameof(originHeader));
+            Header = originHeader;
         }
 
         /// <summary>

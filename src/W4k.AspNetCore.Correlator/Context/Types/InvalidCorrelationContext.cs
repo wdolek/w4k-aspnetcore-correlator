@@ -1,5 +1,4 @@
-﻿using System;
-using W4k.AspNetCore.Correlator.Validation;
+﻿using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Context.Types
 {
@@ -16,7 +15,8 @@ namespace W4k.AspNetCore.Correlator.Context.Types
         public InvalidCorrelationContext(string header, ValidationResult validationResult)
             : base(CorrelationId.Empty)
         {
-            Header = header ?? throw new ArgumentNullException(nameof(header));
+            ThrowHelper.ThrowIfNull(header, nameof(header));
+            Header = header;
             ValidationResult = validationResult;
         }
 

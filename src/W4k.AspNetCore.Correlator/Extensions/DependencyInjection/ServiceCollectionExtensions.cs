@@ -60,10 +60,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<CorrelatorOptions> configureOptions)
         {
-            if (configureOptions is null)
-            {
-                throw new ArgumentNullException(nameof(configureOptions));
-            }
+            ThrowHelper.ThrowIfNull(configureOptions, nameof(configureOptions));
 
             var optionsBuilder = services
                 .AddOptions<CorrelatorOptions>()

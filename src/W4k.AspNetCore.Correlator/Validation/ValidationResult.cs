@@ -64,7 +64,7 @@ namespace W4k.AspNetCore.Correlator.Validation
         {
             if (string.IsNullOrEmpty(reason))
             {
-                throw new ArgumentNullException(nameof(reason));
+                ThrowHelper.ThrowArgNull(nameof(reason));
             }
 
             return new ValidationResult(false, reason);

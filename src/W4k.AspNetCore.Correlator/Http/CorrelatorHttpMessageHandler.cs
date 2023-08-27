@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,9 +26,9 @@ namespace W4k.AspNetCore.Correlator.Http
             PropagationSettings settings,
             ICorrelationContextAccessor correlationContextAccessor)
         {
+            ThrowHelper.ThrowIfNull(correlationContextAccessor, nameof(correlationContextAccessor));
             _settings = settings;
-            _correlationContextAccessor = correlationContextAccessor
-                ?? throw new ArgumentNullException(nameof(correlationContextAccessor));
+            _correlationContextAccessor = correlationContextAccessor;
         }
 
         /// <inheritdoc />
@@ -37,8 +36,7 @@ namespace W4k.AspNetCore.Correlator.Http
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            _ = request ?? throw new ArgumentNullException(nameof(request));
-
+            ThrowHelper.ThrowIfNull(request, nameof(request));
             HandleCorrelationIdForwarding(request.Headers);
 
             return base.SendAsync(request, cancellationToken);

@@ -76,7 +76,7 @@ namespace W4k.AspNetCore.Correlator.Options
         {
             if (string.IsNullOrWhiteSpace(headerName))
             {
-                throw new ArgumentNullException(nameof(headerName));
+                ThrowHelper.ThrowArgNull(nameof(headerName));
             }
 
             return new PropagationSettings(HeaderPropagation.UsePredefinedHeaderName, headerName);
