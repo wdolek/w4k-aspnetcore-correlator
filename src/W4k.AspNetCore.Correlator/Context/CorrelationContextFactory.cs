@@ -40,7 +40,7 @@ namespace W4k.AspNetCore.Correlator.Context
                 return HandleEmptyValue(httpContext);
             }
 
-            if (_validator != null)
+            if (_validator is not null)
             {
                 var validationResult = _validator.Validate(headerValue);
                 if (!validationResult.IsValid)
