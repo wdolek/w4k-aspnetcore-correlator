@@ -18,6 +18,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 
 [BenchmarkCategory("Comparison", "CorrelationId")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+[MemoryDiagnoser]
 public class CorrelationIdComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
@@ -36,7 +37,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
                     new WebHostBuilder().UseStartup<CorrelationIdStartup>()));
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Short", Baseline = true)]
     [BenchmarkCategory("Short")]
     public async Task CorrelatorRequest()
     {
@@ -44,7 +45,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "CorrelationId: Short")]
     [BenchmarkCategory("Short")]
     public async Task CorrelationIdRequest()
     {
@@ -52,7 +53,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         await _correlationId.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Long", Baseline = true)]
     [BenchmarkCategory("Long")]
     public async Task CorrelatorRequestWithAdditionalHeaders()
     {
@@ -60,7 +61,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "CorrelationId: Long")]
     [BenchmarkCategory("Long")]
     public async Task CorrelationIdRequestWithAdditionalHeaders()
     {
@@ -68,7 +69,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         await _correlationId.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Empty", Baseline = true)]
     [BenchmarkCategory("None")]
     public async Task CorrelatorRequestWithoutCorrelation()
     {
@@ -76,7 +77,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "CorrelationId: Empty")]
     [BenchmarkCategory("None")]
     public async Task CorrelationIdRequestWithoutCorrelation()
     {

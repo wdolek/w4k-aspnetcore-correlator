@@ -11,7 +11,8 @@ using W4k.AspNetCore.Correlator.Benchmarks.Startup;
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-public sealed class DefaultCorrelatorBenchmarks : IDisposable
+[MemoryDiagnoser]
+public class DefaultCorrelatorBenchmarks : IDisposable
 {
     private readonly TestServer _server;
     private readonly HttpClient _client;

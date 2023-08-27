@@ -18,6 +18,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 
 [BenchmarkCategory("Comparison", "AspNet.CorrelationIdGenerator")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+[MemoryDiagnoser]
 public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
@@ -37,7 +38,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
     }
 
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Short", Baseline = true)]
     [BenchmarkCategory("Short")]
     public async Task CorrelatorRequest()
     {
@@ -45,7 +46,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "AspNet.CorrelationIdGenerator: Short")]
     [BenchmarkCategory("Short")]
     public async Task CorrelateRequest()
     {
@@ -53,7 +54,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         await _correlationIdGenerator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Long", Baseline = true)]
     [BenchmarkCategory("Long")]
     public async Task CorrelatorRequestWithAdditionalHeaders()
     {
@@ -61,7 +62,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "AspNet.CorrelationIdGenerator: Long")]
     [BenchmarkCategory("Long")]
     public async Task CorrelateRequestWithAdditionalHeaders()
     {
@@ -69,7 +70,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         await _correlationIdGenerator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Correlator: Empty", Baseline = true)]
     [BenchmarkCategory("None")]
     public async Task CorrelatorRequestWithoutCorrelation()
     {
@@ -77,7 +78,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         await _correlator.HttpClient.SendAsync(requestMessage);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "AspNet.CorrelationIdGenerator: Empty")]
     [BenchmarkCategory("None")]
     public async Task CorrelateRequestWithoutCorrelation()
     {

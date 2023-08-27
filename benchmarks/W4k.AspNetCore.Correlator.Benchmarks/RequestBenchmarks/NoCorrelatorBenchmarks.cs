@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Order;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
@@ -11,9 +10,9 @@ using W4k.AspNetCore.Correlator.Benchmarks.Startup;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
-[Orderer(SummaryOrderPolicy.FastestToSlowest)]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
-public sealed class NoCorrelatorBenchmarks : IDisposable
+[MemoryDiagnoser]
+public class NoCorrelatorBenchmarks : IDisposable
 {
     private readonly TestServer _server;
     private readonly HttpClient _client;
