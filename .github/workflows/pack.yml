@@ -13,9 +13,9 @@ jobs:
     steps:
 
     - name: Setup node.js
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v3
       with:
-        node-version: '12'
+        node-version: 18
 
     - name: Install semver
       run: |
@@ -28,11 +28,6 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
 
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
