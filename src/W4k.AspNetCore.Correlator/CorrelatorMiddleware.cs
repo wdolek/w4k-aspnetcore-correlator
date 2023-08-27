@@ -48,7 +48,7 @@ namespace W4k.AspNetCore.Correlator
             // emit correlation ID back to caller in response headers
             if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
             {
-                httpContext.Response.OnStarting(() => _emitter.Emit(httpContext, correlationContext));
+                httpContext.Response.OnStarting((e) => ((ICorrelationEmitter)e).Emit(httpContext, correlationContext), _emitter);
             }
 
             var correlationId = correlationContext.CorrelationId;
