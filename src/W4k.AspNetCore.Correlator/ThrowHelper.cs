@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable 1574
 namespace W4k.AspNetCore.Correlator
 {
     /// <summary>
-    /// Helper class to support <c>netstandard</c> targets, where <see cref="System.ArgumentNullException.ThrowIfNull(object?, string?)"/> is not available.
+    /// Helper class to support <c>netstandard</c> targets, where <see cref="ArgumentNullException.ThrowIfNull(object?, string?)"/> is not available.
     /// </summary>
     internal static class ThrowHelper
     {
