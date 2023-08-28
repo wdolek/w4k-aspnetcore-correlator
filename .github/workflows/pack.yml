@@ -47,7 +47,7 @@ jobs:
       run: dotnet pack --nologo --no-build --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: w4k-aspnetcore-correlator-${{ github.event.inputs.version }}
         path: src/W4k.AspNetCore.Correlator/bin/Release/W4k.AspNetCore.Correlator.*.nupkg
