@@ -6,9 +6,6 @@ namespace W4k.AspNetCore.Correlator.Logging
 {
     internal static partial class LoggerExtensions
     {
-        private static readonly EventId NoHeaderReceivedEvent =
-            new EventId(201, nameof(NoHeaderReceived));
-
         private static readonly EventId NoCorrelationHeaderReceivedEvent =
             new EventId(202, nameof(NoCorrelationHeaderReceived));
 
@@ -23,12 +20,6 @@ namespace W4k.AspNetCore.Correlator.Logging
 
         private static readonly EventId InvalidCorrelationValueEvent =
             new EventId(206, nameof(InvalidCorrelationValue));
-
-        private static readonly Action<ILogger, Exception> LogNoHeaderReceived =
-            LoggerMessage.Define(
-                LogLevel.Warning,
-                NoHeaderReceivedEvent,
-                "No HTTP header received");
 
         private static readonly Action<ILogger, Exception> LogNoCorrelationHeaderReceived =
             LoggerMessage.Define(
@@ -59,9 +50,6 @@ namespace W4k.AspNetCore.Correlator.Logging
                 LogLevel.Warning,
                 InvalidCorrelationValueEvent,
                 "Correlation header ({Header}) value is invalid with: {Reason}");
-
-        public static void NoHeaderReceived(this ILogger logger) =>
-            LogNoHeaderReceived(logger, null!);
 
         public static void NoCorrelationHeaderReceived(this ILogger logger) =>
             LogNoCorrelationHeaderReceived(logger, null!);
