@@ -26,6 +26,10 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="W4k.AspNetCore.Correlator.UnitTests" />
+  </ItemGroup>
+   
   <PropertyGroup>
     <VersionPrefix>1.0.0</VersionPrefix>
     <Authors>Zdenek Havlin</Authors>
