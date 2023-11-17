@@ -45,19 +45,23 @@ namespace W4k.AspNetCore.Correlator.Context
                 var validationResult = _validator.Validate(headerValue);
                 if (!validationResult.IsValid)
                 {
-                    _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
-                    return new InvalidCorrelationContext(headerName, validationResult);
+                    _logger.InvalidCorrelationValue(headerName!, validationResult.Reason);
+                    return new InvalidCorrelationContext(headerName!, validationResult);
                 }
             }
 
-            _logger.CorrelationIdReceived(headerName, headerValue!);
-            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
+            _logger.CorrelationIdReceived(headerName!, headerValue!);
+            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName!);
         }
 
+#if NETSTANDARD2_0
+        private bool TryGetCorrelationHeader(IHeaderDictionary requestHeaders, out string? headerName, out string? headerValue)
+#else
         private bool TryGetCorrelationHeader(
             IHeaderDictionary requestHeaders,
             [NotNullWhen(true)] out string? headerName,
             [NotNullWhen(true)] out string? headerValue)
+#endif
         {
             if (requestHeaders.Count == 0)
             {
