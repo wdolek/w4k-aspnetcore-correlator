@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using W4k.AspNetCore.Correlator.Extensions;
-using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Options

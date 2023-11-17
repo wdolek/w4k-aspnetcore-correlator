@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Validation;
 
-namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection
 {
     /// <summary>
     /// Extensions of <see cref="ICorrelatorBuilder"/>.
     /// </summary>
-    public static class CorrelatorBuilderExtensions
+    public static class W4kCorrelatorBuilderExtensions
     {
         /// <summary>
         /// Registers correlation context factory.
@@ -117,5 +118,88 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
 
             return builder;
         }
+    }
+}
+
+namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
+{
+    /// <summary>
+    /// Extensions of <see cref="ICorrelatorBuilder"/>.
+    /// </summary>
+    public static class CorrelatorBuilderExtensions
+    {
+        /// <summary>
+        /// Registers correlation context factory.
+        /// </summary>
+        /// <remarks>
+        /// Provided implementation of correlation context factory is registered as singleton.
+        /// </remarks>
+        /// <typeparam name="T">Implementing type of correlation context factory.</typeparam>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register correlation context factory second time.</exception>
+        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        public static ICorrelatorBuilder WithCorrelationContextFactory<T>(this ICorrelatorBuilder builder)
+            where T : class, ICorrelationContextFactory =>
+            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(builder);
+
+        /// <summary>
+        /// Registers default implementation of correlation context factory.
+        /// </summary>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        public static ICorrelatorBuilder WithDefaultCorrelationContextFactory(this ICorrelatorBuilder builder) =>
+            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(builder);
+
+        /// <summary>
+        /// Registers correlation emitter.
+        /// </summary>
+        /// <remarks>
+        /// Provided implementation of correlation emitter is registered as singleton.
+        /// </remarks>
+        /// <typeparam name="T">Implementing type of correlation emitter.</typeparam>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register correlation emitter second time.</exception>
+        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        public static ICorrelatorBuilder WithCorrelationEmitter<T>(this ICorrelatorBuilder builder)
+            where T : class, ICorrelationEmitter =>
+            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationEmitter<T>(builder);
+
+        /// <summary>
+        /// Registers correlation emitter.
+        /// </summary>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
+            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationEmitter(builder);
+
+        /// <summary>
+        /// Registers correlation validator.
+        /// </summary>
+        /// <typeparam name="T">Implementing type of correlation validator.</typeparam>
+        /// <param name="builder">Correlator builder.</param>
+        /// <param name="validator">Instance of correlation validator.</param>
+        /// <returns>
+        /// Correlator builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> or <paramref name="validator"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
+        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
+            where T : ICorrelationValidator =>
+            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithValidator(builder, validator);
     }
 }

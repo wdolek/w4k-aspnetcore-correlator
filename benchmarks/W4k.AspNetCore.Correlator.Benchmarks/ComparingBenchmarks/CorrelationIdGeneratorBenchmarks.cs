@@ -10,8 +10,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
 using W4k.AspNetCore.Correlator.Benchmarks.Middleware;
-using W4k.AspNetCore.Correlator.Extensions;
-using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
