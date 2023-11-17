@@ -66,7 +66,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
                 .AddOptions<CorrelatorOptions>()
                 .Configure(configureOptions);
 
-#if NET6_0 || NETSTANDARD2_1
+#if NET6_0_OR_GREATER || NETSTANDARD2_1
             optionsBuilder.Validate(
                 options =>
                 {
