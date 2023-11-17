@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -69,7 +70,13 @@ namespace W4k.AspNetCore.Correlator.Context
                 return false;
             }
 
-            foreach (var header in _options.ReadFrom)
+#if NET6_0_OR_GREATER
+            var headerNames = CollectionsMarshal.AsSpan(_options.ReadFrom);
+#else
+            var headerNames = _options.ReadFrom;
+#endif
+
+            foreach (var header in headerNames)
             {
                 if (!requestHeaders.TryGetValue(header, out var values))
                 {

@@ -42,7 +42,7 @@ W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.get -> W4k.AspNetCor
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.set -> void
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.get -> W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.set -> void
-W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReadFrom.get -> System.Collections.Generic.ICollection<string!>!
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReadFrom.get -> System.Collections.Generic.List<string!>!
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReplaceTraceIdentifier.get -> bool
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReplaceTraceIdentifier.set -> void
 W4k.AspNetCore.Correlator.Options.HeaderPropagation
