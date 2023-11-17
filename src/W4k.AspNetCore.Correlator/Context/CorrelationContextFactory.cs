@@ -67,18 +67,21 @@ namespace W4k.AspNetCore.Correlator.Context
 
             foreach (var header in _options.ReadFrom)
             {
-                if (!requestHeaders.ContainsKey(header))
+                if (!requestHeaders.TryGetValue(header, out var values))
                 {
                     continue;
                 }
 
-                var values = requestHeaders[header];
-                if (values.Count > 0 && !string.IsNullOrEmpty(values[0]))
+                if (values.Count > 0)
                 {
-                    headerName = header;
-                    headerValue = values[0];
+                    var value = values[0];
+                    if (value is not null)
+                    {
+                        headerName = header;
+                        headerValue = value;
 
-                    return true;
+                        return true;
+                    }
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -21,6 +22,7 @@ namespace W4k.AspNetCore.Correlator
         }
 
         [Fact]
+        [SuppressMessage("Usage", "xUnit1031", Justification = "Accessing results when all tasks have been awaited.")]
         public async Task CorrelationCorrectForEachRequest()
         {
             _output.WriteLine($"'Concurrency' level: {_concurrency} (number of request tasks to be executed)");

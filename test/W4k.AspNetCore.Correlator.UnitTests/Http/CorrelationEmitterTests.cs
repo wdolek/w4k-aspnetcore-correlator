@@ -32,9 +32,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act
             var emitter = new CorrelationEmitter(options, _logger);
-            await emitter
-                .Emit(httpContext, correlationContext)
-                .ConfigureAwait(false);
+            await emitter.Emit(httpContext, correlationContext);
 
             // assert
             Assert.Contains(headerName, httpContext.Response.Headers);
@@ -54,9 +52,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act
             var emitter = new CorrelationEmitter(options, _logger);
-            await emitter
-                .Emit(httpContext, correlationContext)
-                .ConfigureAwait(false);
+            await emitter.Emit(httpContext, correlationContext);
 
             // assert
             Assert.Contains(headerName, httpContext.Response.Headers);
@@ -79,9 +75,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act
             var emitter = new CorrelationEmitter(options, _logger);
-            await emitter
-                .Emit(httpContext, correlationContext)
-                .ConfigureAwait(false);
+            await emitter.Emit(httpContext, correlationContext);
 
             // assert
             Assert.Contains(outgoingHeader, httpContext.Response.Headers);
@@ -103,9 +97,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act
             var emitter = new CorrelationEmitter(options, _logger);
-            await emitter
-                .Emit(httpContext, correlationContext)
-                .ConfigureAwait(false);
+            await emitter.Emit(httpContext, correlationContext);
 
             // assert
             Assert.DoesNotContain(incomingHeader, httpContext.Response.Headers);

@@ -46,9 +46,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
-            _ = await client
-                .GetAsync("https://www.example.com/")
-                .ConfigureAwait(false);
+            _ = await client.GetAsync("https://www.example.com/");
         }
 
         [Fact]
@@ -72,9 +70,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
-            _ = await client
-                .GetAsync("https://www.example.com/")
-                .ConfigureAwait(false);
+            _ = await client.GetAsync("https://www.example.com/");
         }
 
         [Fact]
@@ -98,9 +94,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
-            _ = await client
-                .GetAsync("https://www.example.com/")
-                .ConfigureAwait(false);
+            _ = await client.GetAsync("https://www.example.com/");
         }
 
         [Fact]
@@ -127,9 +121,7 @@ namespace W4k.AspNetCore.Correlator.Http
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
-            _ = await client
-                .GetAsync("https://www.example.com/")
-                .ConfigureAwait(false);
+            _ = await client.GetAsync("https://www.example.com/");
         }
 
         public static IEnumerable<object[]> GenerateIncomingCorrelationContext()

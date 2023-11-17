@@ -113,7 +113,7 @@ namespace W4k.AspNetCore.Correlator
                     var response = await httpClientFactory.CreateClient(BetaClientName).GetAsync("/");
                     var receivedValue = await response.Content.ReadAsStringAsync();
 
-                    context.Response.Headers.Add("Content-Type", "text/plain");
+                    context.Response.Headers.Append("Content-Type", "text/plain");
                     await context.Response.WriteAsync(receivedValue);
                 });
             }
@@ -131,7 +131,7 @@ namespace W4k.AspNetCore.Correlator
                 app.UseCorrelator();
                 app.Run(async (context) =>
                 {
-                    context.Response.Headers.Add("Content-Type", "text/plain");
+                    context.Response.Headers.Append("Content-Type", "text/plain");
 
                     var correlationContext = (RequestCorrelationContext)correlationContextAccessor.CorrelationContext;
                     await context.Response.WriteAsync($"{correlationContext.Header}:{correlationContext.CorrelationId}");
