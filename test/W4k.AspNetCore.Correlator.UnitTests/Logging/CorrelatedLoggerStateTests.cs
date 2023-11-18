@@ -2,29 +2,28 @@
 using System.Linq;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.Logging
+namespace W4k.AspNetCore.Correlator.Logging;
+
+public class CorrelatedLoggerStateTests
 {
-    public class CorrelatedLoggerStateTests
+    [Fact]
+    public void Ctor_ExpectStringValueAndStructure()
     {
-        [Fact]
-        public void Ctor_ExpectStringValueAndStructure()
-        {
-            // arrange
-            var correlationKey = "CorrelationKey";
-            var correlationId = CorrelationId.FromString("correlation_id");
+        // arrange
+        var correlationKey = "CorrelationKey";
+        var correlationId = CorrelationId.FromString("correlation_id");
 
-            // act
-            var state = new CorrelatedLoggerState("CorrelationKey", correlationId);
+        // act
+        var state = new CorrelatedLoggerState("CorrelationKey", correlationId);
 
-            // assert
-            Assert.Equal("CorrelationKey:correlation_id", state.ToString());
+        // assert
+        Assert.Equal("CorrelationKey:correlation_id", state.ToString());
 
-            Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object>>>(state);
+        Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object>>>(state);
 
-            var stateArray = state.ToArray();
-            Assert.Single(stateArray);
-            Assert.Equal(correlationKey, stateArray[0].Key);
-            Assert.Equal(correlationId, stateArray[0].Value);
-        }
+        var stateArray = state.ToArray();
+        Assert.Single(stateArray);
+        Assert.Equal(correlationKey, stateArray[0].Key);
+        Assert.Equal(correlationId, stateArray[0].Value);
     }
 }

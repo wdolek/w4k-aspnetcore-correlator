@@ -4,27 +4,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Context;
 
-namespace W4k.AspNetCore.Correlator.Startup
+namespace W4k.AspNetCore.Correlator.Startup;
+
+public class DefaultCorrelatorStartup
 {
-    public class DefaultCorrelatorStartup
+    public void ConfigureServices(IServiceCollection services)
     {
-        public void ConfigureServices(IServiceCollection services)
+        services.AddDefaultCorrelator();
+    }
+
+    public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
+    {
+        app.UseCorrelator();
+        app.Run(async (context) =>
         {
-            services.AddDefaultCorrelator();
-        }
+            var correlationId = correlationContextAccessor.CorrelationContext.CorrelationId;
 
-        public void Configure(IApplicationBuilder app, ICorrelationContextAccessor correlationContextAccessor)
-        {
-            app.UseCorrelator();
-            app.Run(async (context) =>
-            {
-                var correlationId = correlationContextAccessor.CorrelationContext.CorrelationId;
+            context.Response.Headers.Append("Content-Type", "text/plain");
+            await context.Response.WriteAsync(correlationId, context.RequestAborted);
 
-                context.Response.Headers.Append("Content-Type", "text/plain");
-                await context.Response.WriteAsync(correlationId, context.RequestAborted);
-
-                await Task.Delay(127);
-            });
-        }
+            await Task.Delay(127);
+        });
     }
 }

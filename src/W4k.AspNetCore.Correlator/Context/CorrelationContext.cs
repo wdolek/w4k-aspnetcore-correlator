@@ -1,23 +1,22 @@
-﻿namespace W4k.AspNetCore.Correlator.Context
+﻿namespace W4k.AspNetCore.Correlator.Context;
+
+/// <summary>
+/// Base correlation context classs.
+/// </summary>
+public abstract class CorrelationContext
 {
     /// <summary>
-    /// Base correlation context classs.
+    /// Initializes a new instance of the <see cref="CorrelationContext"/> class.
     /// </summary>
-    public abstract class CorrelationContext
+    /// <param name="correlationId">Correlation ID.</param>
+    protected CorrelationContext(CorrelationId correlationId)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelationContext"/> class.
-        /// </summary>
-        /// <param name="correlationId">Correlation ID.</param>
-        protected CorrelationContext(CorrelationId correlationId)
-        {
-            ThrowHelper.ThrowIfNull(correlationId, nameof(correlationId));
-            CorrelationId = correlationId;
-        }
-
-        /// <summary>
-        /// Gets correlation ID.
-        /// </summary>
-        public CorrelationId CorrelationId { get; }
+        ThrowHelper.ThrowIfNull(correlationId, nameof(correlationId));
+        CorrelationId = correlationId;
     }
+
+    /// <summary>
+    /// Gets correlation ID.
+    /// </summary>
+    public CorrelationId CorrelationId { get; }
 }

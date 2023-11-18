@@ -5,42 +5,41 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.Options
+namespace W4k.AspNetCore.Correlator.Options;
+
+public class CorrelatorOptionsTests
 {
-    public class CorrelatorOptionsTests
+    [Fact]
+    public void Invoke_WhenMisconfigured_ExpectOptionsValidationException()
     {
-        [Fact]
-        public void Invoke_WhenMisconfigured_ExpectOptionsValidationException()
+        Assert.Throws<OptionsValidationException>(() =>
         {
-            Assert.Throws<OptionsValidationException>(() =>
+            using var _ = new TestServer(CreateTestWebHostBuilder());
+        });
+    }
+
+    private static IWebHostBuilder CreateTestWebHostBuilder() =>
+        new WebHostBuilder()
+            .UseEnvironment("test")
+            .UseStartup<LocalStartup>();
+
+    private class LocalStartup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDefaultCorrelator(o =>
             {
-                using var _ = new TestServer(CreateTestWebHostBuilder());
+                o.ReadFrom.Clear();
             });
         }
 
-        private static IWebHostBuilder CreateTestWebHostBuilder() =>
-            new WebHostBuilder()
-                .UseEnvironment("test")
-                .UseStartup<LocalStartup>();
-
-        private class LocalStartup
+        public void Configure(IApplicationBuilder app)
         {
-            public void ConfigureServices(IServiceCollection services)
+            app.UseCorrelator();
+            app.Use(async (_, next) =>
             {
-                services.AddDefaultCorrelator(o =>
-                {
-                    o.ReadFrom.Clear();
-                });
-            }
-
-            public void Configure(IApplicationBuilder app)
-            {
-                app.UseCorrelator();
-                app.Use(async (_, next) =>
-                {
-                    await next();
-                });
-            }
+                await next();
+            });
         }
     }
 }
