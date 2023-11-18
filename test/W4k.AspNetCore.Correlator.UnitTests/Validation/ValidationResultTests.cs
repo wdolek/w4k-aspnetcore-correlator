@@ -6,10 +6,10 @@ namespace W4k.AspNetCore.Correlator.Validation;
 public class ValidationResultTests
 {
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Invalid_WhenEmptyReason_Throw(string emptyReason)
+    [InlineData(null, typeof(ArgumentNullException))]
+    [InlineData("", typeof(ArgumentException))]
+    public void Invalid_WhenEmptyReason_Throw(string emptyReason, Type exceptionType)
     {
-        Assert.Throws<ArgumentNullException>(() => ValidationResult.Invalid(emptyReason));
+        Assert.Throws(exceptionType, () => ValidationResult.Invalid(emptyReason));
     }
 }

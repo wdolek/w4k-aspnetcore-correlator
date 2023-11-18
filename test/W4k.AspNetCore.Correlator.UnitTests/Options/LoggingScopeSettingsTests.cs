@@ -32,11 +32,11 @@ public class LoggingScopeSettingsTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void IncludeLoggingScope_WhenEmptyInput_Throws(string input)
+    [InlineData(null, typeof(ArgumentNullException))]
+    [InlineData("", typeof(ArgumentException))]
+    public void IncludeLoggingScope_WhenEmptyInput_Throws(string input, Type exceptionType)
     {
-        Assert.Throws<ArgumentNullException>(() => LoggingScopeSettings.IncludeLoggingScope(input));
+        Assert.Throws(exceptionType, () => LoggingScopeSettings.IncludeLoggingScope(input));
     }
 
     public static IEnumerable<object[]> GenerateDefaultLoggingScopeSettings()

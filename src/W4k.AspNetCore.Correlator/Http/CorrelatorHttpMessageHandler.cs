@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,8 @@ public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
         PropagationSettings settings,
         ICorrelationContextAccessor correlationContextAccessor)
     {
-        ThrowHelper.ThrowIfNull(correlationContextAccessor, nameof(correlationContextAccessor));
+        ArgumentNullException.ThrowIfNull(correlationContextAccessor);
+
         _settings = settings;
         _correlationContextAccessor = correlationContextAccessor;
     }
@@ -34,7 +36,7 @@ public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
     /// <inheritdoc />
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        ThrowHelper.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
         HandleCorrelationIdForwarding(request.Headers);
 
         return base.SendAsync(request, cancellationToken);

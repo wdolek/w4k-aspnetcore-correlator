@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using W4k.AspNetCore.Correlator;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Http;
@@ -62,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             this IServiceCollection services,
             Action<CorrelatorOptions> configureOptions)
         {
-            ThrowHelper.ThrowIfNull(configureOptions, nameof(configureOptions));
+            ArgumentNullException.ThrowIfNull(configureOptions);
 
             services
                 .AddOptions<CorrelatorOptions>()

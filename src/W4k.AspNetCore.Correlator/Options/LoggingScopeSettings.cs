@@ -75,11 +75,7 @@ public readonly struct LoggingScopeSettings : IEquatable<LoggingScopeSettings>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="correlationKey"/> is <c>null</c> or empty string.</exception>
     public static LoggingScopeSettings IncludeLoggingScope(string correlationKey = DefaultLoggingScope)
     {
-        if (string.IsNullOrEmpty(correlationKey))
-        {
-            ThrowHelper.ThrowArgNull(nameof(correlationKey));
-        }
-
+        ThrowHelper.ThrowIfNullOrEmpty(correlationKey);
         return new LoggingScopeSettings(true, correlationKey);
     }
 

@@ -62,11 +62,7 @@ public readonly struct ValidationResult : IEquatable<ValidationResult>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="reason"/> is <c>null</c>.</exception>
     public static ValidationResult Invalid(string reason)
     {
-        if (string.IsNullOrEmpty(reason))
-        {
-            ThrowHelper.ThrowArgNull(nameof(reason));
-        }
-
+        ThrowHelper.ThrowIfNullOrEmpty(reason);
         return new ValidationResult(false, reason);
     }
 

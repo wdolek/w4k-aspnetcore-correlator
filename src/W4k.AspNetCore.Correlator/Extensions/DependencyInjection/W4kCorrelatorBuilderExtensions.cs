@@ -29,11 +29,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static ICorrelatorBuilder WithCorrelationContextFactory<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationContextFactory
         {
-            ThrowHelper.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(builder);
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationContextFactory)))
             {
-                ThrowHelper.ThrowInvalidOp(
+                ThrowHelper.ThrowInvalidOpException(
                     $"Correlation context factory ({typeof(ICorrelationContextFactory).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
@@ -68,11 +68,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static ICorrelatorBuilder WithCorrelationEmitter<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationEmitter
         {
-            ThrowHelper.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(builder);
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationEmitter)))
             {
-                ThrowHelper.ThrowInvalidOp(
+                ThrowHelper.ThrowInvalidOpException(
                     $"Correlation emitter ({typeof(ICorrelationEmitter).FullName}) has been already registered, remove default registration or ensure registration happens only once.");
             }
 
@@ -105,12 +105,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
             where T : ICorrelationValidator
         {
-            ThrowHelper.ThrowIfNull(builder, nameof(builder));
-            ThrowHelper.ThrowIfNull(validator, nameof(validator));
+            ArgumentNullException.ThrowIfNull(validator);
 
             if (builder.Services.Any(svc => svc.ServiceType == typeof(ICorrelationValidator)))
             {
-                ThrowHelper.ThrowInvalidOp(
+                ThrowHelper.ThrowInvalidOpException(
                     $"Correlation validator ({typeof(ICorrelationValidator).FullName} -> {typeof(T).FullName}) has been already registered, only one validator is supported.");
             }
 

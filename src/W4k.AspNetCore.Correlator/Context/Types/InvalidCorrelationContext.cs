@@ -1,4 +1,5 @@
-﻿using W4k.AspNetCore.Correlator.Validation;
+﻿using System;
+using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Context.Types;
 
@@ -15,7 +16,7 @@ public sealed class InvalidCorrelationContext : CorrelationContext
     public InvalidCorrelationContext(string header, ValidationResult validationResult)
         : base(CorrelationId.Empty)
     {
-        ThrowHelper.ThrowIfNull(header, nameof(header));
+        ArgumentNullException.ThrowIfNull(header);
         Header = header;
         ValidationResult = validationResult;
     }

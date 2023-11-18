@@ -42,11 +42,11 @@ public class PropagationSettingsTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void PropagateAs_WhenEmptyInput_Throws(string input)
+    [InlineData(null, typeof(ArgumentNullException))]
+    [InlineData("", typeof(ArgumentException))]
+    public void PropagateAs_WhenEmptyInput_Throws(string input, Type exceptionType)
     {
-        Assert.Throws<ArgumentNullException>(() => PropagationSettings.PropagateAs(input));
+        Assert.Throws(exceptionType, () => PropagationSettings.PropagateAs(input));
     }
 
     [Theory]

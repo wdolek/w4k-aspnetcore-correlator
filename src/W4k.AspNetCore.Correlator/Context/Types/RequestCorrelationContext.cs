@@ -1,4 +1,6 @@
-﻿namespace W4k.AspNetCore.Correlator.Context.Types;
+﻿using System;
+
+namespace W4k.AspNetCore.Correlator.Context.Types;
 
 /// <summary>
 /// Correlation context with correlation ID received from HTTP request.
@@ -13,7 +15,7 @@ public sealed class RequestCorrelationContext : CorrelationContext
     public RequestCorrelationContext(CorrelationId correlationId, string originHeader)
         : base(correlationId)
     {
-        ThrowHelper.ThrowIfNull(originHeader, nameof(originHeader));
+        ArgumentNullException.ThrowIfNull(originHeader);
         Header = originHeader;
     }
 

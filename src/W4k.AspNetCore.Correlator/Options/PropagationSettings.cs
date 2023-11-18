@@ -73,11 +73,7 @@ public readonly struct PropagationSettings : IEquatable<PropagationSettings>
     /// </returns>
     public static PropagationSettings PropagateAs(string headerName)
     {
-        if (string.IsNullOrEmpty(headerName))
-        {
-            ThrowHelper.ThrowArgNull(nameof(headerName));
-        }
-
+        ThrowHelper.ThrowIfNullOrEmpty(headerName);
         return new PropagationSettings(HeaderPropagation.UsePredefinedHeaderName, headerName);
     }
 
