@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,96 +8,97 @@ using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
 using W4k.AspNetCore.Correlator.Validation;
 
-namespace W4k.AspNetCore.Correlator.Context
+namespace W4k.AspNetCore.Correlator.Context;
+
+internal class CorrelationContextFactory : ICorrelationContextFactory
 {
-    internal class CorrelationContextFactory : ICorrelationContextFactory
+    private readonly CorrelatorOptions _options;
+    private readonly ICorrelationValidator? _validator;
+    private readonly ILogger<CorrelationContextFactory> _logger;
+
+    public CorrelationContextFactory(IOptions<CorrelatorOptions> options, ILogger<CorrelationContextFactory> logger)
+        : this(options, null, logger)
     {
-        private readonly CorrelatorOptions _options;
-        private readonly ICorrelationValidator? _validator;
-        private readonly ILogger<CorrelationContextFactory> _logger;
+    }
 
-        public CorrelationContextFactory(
-            IOptions<CorrelatorOptions> options,
-            ILogger<CorrelationContextFactory> logger)
-            : this(options, null, logger)
+    public CorrelationContextFactory(
+        IOptions<CorrelatorOptions> options,
+        ICorrelationValidator? validator,
+        ILogger<CorrelationContextFactory> logger)
+    {
+        _options = options.Value;
+        _validator = validator;
+        _logger = logger;
+    }
+
+    public CorrelationContext CreateContext(HttpContext httpContext)
+    {
+        if (!TryGetCorrelationHeader(httpContext.Request.Headers, out var headerName, out var headerValue))
         {
+            _logger.NoCorrelationHeaderReceived();
+            return HandleEmptyValue(httpContext);
         }
 
-        public CorrelationContextFactory(
-            IOptions<CorrelatorOptions> options,
-            ICorrelationValidator? validator,
-            ILogger<CorrelationContextFactory> logger)
+        if (_validator is not null)
         {
-            _options = options.Value;
-            _validator = validator;
-            _logger = logger;
+            var validationResult = _validator.Validate(headerValue);
+            if (!validationResult.IsValid)
+            {
+                _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
+                return new InvalidCorrelationContext(headerName, validationResult);
+            }
         }
 
-        public CorrelationContext CreateContext(HttpContext httpContext)
+        _logger.CorrelationIdReceived(headerName, headerValue);
+        return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
+    }
+
+    private bool TryGetCorrelationHeader(
+        IHeaderDictionary requestHeaders,
+        [NotNullWhen(true)] out string? headerName,
+        [NotNullWhen(true)] out string? headerValue)
+    {
+        if (requestHeaders.Count == 0)
         {
-            if (!TryGetCorrelationHeader(httpContext.Request.Headers, out var headerName, out var headerValue))
-            {
-                _logger.NoCorrelationHeaderReceived();
-                return HandleEmptyValue(httpContext);
-            }
-
-            if (_validator is not null)
-            {
-                var validationResult = _validator.Validate(headerValue);
-                if (!validationResult.IsValid)
-                {
-                    _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
-                    return new InvalidCorrelationContext(headerName, validationResult);
-                }
-            }
-
-            _logger.CorrelationIdReceived(headerName, headerValue!);
-            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
-        }
-
-        private bool TryGetCorrelationHeader(
-            IHeaderDictionary requestHeaders,
-            [NotNullWhen(true)] out string? headerName,
-            [NotNullWhen(true)] out string? headerValue)
-        {
-            if (requestHeaders.Count == 0)
-            {
-                headerName = headerValue = null;
-                return false;
-            }
-
-            foreach (var header in _options.ReadFrom)
-            {
-                if (!requestHeaders.ContainsKey(header))
-                {
-                    continue;
-                }
-
-                var values = requestHeaders[header];
-                if (values.Count > 0 && !string.IsNullOrEmpty(values[0]))
-                {
-                    headerName = header;
-                    headerValue = values[0];
-
-                    return true;
-                }
-            }
-
             headerName = headerValue = null;
             return false;
         }
 
-        private CorrelationContext HandleEmptyValue(HttpContext httpContext)
+        var headerNames = CollectionsMarshal.AsSpan(_options.ReadFrom);
+        foreach (var header in headerNames)
         {
-            var generateCorrelationId = _options.Factory;
-            if (generateCorrelationId is null)
+            if (!requestHeaders.TryGetValue(header, out var values))
             {
-                _logger.NoCorrelationIdFactoryConfigured();
-                return EmptyCorrelationContext.Instance;
+                continue;
             }
 
-            _logger.GeneratingCorrelationId();
-            return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+            if (values.Count > 0)
+            {
+                var value = values[0];
+                if (value is not null)
+                {
+                    headerName = header;
+                    headerValue = value;
+
+                    return true;
+                }
+            }
         }
+
+        headerName = headerValue = null;
+        return false;
+    }
+
+    private CorrelationContext HandleEmptyValue(HttpContext httpContext)
+    {
+        var generateCorrelationId = _options.Factory;
+        if (generateCorrelationId is null)
+        {
+            _logger.NoCorrelationIdFactoryConfigured();
+            return EmptyCorrelationContext.Instance;
+        }
+
+        _logger.GeneratingCorrelationId();
+        return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
     }
 }

@@ -1,4 +1,8 @@
 #nullable enable
+Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions
+Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions
+Microsoft.Extensions.DependencyInjection.W4kHttpClientBuilderExtensions
+W4k.AspNetCore.Correlator.ApplicationBuilderExtensions
 W4k.AspNetCore.Correlator.Context.CorrelationContext
 W4k.AspNetCore.Correlator.Context.CorrelationContext.CorrelationContext(W4k.AspNetCore.Correlator.CorrelationId! correlationId) -> void
 W4k.AspNetCore.Correlator.Context.CorrelationContext.CorrelationId.get -> W4k.AspNetCore.Correlator.CorrelationId!
@@ -21,11 +25,8 @@ W4k.AspNetCore.Correlator.CorrelationId.Equals(W4k.AspNetCore.Correlator.Correla
 W4k.AspNetCore.Correlator.CorrelationId.IsEmpty.get -> bool
 W4k.AspNetCore.Correlator.CorrelationId.Value.get -> string!
 W4k.AspNetCore.Correlator.Extensions.ApplicationBuilderExtensions
-W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions
-W4k.AspNetCore.Correlator.Extensions.DependencyInjection.HttpClientBuilderExtensions
 W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder
 W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder.Services.get -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions
 W4k.AspNetCore.Correlator.Http.CorrelatorHttpMessageHandler
 W4k.AspNetCore.Correlator.Http.CorrelatorHttpMessageHandler.CorrelatorHttpMessageHandler(W4k.AspNetCore.Correlator.Options.PropagationSettings settings, W4k.AspNetCore.Correlator.Context.ICorrelationContextAccessor! correlationContextAccessor) -> void
 W4k.AspNetCore.Correlator.Http.HttpHeaders
@@ -41,7 +42,7 @@ W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.get -> W4k.AspNetCor
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.set -> void
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.get -> W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.set -> void
-W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReadFrom.get -> System.Collections.Generic.ICollection<string!>!
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReadFrom.get -> System.Collections.Generic.List<string!>!
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReplaceTraceIdentifier.get -> bool
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReplaceTraceIdentifier.set -> void
 W4k.AspNetCore.Correlator.Options.HeaderPropagation
@@ -77,22 +78,23 @@ override W4k.AspNetCore.Correlator.Options.PropagationSettings.Equals(object? ob
 override W4k.AspNetCore.Correlator.Options.PropagationSettings.GetHashCode() -> int
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.Equals(object? obj) -> bool
 override W4k.AspNetCore.Correlator.Validation.ValidationResult.GetHashCode() -> int
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationEmitter<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationEmitter(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithValidator<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder, T validator) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<W4k.AspNetCore.Correlator.Options.CorrelatorOptions!>! configureOptions) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<W4k.AspNetCore.Correlator.Options.CorrelatorOptions!>! configureOptions) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kHttpClientBuilderExtensions.WithCorrelation(this Microsoft.Extensions.DependencyInjection.IHttpClientBuilder! builder) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
+static Microsoft.Extensions.DependencyInjection.W4kHttpClientBuilderExtensions.WithCorrelation(this Microsoft.Extensions.DependencyInjection.IHttpClientBuilder! builder, W4k.AspNetCore.Correlator.Options.PropagationSettings propagationSettings) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
+static W4k.AspNetCore.Correlator.ApplicationBuilderExtensions.UseCorrelator(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
 static W4k.AspNetCore.Correlator.CorrelationId.FromString(string? value) -> W4k.AspNetCore.Correlator.CorrelationId!
 static W4k.AspNetCore.Correlator.CorrelationId.implicit operator string!(W4k.AspNetCore.Correlator.CorrelationId! correlationId) -> string!
 static W4k.AspNetCore.Correlator.CorrelationId.operator !=(W4k.AspNetCore.Correlator.CorrelationId? left, W4k.AspNetCore.Correlator.CorrelationId? right) -> bool
 static W4k.AspNetCore.Correlator.CorrelationId.operator ==(W4k.AspNetCore.Correlator.CorrelationId? left, W4k.AspNetCore.Correlator.CorrelationId? right) -> bool
 static W4k.AspNetCore.Correlator.Extensions.ApplicationBuilderExtensions.UseCorrelator(this Microsoft.AspNetCore.Builder.IApplicationBuilder! app) -> Microsoft.AspNetCore.Builder.IApplicationBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithCorrelationEmitter<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithDefaultCorrelationEmitter(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithValidator<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder, T validator) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.HttpClientBuilderExtensions.WithCorrelation(this Microsoft.Extensions.DependencyInjection.IHttpClientBuilder! builder) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.HttpClientBuilderExtensions.WithCorrelation(this Microsoft.Extensions.DependencyInjection.IHttpClientBuilder! builder, W4k.AspNetCore.Correlator.Options.PropagationSettings propagationSettings) -> Microsoft.Extensions.DependencyInjection.IHttpClientBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions.AddCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions.AddCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<W4k.AspNetCore.Correlator.Options.CorrelatorOptions!>! configureOptions) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions.AddDefaultCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
-static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions.AddDefaultCorrelator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, System.Action<W4k.AspNetCore.Correlator.Options.CorrelatorOptions!>! configureOptions) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
 static W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.IncludeLoggingScope(string! correlationKey = "Correlation") -> W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 static W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.operator !=(W4k.AspNetCore.Correlator.Options.LoggingScopeSettings left, W4k.AspNetCore.Correlator.Options.LoggingScopeSettings right) -> bool
 static W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.operator ==(W4k.AspNetCore.Correlator.Options.LoggingScopeSettings left, W4k.AspNetCore.Correlator.Options.LoggingScopeSettings right) -> bool

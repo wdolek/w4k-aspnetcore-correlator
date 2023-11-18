@@ -1,16 +1,15 @@
-﻿using System;
+using System;
 using Xunit;
 
-namespace W4k.AspNetCore.Correlator.Validation
+namespace W4k.AspNetCore.Correlator.Validation;
+
+public class ValidationResultTests
 {
-    public class ValidationResultTests
+    [Theory]
+    [InlineData(null, typeof(ArgumentNullException))]
+    [InlineData("", typeof(ArgumentException))]
+    public void Invalid_WhenEmptyReason_Throw(string emptyReason, Type exceptionType)
     {
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public void Invalid_WhenEmptyReason_Throw(string emptyReason)
-        {
-            Assert.Throws<ArgumentNullException>(() => ValidationResult.Invalid(emptyReason));
-        }
+        Assert.Throws(exceptionType, () => ValidationResult.Invalid(emptyReason));
     }
 }

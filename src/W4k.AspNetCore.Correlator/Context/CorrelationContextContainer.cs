@@ -3,32 +3,31 @@ using System.Threading;
 using Microsoft.AspNetCore.Http;
 using W4k.AspNetCore.Correlator.Context.Types;
 
-namespace W4k.AspNetCore.Correlator.Context
+namespace W4k.AspNetCore.Correlator.Context;
+
+internal class CorrelationContextContainer
+    : ICorrelationScopeFactory, ICorrelationContextAccessor, IDisposable
 {
-    internal class CorrelationContextContainer
-        : ICorrelationScopeFactory, ICorrelationContextAccessor, IDisposable
+    private static readonly AsyncLocal<CorrelationContext?> LocalContext = new();
+
+    private readonly ICorrelationContextFactory _correlationContextFactory;
+
+    public CorrelationContextContainer(ICorrelationContextFactory correlationContextFactory)
     {
-        private static readonly AsyncLocal<CorrelationContext?> LocalContext = new AsyncLocal<CorrelationContext?>();
+        _correlationContextFactory = correlationContextFactory;
+    }
 
-        private readonly ICorrelationContextFactory _correlationContextFactory;
+    public CorrelationContext CorrelationContext => LocalContext.Value ?? EmptyCorrelationContext.Instance;
 
-        public CorrelationContextContainer(ICorrelationContextFactory correlationContextFactory)
-        {
-            _correlationContextFactory = correlationContextFactory;
-        }
+    public ICorrelationScope CreateScope(HttpContext httpContext)
+    {
+        LocalContext.Value = _correlationContextFactory.CreateContext(httpContext);
 
-        public CorrelationContext CorrelationContext => LocalContext.Value ?? EmptyCorrelationContext.Instance;
+        return new CorrelationScope(this);
+    }
 
-        public ICorrelationScope CreateScope(HttpContext httpContext)
-        {
-            LocalContext.Value = _correlationContextFactory.CreateContext(httpContext);
-
-            return new CorrelationScope(this);
-        }
-
-        public void Dispose()
-        {
-            LocalContext.Value = null;
-        }
+    public void Dispose()
+    {
+        LocalContext.Value = null;
     }
 }

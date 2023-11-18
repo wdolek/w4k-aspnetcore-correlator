@@ -1,14 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
+namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
+
+internal class CorrelatorBuilder : ICorrelatorBuilder
 {
-    internal class CorrelatorBuilder : ICorrelatorBuilder
+    public CorrelatorBuilder(IServiceCollection services)
     {
-        public CorrelatorBuilder(IServiceCollection services)
-        {
-            Services = services;
-        }
-
-        public IServiceCollection Services { get; }
+        Services = services;
     }
+
+    public IServiceCollection Services { get; }
 }

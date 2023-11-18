@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable 1574
-namespace W4k.AspNetCore.Correlator
+namespace W4k.AspNetCore.Correlator;
+
+/// <summary>
+/// Helper class to support older .NET targets, where <see cref="ArgumentException.ThrowIfNullOrEmpty"/> is not available.
+/// </summary>
+internal static class ThrowHelper
 {
-    /// <summary>
-    /// Helper class to support <c>netstandard</c> targets, where <see cref="ArgumentNullException.ThrowIfNull(object?, string?)"/> is not available.
-    /// </summary>
-    internal static class ThrowHelper
+    public static void ThrowIfNullOrEmpty(string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
-#if NET6_0_OR_GREATER
-        [DoesNotReturn]
-#endif
-        public static void ThrowInvalidOp(string message) => throw new InvalidOperationException(message);
-
-#if NET6_0_OR_GREATER
-        [DoesNotReturn]
-#endif
-        public static void ThrowArgNull(string? paramName) => throw new ArgumentNullException(paramName);
-
-        public static void ThrowIfNull(object? argument, string? paramName = null)
+        if (string.IsNullOrEmpty(argument))
         {
-            if (argument is null)
-            {
-                ThrowArgNull(paramName);
-            }
+            ThrowNullOrEmptyException(argument, paramName);
         }
+    }
+
+    [DoesNotReturn]
+    public static void ThrowInvalidOpException(string message) =>
+        throw new InvalidOperationException(message);
+
+    [DoesNotReturn]
+    public static void ThrowNullOrEmptyException(string? argument, string? paramName)
+    {
+        ArgumentNullException.ThrowIfNull(argument);
+        throw new ArgumentException("The value cannot be an empty string.", paramName);
     }
 }

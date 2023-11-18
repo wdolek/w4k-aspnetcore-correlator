@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,76 +8,74 @@ using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http.Extensions;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.Http
+namespace W4k.AspNetCore.Correlator.Http;
+
+/// <summary>
+/// Delegating HTTP message handler handling correlation ID in outgoing request.
+/// </summary>
+public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
 {
+    private readonly PropagationSettings _settings;
+    private readonly ICorrelationContextAccessor _correlationContextAccessor;
+
     /// <summary>
-    /// Delegating HTTP message handler handling correlation ID in outgoing request.
+    /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
     /// </summary>
-    public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
+    /// <param name="settings">Propagation settings.</param>
+    /// <param name="correlationContextAccessor">Correlation context accessor.</param>
+    public CorrelatorHttpMessageHandler(
+        PropagationSettings settings,
+        ICorrelationContextAccessor correlationContextAccessor)
     {
-        private readonly PropagationSettings _settings;
-        private readonly ICorrelationContextAccessor _correlationContextAccessor;
+        ArgumentNullException.ThrowIfNull(correlationContextAccessor);
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CorrelatorHttpMessageHandler"/> class.
-        /// </summary>
-        /// <param name="settings">Propagation settings.</param>
-        /// <param name="correlationContextAccessor">Correlation context accessor.</param>
-        public CorrelatorHttpMessageHandler(
-            PropagationSettings settings,
-            ICorrelationContextAccessor correlationContextAccessor)
+        _settings = settings;
+        _correlationContextAccessor = correlationContextAccessor;
+    }
+
+    /// <inheritdoc />
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        HandleCorrelationIdForwarding(request.Headers);
+
+        return base.SendAsync(request, cancellationToken);
+    }
+
+    /// <summary>
+    /// Handles correlation ID forwarding.
+    /// </summary>
+    /// <param name="requestHeaders">HTTP request headers.</param>
+    /// <returns>
+    /// HTTP request headers containing correlation ID (or unchanged, if forwarding not set).
+    /// </returns>
+    private HttpRequestHeaders HandleCorrelationIdForwarding(HttpRequestHeaders requestHeaders)
+    {
+        if (_settings.Settings == HeaderPropagation.NoPropagation)
         {
-            ThrowHelper.ThrowIfNull(correlationContextAccessor, nameof(correlationContextAccessor));
-            _settings = settings;
-            _correlationContextAccessor = correlationContextAccessor;
+            return requestHeaders;
         }
 
-        /// <inheritdoc />
-        protected override Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        var correlationContext = _correlationContextAccessor.CorrelationContext;
+
+        return (_settings.Settings, correlationContext) switch
         {
-            ThrowHelper.ThrowIfNull(request, nameof(request));
-            HandleCorrelationIdForwarding(request.Headers);
+            (HeaderPropagation.UsePredefinedHeaderName, _) =>
+                requestHeaders.AddHeaderIfNotSet(
+                    _settings.HeaderName,
+                    correlationContext.CorrelationId),
 
-            return base.SendAsync(request, cancellationToken);
-        }
+            (HeaderPropagation.KeepIncomingHeaderName, RequestCorrelationContext requestCorrelationContext) =>
+                requestHeaders.AddHeaderIfNotSet(
+                    requestCorrelationContext.Header,
+                    requestCorrelationContext.CorrelationId),
 
-        /// <summary>
-        /// Handles correlation ID forwarding.
-        /// </summary>
-        /// <param name="requestHeaders">HTTP request headers.</param>
-        /// <returns>
-        /// HTTP request headers containing correlation ID (or unchanged, if forwarding not set).
-        /// </returns>
-        private HttpRequestHeaders HandleCorrelationIdForwarding(HttpRequestHeaders requestHeaders)
-        {
-            if (_settings.Settings == HeaderPropagation.NoPropagation)
-            {
-                return requestHeaders;
-            }
+            (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext generatedCorrelationContext) =>
+                requestHeaders.AddHeaderIfNotSet(
+                    _settings.HeaderName,
+                    generatedCorrelationContext.CorrelationId),
 
-            var correlationContext = _correlationContextAccessor.CorrelationContext;
-
-            return (_settings.Settings, correlationContext) switch
-            {
-                (HeaderPropagation.UsePredefinedHeaderName, _) =>
-                    requestHeaders.AddHeaderIfNotSet(
-                        _settings.HeaderName,
-                        correlationContext.CorrelationId),
-
-                (HeaderPropagation.KeepIncomingHeaderName, RequestCorrelationContext requestCorrelationContext) =>
-                    requestHeaders.AddHeaderIfNotSet(
-                        requestCorrelationContext.Header,
-                        requestCorrelationContext.CorrelationId),
-
-                (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext generatedCorrelationContext) =>
-                    requestHeaders.AddHeaderIfNotSet(
-                        _settings.HeaderName,
-                        generatedCorrelationContext.CorrelationId),
-
-                _ => requestHeaders,
-            };
-        }
+            _ => requestHeaders,
+        };
     }
 }

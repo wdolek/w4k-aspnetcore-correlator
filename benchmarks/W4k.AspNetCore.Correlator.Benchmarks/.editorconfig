@@ -1,2 +1,2 @@
 [*.{cs,vb}]
-dotnet_diagnostic.CA1063.severity = none
+dotnet_diagnostic.CA1063.severity = none # CA1063: Implement IDisposable correctly

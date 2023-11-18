@@ -19,12 +19,12 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Setup .NET 6.0
+    - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8
 
     - name: Install dependencies
       run: dotnet restore
@@ -35,4 +35,4 @@ jobs:
     - name: Test
       env:
         DOTNET_ROLL_FORWARD: Major
-      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net6.0
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net8.0
