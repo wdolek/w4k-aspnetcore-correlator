@@ -14,7 +14,6 @@
 
   <PropertyGroup>
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 

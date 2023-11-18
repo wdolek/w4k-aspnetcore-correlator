@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Implementing type of correlation context factory.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation context factory second time.</exception>
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         public static ICorrelatorBuilder WithDefaultCorrelationContextFactory(this ICorrelatorBuilder builder) =>
             builder.WithCorrelationContextFactory<CorrelationContextFactory>();
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparam name="T">Implementing type of correlation emitter.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation emitter second time.</exception>
@@ -86,7 +86,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
             builder.WithCorrelationEmitter<CorrelationEmitter>();
@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="builder">Correlator builder.</param>
         /// <param name="validator">Instance of correlation validator.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> or <paramref name="validator"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
@@ -136,7 +136,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <typeparam name="T">Implementing type of correlation context factory.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation context factory second time.</exception>
@@ -150,7 +150,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
         public static ICorrelatorBuilder WithDefaultCorrelationContextFactory(this ICorrelatorBuilder builder) =>
@@ -165,7 +165,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <typeparam name="T">Implementing type of correlation emitter.</typeparam>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation emitter second time.</exception>
@@ -179,7 +179,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </summary>
         /// <param name="builder">Correlator builder.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
         public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
@@ -192,7 +192,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <param name="builder">Correlator builder.</param>
         /// <param name="validator">Instance of correlation validator.</param>
         /// <returns>
-        /// Correlator builder.
+        /// Same instance of Correlator builder.
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> or <paramref name="validator"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
