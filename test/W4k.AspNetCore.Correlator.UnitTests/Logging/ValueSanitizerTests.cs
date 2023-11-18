@@ -30,16 +30,18 @@ public class ValueSanitizerTests
         Assert.Same(value, sanitizedValue);
     }
 
-    [Fact]
-    public void Sanitize_ExpectTruncatedValue()
+    [Theory]
+    [InlineData('a')]
+    [InlineData('@')]
+    public void Sanitize_ExpectTruncatedValue(char c)
     {
         // arrange
-        var value = new string('a', (8 * 1024) + 1);
+        var value = new string(c, (256) + 1);
 
         // act
         var sanitizedValue = ValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Equal(8 * 1024, sanitizedValue.Length);
+        Assert.Equal(256, sanitizedValue.Length);
     }
 }

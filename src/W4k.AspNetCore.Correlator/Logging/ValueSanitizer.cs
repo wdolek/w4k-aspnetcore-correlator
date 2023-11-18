@@ -5,42 +5,48 @@ namespace W4k.AspNetCore.Correlator.Logging;
 
 internal static class ValueSanitizer
 {
-    // let's be generous here: despite HTTP specs don't limit header value length, 8KiB should be more than enough
-    private const int MaxValueLength = 8 * 1024;
+    // let's be generous here: 256 chars should be enough for correlation ID; apart of that, we do sanitization to avoid log injection
+    private const int MaxValueLength = 256;
     private const char SanitizedChar = '_';
 
-    [SkipLocalsInit]
     public static string Sanitize(string value)
     {
-        var wasSanitized = false;
-        var maxValueLength = value.Length;
-        if (maxValueLength > MaxValueLength)
-        {
-            maxValueLength = MaxValueLength;
-            wasSanitized = true;
-        }
-
+        var maxValueLength = Math.Min(value.Length, MaxValueLength);
         var source = value.AsSpan(0, maxValueLength);
-        Span<char> destination = stackalloc char[maxValueLength];
 
         for (int i = 0; i < maxValueLength; i++)
         {
             char currentChar = source[i];
-            if (char.IsLetterOrDigit(currentChar))
+            if (!char.IsLetterOrDigit(currentChar))
             {
-                destination[i] = currentChar;
-            }
-            else
-            {
-                destination[i] = SanitizedChar;
-                wasSanitized = true;
+                // break early, sanitize input value
+                return SanitizeWithAllocation(source, maxValueLength);
             }
         }
 
-        // if there was no sanitization, we can return original value to avoid allocation
-        // (stack-allocated memory is wasted in such case, but it's better than new heap allocation)
-        return wasSanitized
-            ? destination.ToString()
-            : value;
+        // no need for sanitization, but we need to truncate value
+        if (value.Length > MaxValueLength)
+        {
+            return source.ToString();
+        }
+
+        // no need for sanitization
+        return value;
+    }
+
+    [SkipLocalsInit]
+    private static string SanitizeWithAllocation(ReadOnlySpan<char> source, int maxValueLength)
+    {
+        Span<char> destination = stackalloc char[maxValueLength];
+
+        for (int i = 0; i < maxValueLength; i++)
+        {
+            var currentChar = source[i];
+            destination[i] = char.IsLetterOrDigit(currentChar)
+                ? currentChar
+                : SanitizedChar;
+        }
+
+        return destination.ToString();
     }
 }
