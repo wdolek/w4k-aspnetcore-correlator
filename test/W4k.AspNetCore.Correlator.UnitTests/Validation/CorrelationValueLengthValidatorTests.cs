@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Validation;
 

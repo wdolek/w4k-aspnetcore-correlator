@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +39,7 @@ public class ConfiguredCorrelatorStartup
 
             context.Response.Headers.Append("Content-Type", "text/plain");
             await context.Response.WriteAsync(correlationId, context.RequestAborted);
-                
+
             await Task.Delay(127);
         });
     }

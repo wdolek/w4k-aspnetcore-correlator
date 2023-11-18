@@ -1,4 +1,4 @@
-﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks;

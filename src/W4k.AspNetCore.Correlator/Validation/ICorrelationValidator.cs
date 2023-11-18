@@ -1,4 +1,4 @@
-﻿namespace W4k.AspNetCore.Correlator.Validation;
+namespace W4k.AspNetCore.Correlator.Validation;
 
 /// <summary>
 /// Correlation ID value validator.

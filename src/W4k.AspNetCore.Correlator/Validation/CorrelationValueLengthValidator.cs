@@ -1,4 +1,4 @@
-﻿namespace W4k.AspNetCore.Correlator.Validation;
+namespace W4k.AspNetCore.Correlator.Validation;
 
 /// <summary>
 /// Correlation value length validator: only criteria for valid correlation ID is its length.

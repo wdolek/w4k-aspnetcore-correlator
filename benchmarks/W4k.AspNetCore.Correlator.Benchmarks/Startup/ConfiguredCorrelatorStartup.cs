@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Benchmarks.Middleware;
 using W4k.AspNetCore.Correlator.Options;

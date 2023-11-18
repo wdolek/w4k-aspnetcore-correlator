@@ -1,4 +1,4 @@
-﻿namespace W4k.AspNetCore.Correlator.Context.Types;
+namespace W4k.AspNetCore.Correlator.Context.Types;
 
 /// <summary>
 /// Correlation context with generated correlation ID.

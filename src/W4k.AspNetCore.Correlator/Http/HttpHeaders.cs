@@ -1,4 +1,4 @@
-﻿namespace W4k.AspNetCore.Correlator.Http;
+namespace W4k.AspNetCore.Correlator.Http;
 
 /// <summary>
 /// HTTP header names.

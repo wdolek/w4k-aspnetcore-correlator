@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace W4k.AspNetCore.Correlator;
 

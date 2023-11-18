@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using W4k.AspNetCore.Correlator.Http;
 using Xunit;

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Http.Extensions;
