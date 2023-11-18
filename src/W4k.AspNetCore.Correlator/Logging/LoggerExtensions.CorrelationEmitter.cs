@@ -6,7 +6,7 @@ namespace W4k.AspNetCore.Correlator.Logging;
 internal static partial class LoggerExtensions
 {
     private static readonly EventId WritingCorrelatedResponseEvent =
-        new EventId(301, nameof(LoggerExtensions.WritingCorrelatedResponse));
+        new EventId(301, nameof(WritingCorrelatedResponse));
 
     private static readonly Action<ILogger, Exception> LogWritingCorrelatedResponse =
         LoggerMessage.Define(

@@ -98,7 +98,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
         public static ICorrelatorBuilder AddDefaultCorrelator(this IServiceCollection services) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(services);
+            W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(services);
 
         /// <summary>
         /// Adds default components required by Correlator to services collection.
@@ -112,7 +112,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         public static ICorrelatorBuilder AddDefaultCorrelator(
             this IServiceCollection services,
             Action<CorrelatorOptions> configureOptions) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(services, configureOptions);
+            W4kCorrelatorServiceCollectionExtensions.AddDefaultCorrelator(services, configureOptions);
 
         /// <summary>
         /// Adds components required by Correlator to services collection.
@@ -123,7 +123,7 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
         public static ICorrelatorBuilder AddCorrelator(this IServiceCollection services) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddCorrelator(services);
+            W4kCorrelatorServiceCollectionExtensions.AddCorrelator(services);
 
         /// <summary>
         /// Adds components required by Correlator to services collection.
@@ -136,6 +136,6 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="configureOptions"/> is <c>null</c>.</exception>
         [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
         public static ICorrelatorBuilder AddCorrelator(this IServiceCollection services, Action<CorrelatorOptions> configureOptions) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorServiceCollectionExtensions.AddCorrelator(services, configureOptions);
+            W4kCorrelatorServiceCollectionExtensions.AddCorrelator(services, configureOptions);
     }
 }
