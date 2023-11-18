@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 namespace W4k.AspNetCore.Correlator.Http.Extensions
@@ -15,10 +16,7 @@ namespace W4k.AspNetCore.Correlator.Http.Extensions
                 return headers;
             }
 
-            if (!headers.ContainsKey(headerName))
-            {
-                headers.Add(headerName, new StringValues(value));
-            }
+            headers.TryAdd(headerName, new StringValues(value));
 
             return headers;
         }

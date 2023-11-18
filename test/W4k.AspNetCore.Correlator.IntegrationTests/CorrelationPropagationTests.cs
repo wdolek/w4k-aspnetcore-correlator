@@ -81,8 +81,8 @@ namespace W4k.AspNetCore.Correlator
 
         public void Dispose()
         {
-            _hostAlpha?.Dispose();
-            _hostBeta?.Dispose();
+            _hostAlpha.Dispose();
+            _hostBeta.Dispose();
         }
 
         private class StartupAlpha

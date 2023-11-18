@@ -27,7 +27,7 @@ namespace W4k.AspNetCore.Correlator.Example.NetCore60.Controllers
                 ? "<correlation missing>"
                 : correlationId;
 
-            _logger.LogInformation("Request almost finished, correlation: {correlationId}", correlationId);
+            _logger.LogInformation("Request almost finished, correlation: {CorrelationId}", correlationId);
 
             return Ok(result);
         }

@@ -34,8 +34,8 @@ namespace W4k.AspNetCore.Correlator
         {
             if (disposing)
             {
-                Client?.Dispose();
-                _server?.Dispose();
+                Client.Dispose();
+                _server.Dispose();
             }
         }
 

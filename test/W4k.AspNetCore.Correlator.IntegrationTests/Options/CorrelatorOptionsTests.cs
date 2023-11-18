@@ -36,7 +36,7 @@ namespace W4k.AspNetCore.Correlator.Options
             public void Configure(IApplicationBuilder app)
             {
                 app.UseCorrelator();
-                app.Use(async (context, next) =>
+                app.Use(async (_, next) =>
                 {
                     await next();
                 });

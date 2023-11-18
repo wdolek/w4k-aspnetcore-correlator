@@ -347,6 +347,7 @@ dotnet_diagnostic.CA2241.severity = warning
 dotnet_diagnostic.CA2242.severity = warning
 dotnet_diagnostic.IDE0003.severity = none
 dotnet_diagnostic.SA1101.severity = none
+dotnet_diagnostic.SA1129.severity = none # SA1129: Do not use default value type constructor
 dotnet_diagnostic.SA1200.severity = none
 dotnet_diagnostic.SA1305.severity = warning
 dotnet_diagnostic.SA1309.severity = none

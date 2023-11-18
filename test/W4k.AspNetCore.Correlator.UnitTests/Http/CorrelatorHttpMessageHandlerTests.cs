@@ -28,9 +28,8 @@ namespace W4k.AspNetCore.Correlator.Http
         public async Task Forward_PropagateAsPredefined_ExpectPredefinedHeader(CorrelationContext correlationContext)
         {
             // arrange
-            var incomingHeader = HttpHeaders.RequestId;
-            var outgoindHeader = "X-MyRequest-Id";
-            var propagationSettings = PropagationSettings.PropagateAs(outgoindHeader);
+            var outgoingHeader = "X-MyRequest-Id";
+            var propagationSettings = PropagationSettings.PropagateAs(outgoingHeader);
 
             _correlationContextAccessor
                 .Setup(a => a.CorrelationContext)
@@ -38,8 +37,8 @@ namespace W4k.AspNetCore.Correlator.Http
 
             void AssertRequest(HttpRequestMessage r)
             {
-                Assert.True(r.Headers.Contains(outgoindHeader));
-                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(outgoindHeader));
+                Assert.True(r.Headers.Contains(outgoingHeader));
+                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(outgoingHeader));
             }
 
             var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
@@ -60,17 +59,18 @@ namespace W4k.AspNetCore.Correlator.Http
                 .Setup(a => a.CorrelationContext)
                 .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
 
-            void AssertRequest(HttpRequestMessage r)
-            {
-                Assert.True(r.Headers.Contains(incomingHeader));
-                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
-            };
-
             var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
             _ = await client.GetAsync("https://www.example.com/");
+            return;
+
+            void AssertRequest(HttpRequestMessage r)
+            {
+                Assert.True(r.Headers.Contains(incomingHeader));
+                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
+            }
         }
 
         [Fact]
@@ -84,17 +84,18 @@ namespace W4k.AspNetCore.Correlator.Http
                 .Setup(a => a.CorrelationContext)
                 .Returns(new GeneratedCorrelationContext(TestCorrelationId));
 
-            void AssertRequest(HttpRequestMessage r)
-            {
-                Assert.True(r.Headers.Contains(incomingHeader));
-                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
-            };
-
             var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
 
             // act & assert (via test delegating handler)
             var client = new HttpClient(handler);
             _ = await client.GetAsync("https://www.example.com/");
+            return;
+
+            void AssertRequest(HttpRequestMessage r)
+            {
+                Assert.True(r.Headers.Contains(incomingHeader));
+                Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
+            }
         }
 
         [Fact]
@@ -108,6 +109,13 @@ namespace W4k.AspNetCore.Correlator.Http
                 .Setup(a => a.CorrelationContext)
                 .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
 
+            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
+
+            // act & assert (via test delegating handler)
+            var client = new HttpClient(handler);
+            _ = await client.GetAsync("https://www.example.com/");
+            return;
+
             void AssertRequest(HttpRequestMessage r)
             {
                 foreach (var header in r.Headers)
@@ -115,13 +123,7 @@ namespace W4k.AspNetCore.Correlator.Http
                     Assert.NotEqual(incomingHeader, header.Key);
                     Assert.DoesNotContain(TestCorrelationId.Value, header.Value);
                 }
-            };
-
-            var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
-
-            // act & assert (via test delegating handler)
-            var client = new HttpClient(handler);
-            _ = await client.GetAsync("https://www.example.com/");
+            }
         }
 
         public static IEnumerable<object[]> GenerateIncomingCorrelationContext()

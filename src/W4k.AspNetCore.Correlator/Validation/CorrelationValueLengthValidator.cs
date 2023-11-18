@@ -27,7 +27,7 @@
                 return ValidationResult.Invalid("Value is null or empty");
             }
 
-            return value!.Length <= _length
+            return value.Length <= _length
                 ? ValidationResult.Valid
                 : ValidationResult.Invalid($"Received value of length: {value.Length}, expecting max length {_length}");
         }

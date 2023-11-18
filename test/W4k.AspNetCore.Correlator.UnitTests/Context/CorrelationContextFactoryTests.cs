@@ -111,7 +111,7 @@ namespace W4k.AspNetCore.Correlator.Context
             var validator = new Mock<ICorrelationValidator>();
 
             validator
-                .Setup(v => v.Validate(It.Is<string>(v => string.Equals(correlationId, v))))
+                .Setup(v => v.Validate(It.Is<string>(val => string.Equals(correlationId, val))))
                 .Returns(validationResult);
 
             // act
@@ -123,7 +123,7 @@ namespace W4k.AspNetCore.Correlator.Context
             var correlationContext = factory.CreateContext(httpContext);
 
             // assert
-            var requestCorrelationContext = Assert.IsType<RequestCorrelationContext>(correlationContext);
+            Assert.IsType<RequestCorrelationContext>(correlationContext);
             Assert.Equal(correlationId, correlationContext.CorrelationId.Value);
         }
 
@@ -147,7 +147,7 @@ namespace W4k.AspNetCore.Correlator.Context
             var validator = new Mock<ICorrelationValidator>();
 
             validator
-                .Setup(v => v.Validate(It.Is<string>(v => string.Equals(correlationId, v))))
+                .Setup(v => v.Validate(It.Is<string>(val => string.Equals(correlationId, val))))
                 .Returns(validationResult);
 
             // act

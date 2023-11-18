@@ -13,14 +13,14 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <summary>
         /// Gets collection of header names to be used when reading correlation ID from request headers.
         /// </summary>
-        public List<string> ReadFrom { get; } =
-            [
-                HttpHeaders.CorrelationId,
-                HttpHeaders.RequestId,
-                HttpHeaders.AspNetRequestId,
-            ];
+        public List<string> ReadFrom { get; } = new()
+        {
+            HttpHeaders.CorrelationId,
+            HttpHeaders.RequestId,
+            HttpHeaders.AspNetRequestId,
+        };
 
-        /// <summary>
+    /// <summary>
         /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
         /// </summary>
         public Func<HttpContext, CorrelationId>? Factory { get; set; } =

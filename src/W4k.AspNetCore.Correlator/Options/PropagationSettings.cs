@@ -74,7 +74,7 @@ namespace W4k.AspNetCore.Correlator.Options
         /// </returns>
         public static PropagationSettings PropagateAs(string headerName)
         {
-            if (string.IsNullOrWhiteSpace(headerName))
+            if (string.IsNullOrEmpty(headerName))
             {
                 ThrowHelper.ThrowArgNull(nameof(headerName));
             }
@@ -95,7 +95,7 @@ namespace W4k.AspNetCore.Correlator.Options
                 ? HttpHeaders.CorrelationId
                 : defaultHeaderName;
 
-            return new PropagationSettings(HeaderPropagation.KeepIncomingHeaderName, defaultHeaderName!);
+            return new PropagationSettings(HeaderPropagation.KeepIncomingHeaderName, defaultHeaderName);
         }
 
         /// <inheritdoc />
