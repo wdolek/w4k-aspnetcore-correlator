@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.Logging;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -54,8 +54,15 @@ internal static partial class LoggerExtensions
     public static void NoCorrelationHeaderReceived(this ILogger logger) =>
         LogNoCorrelationHeaderReceived(logger, null!);
 
-    public static void CorrelationIdReceived(this ILogger logger, string header, string value) =>
-        LogCorrelationHeaderReceived(logger, header, value, null!);
+    public static void CorrelationIdReceived(this ILogger logger, string header, string value)
+    {
+        if (!logger.IsEnabled(LogLevel.Information))
+        {
+            return;
+        }
+
+        LogCorrelationHeaderReceived(logger, header, ValueSanitizer.Sanitize(value), null!);
+    }
 
     public static void NoCorrelationIdFactoryConfigured(this ILogger logger) =>
         LogNoCorrelationIdFactoryConfigured(logger, null!);

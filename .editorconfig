@@ -383,6 +383,7 @@ dotnet_naming_style.s_camelcase.capitalization = camel_case
 
 # .NET diagnostics
 
+dotnet_diagnostic.IDE0057.severity = none # IDE0057: Use range operator
 dotnet_diagnostic.SA1101.severity = none # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1129.severity = none # SA1129: Do not use default value type constructor
 dotnet_diagnostic.SA1309.severity = none # SA1309: Field '_...' should not begin with an underscore
@@ -393,4 +394,3 @@ dotnet_diagnostic.SA1600.severity = none # SA1600: Elements should be documented
 dotnet_diagnostic.SA1601.severity = none # SA1601: Partial elements should be documented
 dotnet_diagnostic.SA1633.severity = none # SA1633: The file header is missing or not located at the top of the file
 dotnet_diagnostic.VSTHRD200.severity = none # VSTHRD200: Use "Async" suffix in names of methods that return an awaitable type
-
