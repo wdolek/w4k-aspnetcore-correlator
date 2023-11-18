@@ -9,7 +9,7 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v4
-      
+
     - name: Setup .NET 8.0
       uses: actions/setup-dotnet@v3
       with:
@@ -19,7 +19,7 @@ jobs:
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
     - name: Test coverage
-      run: dotnet test --nologo -f net6.0 /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/"
+      run: dotnet test --nologo -f net8.0 /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput="./TestResults/"
       working-directory: test/W4k.AspNetCore.Correlator.UnitTests
 
     - name: Generate report
