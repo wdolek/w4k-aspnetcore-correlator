@@ -1,6 +1,6 @@
 # W4k.AspNetCore.Correlator
 
-![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg) 
+![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg)
 [![NuGet Badge](https://buildstats.info/nuget/W4k.AspNetCore.Correlator)](https://www.nuget.org/packages/W4k.AspNetCore.Correlator/)
 [![CodeQL](https://github.com/wdolek/w4k-aspnetcore-correlator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/wdolek/w4k-aspnetcore-correlator/security/code-scanning)
 
@@ -15,13 +15,13 @@ so in case when correlation ID is generated, caller is aware of that value.
 To forward correlation ID to subsequent request, it is necessary to use designated HTTP message handler, see
 examples below.
 
-## W3 Trace Context and .NET Core 3.x
+## W3 Trace Context and .NET
 
-Please be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is **not supported** out of the box,
+Be aware that [Trace Context](https://www.w3.org/TR/trace-context/) is **not supported**,
 Correlator helps you with simple non-standard headers.
 
-Note that with .NET Core 3.x, distributed tracing and trace context is built in. You can get more insights from article:
-[Improvements in .NET Core 3.0 for troubleshooting and monitoring distributed apps](https://devblogs.microsoft.com/aspnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/).
+Distributed tracing and trace context is built in .NET, You can get more insights from article:
+[.NET distributed tracing](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing).
 
 ## Basic usage
 
@@ -114,7 +114,7 @@ See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/
 ## Validation of correlation ID
 
 It is possible to validate correlation ID value and prevent invalid value to spread. By default, validation is
-turned off. In order to turn validation on, implementation of `ICorrelationValidator` musth be registered.
+turned off. In order to turn validation on, implementation of `ICorrelationValidator` has to be registered.
 
 Correlator is shipped with lightweight validator, `CorrelationValueLengthValidator`, which decides whether received
 value is valid simply based on its length.
