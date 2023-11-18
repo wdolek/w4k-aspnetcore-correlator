@@ -5,18 +5,14 @@ using System.Diagnostics.CodeAnalysis;
 namespace W4k.AspNetCore.Correlator
 {
     /// <summary>
-    /// Helper class to support <c>netstandard</c> targets, where <see cref="ArgumentNullException.ThrowIfNull(object?, string?)"/> is not available.
+    /// Helper class to support older .NET targets, where <see cref="ArgumentException.ThrowIfNullOrWhiteSpace"/> are not available.
     /// </summary>
     internal static class ThrowHelper
     {
-#if NET6_0_OR_GREATER
         [DoesNotReturn]
-#endif
         public static void ThrowInvalidOp(string message) => throw new InvalidOperationException(message);
 
-#if NET6_0_OR_GREATER
         [DoesNotReturn]
-#endif
         public static void ThrowArgNull(string? paramName) => throw new ArgumentNullException(paramName);
 
         public static void ThrowIfNull(object? argument, string? paramName = null)

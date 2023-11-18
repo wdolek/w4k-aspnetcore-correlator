@@ -73,14 +73,11 @@ namespace W4k.AspNetCore.Correlator.Validation
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-#if NETSTANDARD2_0
-                return IsValid.GetHashCode() ^ Reason.GetHashCode();
-#else
-                return IsValid.GetHashCode() ^ Reason.GetHashCode(StringComparison.Ordinal);
-#endif
-            }
+            var hashCode = new HashCode();
+            hashCode.Add(IsValid);
+            hashCode.Add(Reason, StringComparer.Ordinal);
+
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc />

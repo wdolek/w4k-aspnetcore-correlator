@@ -46,23 +46,19 @@ namespace W4k.AspNetCore.Correlator.Context
                 var validationResult = _validator.Validate(headerValue);
                 if (!validationResult.IsValid)
                 {
-                    _logger.InvalidCorrelationValue(headerName!, validationResult.Reason);
-                    return new InvalidCorrelationContext(headerName!, validationResult);
+                    _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
+                    return new InvalidCorrelationContext(headerName, validationResult);
                 }
             }
 
-            _logger.CorrelationIdReceived(headerName!, headerValue!);
-            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName!);
+            _logger.CorrelationIdReceived(headerName, headerValue);
+            return new RequestCorrelationContext(CorrelationId.FromString(headerValue), headerName);
         }
 
-#if NETSTANDARD2_0
-        private bool TryGetCorrelationHeader(IHeaderDictionary requestHeaders, out string? headerName, out string? headerValue)
-#else
         private bool TryGetCorrelationHeader(
             IHeaderDictionary requestHeaders,
             [NotNullWhen(true)] out string? headerName,
             [NotNullWhen(true)] out string? headerValue)
-#endif
         {
             if (requestHeaders.Count == 0)
             {
@@ -70,12 +66,7 @@ namespace W4k.AspNetCore.Correlator.Context
                 return false;
             }
 
-#if NET6_0_OR_GREATER
             var headerNames = CollectionsMarshal.AsSpan(_options.ReadFrom);
-#else
-            var headerNames = _options.ReadFrom;
-#endif
-
             foreach (var header in headerNames)
             {
                 if (!requestHeaders.TryGetValue(header, out var values))

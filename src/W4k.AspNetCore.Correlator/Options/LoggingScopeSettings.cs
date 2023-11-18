@@ -90,14 +90,11 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            unchecked
-            {
-#if NETSTANDARD2_0
-                return 17 * IncludeScope.GetHashCode() ^ CorrelationKey.GetHashCode();
-#else
-                return 17 * IncludeScope.GetHashCode() ^ CorrelationKey.GetHashCode(StringComparison.OrdinalIgnoreCase);
-#endif
-            }
+            var hashCode = new HashCode();
+            hashCode.Add(IncludeScope);
+            hashCode.Add(CorrelationKey, StringComparer.OrdinalIgnoreCase);
+
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc />

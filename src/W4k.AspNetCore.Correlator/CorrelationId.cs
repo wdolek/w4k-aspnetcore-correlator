@@ -75,11 +75,7 @@ namespace W4k.AspNetCore.Correlator
 
         /// <inheritdoc />
         public override int GetHashCode() =>
-#if NETSTANDARD2_0
-            Value.GetHashCode();
-#else
             Value.GetHashCode(StringComparison.OrdinalIgnoreCase);
-#endif
 
         /// <inheritdoc />
         public override bool Equals(object? obj) =>

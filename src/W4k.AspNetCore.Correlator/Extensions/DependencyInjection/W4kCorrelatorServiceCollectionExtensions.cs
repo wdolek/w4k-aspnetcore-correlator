@@ -64,18 +64,12 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             ThrowHelper.ThrowIfNull(configureOptions, nameof(configureOptions));
 
-            var optionsBuilder = services
+            services
                 .AddOptions<CorrelatorOptions>()
-                .Configure(configureOptions);
-
-#if NET6_0_OR_GREATER || NETSTANDARD2_1
-            optionsBuilder.Validate(
-                options =>
-                {
-                    return options.ReadFrom.Count > 0;
-                },
-                $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
-#endif
+                .Configure(configureOptions)
+                .Validate(
+                    options => options.ReadFrom.Count > 0,
+                    $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}");
 
             services
                 .AddSingleton<CorrelationContextContainer>()

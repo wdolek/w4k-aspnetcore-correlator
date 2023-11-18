@@ -105,14 +105,11 @@ namespace W4k.AspNetCore.Correlator.Options
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-#if NETSTANDARD2_0
-                return 17 * Settings.GetHashCode() ^ HeaderName.GetHashCode();
-#else
-                return 17 * Settings.GetHashCode() ^ HeaderName.GetHashCode(StringComparison.OrdinalIgnoreCase);
-#endif
-            }
+            var hashCode = new HashCode();
+            hashCode.Add(Settings);
+            hashCode.Add(HeaderName, StringComparer.OrdinalIgnoreCase);
+
+            return hashCode.ToHashCode();
         }
 
         /// <inheritdoc />
