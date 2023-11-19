@@ -61,7 +61,7 @@ internal static partial class LoggerExtensions
             return;
         }
 
-        LogCorrelationHeaderReceived(logger, header, ValueSanitizer.Sanitize(value), null!);
+        LogCorrelationHeaderReceived(logger, header, CorrelationIdValueSanitizer.Sanitize(value), null!);
     }
 
     public static void NoCorrelationIdFactoryConfigured(this ILogger logger) =>

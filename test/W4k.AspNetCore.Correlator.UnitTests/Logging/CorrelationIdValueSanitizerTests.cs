@@ -2,19 +2,19 @@
 
 namespace W4k.AspNetCore.Correlator.Logging;
 
-public class ValueSanitizerTests
+public class CorrelationIdValueSanitizerTests
 {
     [Fact]
     public void Sanitize_ExpectSanitizedValue()
     {
         // arrange
-        var value = "Invalid <value>!";
+        var value = "Invalid:<value>!\n";
 
         // act
-        var sanitizedValue = ValueSanitizer.Sanitize(value);
+        var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Equal("Invalid__value__", sanitizedValue);
+        Assert.Equal("Invalid:_value_!_", sanitizedValue);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class ValueSanitizerTests
         var value = "ValidValue";
 
         // act
-        var sanitizedValue = ValueSanitizer.Sanitize(value);
+        var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
         Assert.Same(value, sanitizedValue);
@@ -32,16 +32,16 @@ public class ValueSanitizerTests
 
     [Theory]
     [InlineData('a')]
-    [InlineData('@')]
+    [InlineData('&')]
     public void Sanitize_ExpectTruncatedValue(char c)
     {
         // arrange
-        var value = new string(c, (256) + 1);
+        var value = new string(c, 100);
 
         // act
-        var sanitizedValue = ValueSanitizer.Sanitize(value);
+        var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Equal(256, sanitizedValue.Length);
+        Assert.Equal(64, sanitizedValue.Length);
     }
 }

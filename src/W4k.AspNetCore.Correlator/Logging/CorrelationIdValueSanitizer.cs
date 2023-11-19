@@ -3,10 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace W4k.AspNetCore.Correlator.Logging;
 
-internal static class ValueSanitizer
+internal static class CorrelationIdValueSanitizer
 {
-    // let's be generous here: 256 chars should be enough for correlation ID; apart of that, we do sanitization to avoid log injection
-    private const int MaxValueLength = 256;
+    // let's be generous here: 64 chars should be enough for correlation ID
+    private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
     public static string Sanitize(string value)
@@ -17,7 +17,7 @@ internal static class ValueSanitizer
         for (int i = 0; i < maxValueLength; i++)
         {
             char currentChar = source[i];
-            if (!char.IsLetterOrDigit(currentChar))
+            if (IsUnsafeChar(currentChar))
             {
                 // break early, sanitize input value
                 return SanitizeWithAllocation(source, maxValueLength);
@@ -34,6 +34,16 @@ internal static class ValueSanitizer
         return value;
     }
 
+    private static bool IsUnsafeChar(char c)
+    {
+        if (char.IsLetterOrDigit(c))
+        {
+            return false;
+        }
+
+        return c < ' ' || c > 127 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
+    }
+
     [SkipLocalsInit]
     private static string SanitizeWithAllocation(ReadOnlySpan<char> source, int maxValueLength)
     {
@@ -42,9 +52,9 @@ internal static class ValueSanitizer
         for (int i = 0; i < maxValueLength; i++)
         {
             var currentChar = source[i];
-            destination[i] = char.IsLetterOrDigit(currentChar)
-                ? currentChar
-                : SanitizedChar;
+            destination[i] = IsUnsafeChar(currentChar)
+                ? SanitizedChar
+                : currentChar;
         }
 
         return destination.ToString();
