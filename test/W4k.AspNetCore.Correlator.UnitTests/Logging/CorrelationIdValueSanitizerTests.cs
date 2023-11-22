@@ -4,17 +4,18 @@ namespace W4k.AspNetCore.Correlator.Logging;
 
 public class CorrelationIdValueSanitizerTests
 {
-    [Fact]
-    public void Sanitize_ExpectSanitizedValue()
+    [Theory]
+    [InlineData("Invalid:<value>!\n", "Invalid:_value_!_")]
+    [InlineData("<2345", "_2345")]
+    [InlineData("1234>", "1234_")]
+    [InlineData("<<3>>", "__3__")]
+    public void Sanitize_ExpectSanitizedValue(string input, string expected)
     {
-        // arrange
-        var value = "Invalid:<value>!\n";
-
         // act
-        var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
+        var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(input);
 
         // assert
-        Assert.Equal("Invalid:_value_!_", sanitizedValue);
+        Assert.Equal(expected, sanitizedValue);
     }
 
     [Fact]

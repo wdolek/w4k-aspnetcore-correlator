@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AspNet.CorrelationIdGenerator" Version="1.0.0" />
     <PackageReference Include="Correlate.AspNetCore" Version="5.1.0" />
-    <PackageReference Include="CorrelationId" Version="3.0.1" />    
+    <PackageReference Include="CorrelationId" Version="3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,10 +23,6 @@
 
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\zdenek\source\repos\wdolek\w4k-aspnetcore-correlator\benchmarks\W4k.AspNetCore.Correlator.Benchmarks\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="C:\Users\zdenek\source\repos\wdolek\w4k-aspnetcore-correlator\benchmarks\W4k.AspNetCore.Correlator.Benchmarks\.editorconfig" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace W4k.AspNetCore.Correlator.Logging;
 
@@ -11,27 +10,36 @@ internal static class CorrelationIdValueSanitizer
 
     public static string Sanitize(string value)
     {
-        var maxValueLength = Math.Min(value.Length, MaxValueLength);
-        var source = value.AsSpan(0, maxValueLength);
-
-        for (int i = 0; i < maxValueLength; i++)
+        var valueLength = Math.Min(value.Length, MaxValueLength);
+        for (int i = 0; i < valueLength; i++)
         {
-            char currentChar = source[i];
-            if (IsUnsafeChar(currentChar))
+            if (IsUnsafeChar(value[i]))
             {
-                // break early, sanitize input value
-                return SanitizeWithAllocation(source, maxValueLength);
+                return SanitizeToNewString(value, valueLength, i);
             }
         }
 
-        // no need for sanitization, but we need to truncate value
-        if (value.Length > MaxValueLength)
-        {
-            return source.ToString();
-        }
+        return value.Length > MaxValueLength
+            ? value.Substring(0, valueLength)
+            : value;
+    }
 
-        // no need for sanitization
-        return value;
+    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
+    private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
+        string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
+
+    private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
+    {
+        (int firstUnsafeCharPosition, string source) = state;
+
+        source.AsSpan(0, firstUnsafeCharPosition).CopyTo(buffer);
+        for (int i = firstUnsafeCharPosition; i < buffer.Length; i++)
+        {
+            var c = source[i];
+            buffer[i] = IsUnsafeChar(c)
+                ? SanitizedChar
+                : c;
+        }
     }
 
     private static bool IsUnsafeChar(char c)
@@ -42,21 +50,5 @@ internal static class CorrelationIdValueSanitizer
         }
 
         return c < ' ' || c > 127 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
-    }
-
-    [SkipLocalsInit]
-    private static string SanitizeWithAllocation(ReadOnlySpan<char> source, int maxValueLength)
-    {
-        Span<char> destination = stackalloc char[maxValueLength];
-
-        for (int i = 0; i < maxValueLength; i++)
-        {
-            var currentChar = source[i];
-            destination[i] = IsUnsafeChar(currentChar)
-                ? SanitizedChar
-                : currentChar;
-        }
-
-        return destination.ToString();
     }
 }
