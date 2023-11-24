@@ -8,9 +8,23 @@ internal static class CorrelationIdValueSanitizer
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
+#if NET8_0_OR_GREATER
+    private static readonly System.Buffers.SearchValues<char> SafeCorrelationIdChars =
+        System.Buffers.SearchValues.Create("!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
+#endif
+
     public static string Sanitize(string value)
     {
         var valueLength = Math.Min(value.Length, MaxValueLength);
+        var valueSpan = value.AsSpan(0, valueLength);
+
+#if NET8_0_OR_GREATER
+        var firstUnsafeCharPosition = valueSpan.IndexOfAnyExcept(SafeCorrelationIdChars);
+        if (firstUnsafeCharPosition >= 0)
+        {
+            return SanitizeToNewString(value, valueLength, firstUnsafeCharPosition);
+        }
+#else
         for (int i = 0; i < valueLength; i++)
         {
             if (IsUnsafeChar(value[i]))
@@ -18,9 +32,10 @@ internal static class CorrelationIdValueSanitizer
                 return SanitizeToNewString(value, valueLength, i);
             }
         }
+#endif
 
         return value.Length > MaxValueLength
-            ? value.Substring(0, valueLength)
+            ? valueSpan.ToString()
             : value;
     }
 
@@ -44,11 +59,15 @@ internal static class CorrelationIdValueSanitizer
 
     private static bool IsUnsafeChar(char c)
     {
+#if NET8_0_OR_GREATER
+        return !SafeCorrelationIdChars.Contains(c);
+#else
         if (char.IsLetterOrDigit(c))
         {
             return false;
         }
 
         return c < ' ' || c > 127 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
+#endif
     }
 }

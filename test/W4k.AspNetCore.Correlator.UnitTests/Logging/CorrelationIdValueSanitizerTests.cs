@@ -7,8 +7,11 @@ public class CorrelationIdValueSanitizerTests
     [Theory]
     [InlineData("Invalid:<value>!\n", "Invalid:_value_!_")]
     [InlineData("<2345", "_2345")]
+    [InlineData("1<345", "1_345")]
+    [InlineData("123>5", "123_5")]
     [InlineData("1234>", "1234_")]
     [InlineData("<<3>>", "__3__")]
+    [InlineData("1<3>5", "1_3_5")]
     public void Sanitize_ExpectSanitizedValue(string input, string expected)
     {
         // act
