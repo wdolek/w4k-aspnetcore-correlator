@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Buffers;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
 using Bogus;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
 public class LogValueSanitizerBenchmarks
 {
@@ -78,7 +76,7 @@ public class LogValueSanitizerBenchmarks
 
         return correlationIdContent == CorrelationIdContent.OnlyAllowedChars
             ? faker.Random.String2(minLength, maxLength, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-            : faker.Random.String2(minLength, maxLength, "ghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$&+-./:=^_|~<>\r\n\t\b@'\"{}[]?\u00a2\u00a3\u20ac\u00a5¶Æ ");
+            : faker.Random.String2(minLength, maxLength, "ghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$&+-./:=^_|~<>\r\n\t\b@'\"{}[]?\u00a2\u00a3\u20ac\u00a5¶Æ \u00ae\u00a9‹›«»");
     }
 
     public enum CorrelationIdLength
@@ -96,7 +94,6 @@ public class LogValueSanitizerBenchmarks
 
 file static class CorrelationIdValueSanitizer_Iterate
 {
-    // let's be generous here: 64 chars should be enough for correlation ID
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
@@ -116,7 +113,6 @@ file static class CorrelationIdValueSanitizer_Iterate
             : value;
     }
 
-    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
     private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
         string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
 
@@ -147,7 +143,6 @@ file static class CorrelationIdValueSanitizer_Iterate
 
 file static class CorrelationIdValueSanitizer_SearchValues_IterateRestOfStr
 {
-    // let's be generous here: 64 chars should be enough for correlation ID
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
@@ -170,7 +165,6 @@ file static class CorrelationIdValueSanitizer_SearchValues_IterateRestOfStr
             : value;
     }
 
-    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
     private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
         string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
 
@@ -197,7 +191,6 @@ file static class CorrelationIdValueSanitizer_SearchValues_JumpToNextUnsafe
     private static readonly SearchValues<char> ValidCorrelationIdChars =
         SearchValues.Create("!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
 
-    // let's be generous here: 64 chars should be enough for correlation ID
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
@@ -217,19 +210,12 @@ file static class CorrelationIdValueSanitizer_SearchValues_JumpToNextUnsafe
             : value;
     }
 
-    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
     private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
         string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
 
     private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
     {
-        (int firstUnsafeCharPos, string source) = state;
-
-        var sourceIndex = firstUnsafeCharPos;
-        if (sourceIndex >= buffer.Length)
-        {
-            return;
-        }
+        (int sourceIndex, string source) = state;
 
         // copy all safe chars before first unsafe char
         source.AsSpan(0, sourceIndex).CopyTo(buffer);

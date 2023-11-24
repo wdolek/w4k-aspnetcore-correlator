@@ -43,6 +43,41 @@ internal static class CorrelationIdValueSanitizer
     private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
         string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
 
+#if NET8_0_OR_GREATER
+    private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
+    {
+        (int sourceIndex, string source) = state;
+
+        // copy all safe chars before first unsafe char
+        source
+            .AsSpan(0, sourceIndex)
+            .CopyTo(buffer);
+
+        buffer[sourceIndex] = SanitizedChar;
+        ++sourceIndex;
+
+        // jump to next unsafe char, copy all safe chars between
+        while (sourceIndex < buffer.Length)
+        {
+            var remainingSpan = source.AsSpan(sourceIndex);
+            var nextUnsafeCharPos = remainingSpan.IndexOfAnyExcept(SafeCorrelationIdChars);
+
+            // no more unsafe characters, copy remaining chars and break
+            if (nextUnsafeCharPos == -1)
+            {
+                remainingSpan.CopyTo(buffer.Slice(sourceIndex));
+                break;
+            }
+
+            remainingSpan
+                .Slice(0, nextUnsafeCharPos)
+                .CopyTo(buffer.Slice(sourceIndex));
+
+            buffer[sourceIndex + nextUnsafeCharPos] = SanitizedChar;
+            sourceIndex += nextUnsafeCharPos + 1;
+        }
+    }
+#else
     private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
     {
         (int firstUnsafeCharPosition, string source) = state;
@@ -59,15 +94,12 @@ internal static class CorrelationIdValueSanitizer
 
     private static bool IsUnsafeChar(char c)
     {
-#if NET8_0_OR_GREATER
-        return !SafeCorrelationIdChars.Contains(c);
-#else
         if (char.IsLetterOrDigit(c))
         {
             return false;
         }
 
         return c < ' ' || c > 127 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
-#endif
     }
+#endif
 }
