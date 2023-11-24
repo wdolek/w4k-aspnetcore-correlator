@@ -3,10 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
-using W4k.AspNetCore.Correlator.Benchmarks.Startup;
+using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
@@ -51,5 +52,22 @@ public class ValidatingCorrelatorBenchmarks : IDisposable
     {
         _client?.Dispose();
         _server?.Dispose();
+    }
+}
+
+file class ValidatingCorrelatorStartup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // all correlation ID values used will be valid
+        services.AddDefaultCorrelator()
+            .WithValidator(new CorrelationValueLengthValidator(40));
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseCorrelator();
+        app.UseMiddleware<CorrelatedMiddleware>();
+        app.UseMiddleware<DummyMiddleware>();
     }
 }

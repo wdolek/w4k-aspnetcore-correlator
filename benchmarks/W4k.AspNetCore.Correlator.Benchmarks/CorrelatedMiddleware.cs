@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using W4k.AspNetCore.Correlator.Context;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.Middleware;
+namespace W4k.AspNetCore.Correlator.Benchmarks;
 
 internal class CorrelatedMiddleware
 {

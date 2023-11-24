@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.Helpers;
+namespace W4k.AspNetCore.Correlator.Benchmarks;
 
 internal static class RequestFactory
 {

@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
-using W4k.AspNetCore.Correlator.Benchmarks.Middleware;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
@@ -99,7 +97,7 @@ public class CorrelateComparingBenchmarks : IDisposable
                 options.ReadFrom.Clear();
                 options.ReadFrom.Add("X-Correlation-Id");
 
-                options.Factory = (_) =>
+                options.Factory = _ =>
                     CorrelationId.FromString(
                         Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture));
 

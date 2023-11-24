@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
-using W4k.AspNetCore.Correlator.Benchmarks.Middleware;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
@@ -96,7 +94,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         {
             services.AddDefaultCorrelator(options =>
             {
-                options.Factory = (_) =>
+                options.Factory = _ =>
                     CorrelationId.FromString(Guid.NewGuid().ToString());
 
                 options.Emit = PropagationSettings.NoPropagation;
