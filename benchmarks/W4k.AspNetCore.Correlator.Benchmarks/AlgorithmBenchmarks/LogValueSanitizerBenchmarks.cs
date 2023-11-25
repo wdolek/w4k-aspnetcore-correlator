@@ -8,6 +8,9 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 [MemoryDiagnoser]
 public class LogValueSanitizerBenchmarks
 {
+    private const string SafeChars = "!#$&+-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private const string UnsafeChars = "<>/\r\n\t\b@'\"{}[]?\u00a2\u00a3\u20ac\u00a5¶Æ \u00ae\u00a9‹›«»バトル・ロワイアル";
+
     private readonly string[] _correlationIds;
 
     [ParamsAllValues]
@@ -74,9 +77,27 @@ public class LogValueSanitizerBenchmarks
             ? (8, 32)
             : (100, 256);
 
-        return correlationIdContent == CorrelationIdContent.OnlyAllowedChars
-            ? faker.Random.String2(minLength, maxLength, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-            : faker.Random.String2(minLength, maxLength, "ghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$&+-./:=^_|~<>\r\n\t\b@'\"{}[]?\u00a2\u00a3\u20ac\u00a5¶Æ \u00ae\u00a9‹›«»");
+        return correlationIdContent switch
+        {
+            CorrelationIdContent.AllSafe =>
+                faker.Random.String2(minLength, maxLength, SafeChars),
+
+            CorrelationIdContent.AllUnsafe =>
+                faker.Random.String2(minLength, maxLength, UnsafeChars),
+
+            CorrelationIdContent.Combined =>
+                faker.Random.String2(minLength, maxLength, SafeChars + UnsafeChars),
+
+            CorrelationIdContent.FirstPartUnsafe =>
+                faker.Random.String2(minLength / 2, maxLength / 2, UnsafeChars)
+                + faker.Random.String2(minLength / 2, maxLength / 2, SafeChars),
+
+            CorrelationIdContent.SecondPartUnsafe =>
+                faker.Random.String2(minLength / 2, maxLength / 2, SafeChars)
+                + faker.Random.String2(minLength / 2, maxLength / 2, UnsafeChars),
+
+            _ => throw new ArgumentException()
+        };
     }
 
     public enum CorrelationIdLength
@@ -87,8 +108,11 @@ public class LogValueSanitizerBenchmarks
 
     public enum CorrelationIdContent
     {
-        OnlyAllowedChars,
-        IncludesInvalidChars,
+        AllSafe,
+        AllUnsafe,
+        Combined,
+        FirstPartUnsafe,
+        SecondPartUnsafe,
     }
 }
 
@@ -132,12 +156,26 @@ file static class CorrelationIdValueSanitizer_Iterate
 
     private static bool IsUnsafeChar(char c)
     {
+        if (c <= ' ' || c >= '~')
+        {
+            return true;
+        }
+
         if (char.IsLetterOrDigit(c))
         {
             return false;
         }
 
-        return c < ' ' || c > 126 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
+        return c == '"'
+            || c == '%'
+            || c is >= '\'' and <= '*'
+            || c == ','
+            || c == '?'
+            || c == '@'
+            || c == '<'
+            || c == '>'
+            || c == '{'
+            || c == '}';
     }
 }
 

@@ -12,6 +12,10 @@ public class CorrelationIdValueSanitizerTests
     [InlineData("1234>", "1234_")]
     [InlineData("<<3>>", "__3__")]
     [InlineData("1<3>5", "1_3_5")]
+    [InlineData("X Z", "X_Z")]
+    [InlineData("\r \n \t \b", "_______")]
+    [InlineData("バトル・ロワイアル", "_________")]
+    [InlineData("\"%'()*,?@{}", "___________")]
     public void Sanitize_ExpectSanitizedValue(string input, string expected)
     {
         // act

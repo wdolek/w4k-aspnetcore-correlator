@@ -94,12 +94,26 @@ internal static class CorrelationIdValueSanitizer
 
     private static bool IsUnsafeChar(char c)
     {
+        if (c <= ' ' || c >= '~')
+        {
+            return true;
+        }
+
         if (char.IsLetterOrDigit(c))
         {
             return false;
         }
 
-        return c < ' ' || c > 127 || c == '<' || c == '>' || c == '&' || c == '\'' || c == '\"';
+        return c == '"'
+            || c == '%'
+            || c is >= '\'' and <= '*'
+            || c == ','
+            || c == '?'
+            || c == '@'
+            || c == '<'
+            || c == '>'
+            || c == '{'
+            || c == '}';
     }
 #endif
 }
