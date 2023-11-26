@@ -4,37 +4,39 @@ namespace W4k.AspNetCore.Correlator.Logging;
 
 internal static class CorrelationIdValueSanitizer
 {
-    // let's be generous here: 64 chars should be enough for correlation ID
-    private const int MaxValueLength = 64;
-    private const char SanitizedChar = '_';
+    internal const int MaxValueLength = 80;
+    internal const char SanitizedChar = '*';
 
-#if NET8_0_OR_GREATER
-    private static readonly System.Buffers.SearchValues<char> SafeCorrelationIdChars =
-        System.Buffers.SearchValues.Create("!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
-#endif
+    internal const string SafeCorrelationIdCharsString = "#+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz|~";
 
     public static string Sanitize(string value)
     {
-        var valueLength = Math.Min(value.Length, MaxValueLength);
-        var valueSpan = value.AsSpan(0, valueLength);
+#if NET8_0_OR_GREATER
+        return CorrelationIdValueSanitizerNet8.Sanitize(value);
+#else
+        return CorrelationIdValueSanitizerNet6.Sanitize(value);
+#endif
+    }
+}
 
 #if NET8_0_OR_GREATER
+file static class CorrelationIdValueSanitizerNet8
+{
+    private static readonly System.Buffers.SearchValues<char> SafeCorrelationIdChars =
+        System.Buffers.SearchValues.Create(CorrelationIdValueSanitizer.SafeCorrelationIdCharsString);
+
+    public static string Sanitize(string value)
+    {
+        var valueLength = Math.Min(value.Length, CorrelationIdValueSanitizer.MaxValueLength);
+        var valueSpan = value.AsSpan(0, valueLength);
+
         var firstUnsafeCharPosition = valueSpan.IndexOfAnyExcept(SafeCorrelationIdChars);
         if (firstUnsafeCharPosition >= 0)
         {
             return SanitizeToNewString(value, valueLength, firstUnsafeCharPosition);
         }
-#else
-        for (int i = 0; i < valueLength; i++)
-        {
-            if (IsUnsafeChar(value[i]))
-            {
-                return SanitizeToNewString(value, valueLength, i);
-            }
-        }
-#endif
 
-        return value.Length > MaxValueLength
+        return value.Length > CorrelationIdValueSanitizer.MaxValueLength
             ? valueSpan.ToString()
             : value;
     }
@@ -43,7 +45,6 @@ internal static class CorrelationIdValueSanitizer
     private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
         string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
 
-#if NET8_0_OR_GREATER
     private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
     {
         (int sourceIndex, string source) = state;
@@ -53,7 +54,7 @@ internal static class CorrelationIdValueSanitizer
             .AsSpan(0, sourceIndex)
             .CopyTo(buffer);
 
-        buffer[sourceIndex] = SanitizedChar;
+        buffer[sourceIndex] = CorrelationIdValueSanitizer.SanitizedChar;
         ++sourceIndex;
 
         // jump to next unsafe char, copy all safe chars between
@@ -73,11 +74,40 @@ internal static class CorrelationIdValueSanitizer
                 .Slice(0, nextUnsafeCharPos)
                 .CopyTo(buffer.Slice(sourceIndex));
 
-            buffer[sourceIndex + nextUnsafeCharPos] = SanitizedChar;
+            buffer[sourceIndex + nextUnsafeCharPos] = CorrelationIdValueSanitizer.SanitizedChar;
             sourceIndex += nextUnsafeCharPos + 1;
         }
     }
-#else
+}
+#endif
+
+#if !NET8_0_OR_GREATER
+file static class CorrelationIdValueSanitizerNet6
+{
+    private static readonly System.Collections.Generic.HashSet<char> SafeCorrelationIdChars =
+        new(CorrelationIdValueSanitizer.SafeCorrelationIdCharsString);
+
+    public static string Sanitize(string value)
+    {
+        var valueLength = Math.Min(value.Length, CorrelationIdValueSanitizer.MaxValueLength);
+
+        for (int charPosition = 0; charPosition < valueLength; charPosition++)
+        {
+            if (IsUnsafeChar(value[charPosition]))
+            {
+                return SanitizeToNewString(value, valueLength, charPosition);
+            }
+        }
+
+        return value.Length > CorrelationIdValueSanitizer.MaxValueLength
+            ? value.Substring(0, valueLength)
+            : value;
+    }
+
+    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
+    private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
+        string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
+
     private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
     {
         (int firstUnsafeCharPosition, string source) = state;
@@ -87,33 +117,11 @@ internal static class CorrelationIdValueSanitizer
         {
             var c = source[i];
             buffer[i] = IsUnsafeChar(c)
-                ? SanitizedChar
+                ? CorrelationIdValueSanitizer.SanitizedChar
                 : c;
         }
     }
 
-    private static bool IsUnsafeChar(char c)
-    {
-        if (c <= ' ' || c >= '~')
-        {
-            return true;
-        }
-
-        if (char.IsLetterOrDigit(c))
-        {
-            return false;
-        }
-
-        return c == '"'
-            || c == '%'
-            || c is >= '\'' and <= '*'
-            || c == ','
-            || c == '?'
-            || c == '@'
-            || c == '<'
-            || c == '>'
-            || c == '{'
-            || c == '}';
-    }
-#endif
+    private static bool IsUnsafeChar(char c) => !SafeCorrelationIdChars.Contains(c);
 }
+#endif

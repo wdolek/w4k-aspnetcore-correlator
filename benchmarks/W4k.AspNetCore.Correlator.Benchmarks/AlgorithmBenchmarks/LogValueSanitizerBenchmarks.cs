@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
 using Bogus;
 
@@ -34,6 +35,18 @@ public class LogValueSanitizerBenchmarks
 
     [Benchmark(Description = "Sanitize: Iterate one by one")]
     public string SanitizeIterating()
+    {
+        string last = null;
+        foreach (var correlationId in _correlationIds)
+        {
+            last = CorrelationIdValueSanitizer_Iterate.Sanitize(correlationId);
+        }
+
+        return last;
+    }
+
+    [Benchmark(Description = "Sanitize: Iterate one by one, use hash set")]
+    public string SanitizeIteratingWithHashSet()
     {
         string last = null;
         foreach (var correlationId in _correlationIds)
@@ -177,6 +190,50 @@ file static class CorrelationIdValueSanitizer_Iterate
             || c == '{'
             || c == '}';
     }
+}
+
+file static class CorrelationIdValueSanitizer_HashSet
+{
+    private const int MaxValueLength = 64;
+    private const char SanitizedChar = '_';
+
+    private static readonly HashSet<char> ValidCorrelationIdChars = new HashSet<char>(
+        "!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
+
+    public static string Sanitize(string value)
+    {
+        var valueLength = Math.Min(value.Length, MaxValueLength);
+        for (int i = 0; i < valueLength; i++)
+        {
+            if (IsUnsafeChar(value[i]))
+            {
+                return SanitizeToNewString(value, valueLength, i);
+            }
+        }
+
+        return value.Length > MaxValueLength
+            ? value.Substring(0, valueLength)
+            : value;
+    }
+
+    private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
+        string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
+
+    private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
+    {
+        (int firstUnsafeCharPosition, string source) = state;
+
+        source.AsSpan(0, firstUnsafeCharPosition).CopyTo(buffer);
+        for (int i = firstUnsafeCharPosition; i < buffer.Length; i++)
+        {
+            var c = source[i];
+            buffer[i] = IsUnsafeChar(c)
+                ? SanitizedChar
+                : c;
+        }
+    }
+
+    private static bool IsUnsafeChar(char c) => !ValidCorrelationIdChars.Contains(c);
 }
 
 file static class CorrelationIdValueSanitizer_SearchValues_IterateRestOfStr

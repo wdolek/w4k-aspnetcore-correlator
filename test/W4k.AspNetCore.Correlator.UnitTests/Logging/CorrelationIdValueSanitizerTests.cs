@@ -5,17 +5,17 @@ namespace W4k.AspNetCore.Correlator.Logging;
 public class CorrelationIdValueSanitizerTests
 {
     [Theory]
-    [InlineData("Invalid:<value>!\n", "Invalid:_value_!_")]
-    [InlineData("<2345", "_2345")]
-    [InlineData("1<345", "1_345")]
-    [InlineData("123>5", "123_5")]
-    [InlineData("1234>", "1234_")]
-    [InlineData("<<3>>", "__3__")]
-    [InlineData("1<3>5", "1_3_5")]
-    [InlineData("X Z", "X_Z")]
-    [InlineData("\r \n \t \b", "_______")]
-    [InlineData("バトル・ロワイアル", "_________")]
-    [InlineData("\"%'()*,?@{}", "___________")]
+    [InlineData("Invalid:<value>!\n", "Invalid:*value***")]
+    [InlineData("<2345", "*2345")]
+    [InlineData("1<345", "1*345")]
+    [InlineData("123>5", "123*5")]
+    [InlineData("1234>", "1234*")]
+    [InlineData("<<3>>", "**3**")]
+    [InlineData("1<3>5", "1*3*5")]
+    [InlineData("X Z", "X*Z")]
+    [InlineData("\r \n \t \b", "*******")]
+    [InlineData("バトル・ロワイアル", "*********")]
+    [InlineData("\"%'()*,?@{}", "***********")]
     public void Sanitize_ExpectSanitizedValue(string input, string expected)
     {
         // act
@@ -40,7 +40,7 @@ public class CorrelationIdValueSanitizerTests
 
     [Theory]
     [InlineData('a')]
-    [InlineData('&')]
+    [InlineData('?')]
     public void Sanitize_ExpectTruncatedValue(char c)
     {
         // arrange
@@ -50,6 +50,6 @@ public class CorrelationIdValueSanitizerTests
         var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Equal(64, sanitizedValue.Length);
+        Assert.Equal(80, sanitizedValue.Length);
     }
 }
