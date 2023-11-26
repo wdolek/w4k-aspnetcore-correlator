@@ -21,7 +21,7 @@ public class CorrelationValueLengthValidatorTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void Validate_WhenEmptyInput_ExpectInvalidResult(string input)
+    public void Validate_WhenEmptyInput_ExpectInvalidResult(string? input)
     {
         var validator = new CorrelationValueLengthValidator(10);
         var result = validator.Validate(input);

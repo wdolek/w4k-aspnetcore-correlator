@@ -34,9 +34,9 @@ public class LoggingScopeSettingsTests
     [Theory]
     [InlineData(null, typeof(ArgumentNullException))]
     [InlineData("", typeof(ArgumentException))]
-    public void IncludeLoggingScope_WhenEmptyInput_Throws(string input, Type exceptionType)
+    public void IncludeLoggingScope_WhenEmptyInput_Throws(string? input, Type exceptionType)
     {
-        Assert.Throws(exceptionType, () => LoggingScopeSettings.IncludeLoggingScope(input));
+        Assert.Throws(exceptionType, () => LoggingScopeSettings.IncludeLoggingScope(input!));
     }
 
     public static IEnumerable<object[]> GenerateDefaultLoggingScopeSettings()

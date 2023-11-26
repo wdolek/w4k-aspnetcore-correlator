@@ -40,7 +40,7 @@ public class HttpRequestHeadersExtensions
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void AddIfNoSet_WhenHeaderNameIsEmpty_ExpectNoChange(string headerName)
+    public void AddIfNoSet_WhenHeaderNameIsEmpty_ExpectNoChange(string? headerName)
     {
         // arrange
         IHeaderDictionary headers = new HeaderDictionary();

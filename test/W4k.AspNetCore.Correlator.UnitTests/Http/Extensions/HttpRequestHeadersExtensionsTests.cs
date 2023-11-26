@@ -40,7 +40,7 @@ public class HttpRequestHeadersExtensionsTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void AddIfNotSet_WhenHeaderNameEmpty_ExpectNoChange(string headerName)
+    public void AddIfNotSet_WhenHeaderNameEmpty_ExpectNoChange(string? headerName)
     {
         // arrange
         HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;
@@ -55,7 +55,7 @@ public class HttpRequestHeadersExtensionsTests
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void AddIfNotSet_WhenHeaderValueEmpty_ExpectNoChange(string headerValue)
+    public void AddIfNotSet_WhenHeaderValueEmpty_ExpectNoChange(string? headerValue)
     {
         // arrange
         HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;

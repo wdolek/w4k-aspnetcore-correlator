@@ -44,15 +44,15 @@ public class PropagationSettingsTests
     [Theory]
     [InlineData(null, typeof(ArgumentNullException))]
     [InlineData("", typeof(ArgumentException))]
-    public void PropagateAs_WhenEmptyInput_Throws(string input, Type exceptionType)
+    public void PropagateAs_WhenEmptyInput_Throws(string? input, Type exceptionType)
     {
-        Assert.Throws(exceptionType, () => PropagationSettings.PropagateAs(input));
+        Assert.Throws(exceptionType, () => PropagationSettings.PropagateAs(input!));
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
-    public void KeepIncomingHeader_WhenEmpty_ExpectDefault(string input)
+    public void KeepIncomingHeader_WhenEmpty_ExpectDefault(string? input)
     {
         var settings = PropagationSettings.KeepIncomingHeaderName(input);
 
