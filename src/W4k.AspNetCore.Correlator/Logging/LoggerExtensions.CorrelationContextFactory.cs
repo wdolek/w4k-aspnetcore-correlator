@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Extensions.Logging;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -27,7 +27,7 @@ internal static partial class LoggerExtensions
             NoCorrelationHeaderReceivedEvent,
             "No correlation HTTP header received");
 
-    private static readonly Action<ILogger, string, string, Exception> LogCorrelationHeaderReceived =
+    private static readonly Action<ILogger, string, string, Exception?> LogCorrelationHeaderReceived =
         LoggerMessage.Define<string, string>(
             LogLevel.Information,
             CorrelationIdReceivedEvent,
@@ -39,7 +39,7 @@ internal static partial class LoggerExtensions
             NoCorrelationIdFactoryConfiguredEvent,
             $"Correlation ID factory not configured, {nameof(CorrelatorOptions)}.{nameof(CorrelatorOptions.Factory)}");
 
-    private static readonly Action<ILogger, Exception> LogGeneratingCorrelationId =
+    private static readonly Action<ILogger, Exception?> LogGeneratingCorrelationId =
         LoggerMessage.Define(
             LogLevel.Information,
             GeneratingCorrelationIdEvent,
@@ -54,14 +54,21 @@ internal static partial class LoggerExtensions
     public static void NoCorrelationHeaderReceived(this ILogger logger) =>
         LogNoCorrelationHeaderReceived(logger, null!);
 
-    public static void CorrelationIdReceived(this ILogger logger, string header, string value) =>
-        LogCorrelationHeaderReceived(logger, header, value, null!);
+    public static void CorrelationIdReceived(this ILogger logger, string header, string value)
+    {
+        if (!logger.IsEnabled(LogLevel.Information))
+        {
+            return;
+        }
+
+        LogCorrelationHeaderReceived(logger, header, CorrelationIdValueSanitizer.Sanitize(value), null);
+    }
 
     public static void NoCorrelationIdFactoryConfigured(this ILogger logger) =>
         LogNoCorrelationIdFactoryConfigured(logger, null!);
 
     public static void GeneratingCorrelationId(this ILogger logger) =>
-        LogGeneratingCorrelationId(logger, null!);
+        LogGeneratingCorrelationId(logger, null);
 
     public static void InvalidCorrelationValue(this ILogger logger, string header, string reason) =>
         LogInvalidCorrelationValue(logger, header, reason, null!);

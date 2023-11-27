@@ -3,10 +3,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
-using W4k.AspNetCore.Correlator.Benchmarks.Startup;
+using Microsoft.Extensions.DependencyInjection;
+using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
@@ -51,5 +52,29 @@ public class ConfiguredCorrelatorBenchmarks : IDisposable
     {
         _client?.Dispose();
         _server?.Dispose();
+    }
+}
+
+file class ConfiguredCorrelatorStartup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDefaultCorrelator(options =>
+        {
+            options.Emit = PropagationSettings.KeepIncomingHeaderName();
+            options.ReplaceTraceIdentifier = true;
+            options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope();
+
+            options.ReadFrom.Add("X-Correlation");
+            options.ReadFrom.Add("X-Request");
+            options.ReadFrom.Add("X-Trace-Id");
+        });
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseCorrelator();
+        app.UseMiddleware<CorrelatedMiddleware>();
+        app.UseMiddleware<DummyMiddleware>();
     }
 }

@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using W4k.AspNetCore.Correlator.Benchmarks.Helpers;
-using W4k.AspNetCore.Correlator.Benchmarks.Middleware;
 using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
@@ -98,7 +96,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
                 options.ReadFrom.Clear();
                 options.ReadFrom.Add("X-Correlation-Id");
 
-                options.Factory = (_) => CorrelationId.FromString("le_correlation");
+                options.Factory = _ => CorrelationId.FromString("le_correlation");
                 options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
                 options.ReplaceTraceIdentifier = false;
                 options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");

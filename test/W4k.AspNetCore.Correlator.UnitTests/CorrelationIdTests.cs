@@ -50,7 +50,7 @@ public class CorrelationIdTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void FromEmptyString_ExpectTrueIfEmpty(string value)
+    public void FromEmptyString_ExpectTrueIfEmpty(string? value)
     {
         var correlationId = CorrelationId.FromString(value);
 

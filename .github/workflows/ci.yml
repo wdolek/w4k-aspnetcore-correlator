@@ -21,7 +21,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup .NET 8.0
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8
@@ -33,6 +33,7 @@ jobs:
       run: dotnet build --nologo --no-restore --configuration Release
 
     - name: Test
-      env:
-        DOTNET_ROLL_FORWARD: Major
       run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net8.0
+
+    - name: Test (net6.0)
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net6.0 ./test/W4k.AspNetCore.Correlator.UnitTests/

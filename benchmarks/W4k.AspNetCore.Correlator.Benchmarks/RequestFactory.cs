@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 
-namespace W4k.AspNetCore.Correlator.Benchmarks.Helpers;
+namespace W4k.AspNetCore.Correlator.Benchmarks;
 
 internal static class RequestFactory
 {
@@ -11,14 +11,17 @@ internal static class RequestFactory
     private static readonly string CorrelationId = Guid.NewGuid().ToString("D");
 
     public static HttpRequestMessage CreateCorrelatedRequest() =>
+        CreateCorrelatedRequest(CorrelationId);
+
+    public static HttpRequestMessage CreateCorrelatedRequest(string correlationId) =>
         new HttpRequestMessage(HttpMethod.Get, "/")
         {
             Content = new StringContent(JsonPayload, Encoding.UTF8, "application/json"),
             Headers =
-                {
-                    { "Accept", "application/json" },
-                    { "X-Correlation-Id", CorrelationId },
-                }
+            {
+                { "Accept", "application/json" },
+                { "X-Correlation-Id", correlationId },
+            }
         };
 
     public static HttpRequestMessage CreateCorrelatedRequestWithAdditionalHeaders() =>
