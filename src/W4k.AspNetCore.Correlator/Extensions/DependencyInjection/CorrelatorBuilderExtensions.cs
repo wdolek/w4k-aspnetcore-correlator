@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
-using W4k.AspNetCore.Correlator;
+using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Validation;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace W4k.AspNetCore.Correlator
 {
     /// <summary>
     /// Extensions of <see cref="ICorrelatorBuilder"/>.
     /// </summary>
-    public static class W4kCorrelatorBuilderExtensions
+    public static class CorrelatorBuilderExtensions
     {
         /// <summary>
         /// Registers correlation context factory.
@@ -140,10 +140,10 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation context factory second time.</exception>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static ICorrelatorBuilder WithCorrelationContextFactory<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationContextFactory =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(builder);
+            W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(builder);
 
         /// <summary>
         /// Registers default implementation of correlation context factory.
@@ -152,9 +152,9 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <returns>
         /// Same instance of Correlator builder.
         /// </returns>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static ICorrelatorBuilder WithDefaultCorrelationContextFactory(this ICorrelatorBuilder builder) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(builder);
+            W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(builder);
 
         /// <summary>
         /// Registers correlation emitter.
@@ -169,10 +169,10 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation emitter second time.</exception>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static ICorrelatorBuilder WithCorrelationEmitter<T>(this ICorrelatorBuilder builder)
             where T : class, ICorrelationEmitter =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithCorrelationEmitter<T>(builder);
+            W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithCorrelationEmitter<T>(builder);
 
         /// <summary>
         /// Registers correlation emitter.
@@ -181,9 +181,9 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <returns>
         /// Same instance of Correlator builder.
         /// </returns>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static ICorrelatorBuilder WithDefaultCorrelationEmitter(this ICorrelatorBuilder builder) =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithDefaultCorrelationEmitter(builder);
+            W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithDefaultCorrelationEmitter(builder);
 
         /// <summary>
         /// Registers correlation validator.
@@ -196,9 +196,9 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> or <paramref name="validator"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static ICorrelatorBuilder WithValidator<T>(this ICorrelatorBuilder builder, T validator)
             where T : ICorrelationValidator =>
-            Microsoft.Extensions.DependencyInjection.W4kCorrelatorBuilderExtensions.WithValidator(builder, validator);
+            W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithValidator(builder, validator);
     }
 }
