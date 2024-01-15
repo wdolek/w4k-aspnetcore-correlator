@@ -5,12 +5,12 @@ using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace W4k.AspNetCore.Correlator
 {
     /// <summary>
     /// Extensions of <see cref="IHttpClientBuilder"/>.
     /// </summary>
-    public static class W4kHttpClientBuilderExtensions
+    public static class HttpClientBuilderExtensions
     {
         /// <summary>
         /// Configures HTTP client with <see cref="CorrelatorHttpMessageHandler"/>.
@@ -55,9 +55,9 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <returns>
         /// HTTP client builder configured to use correlator message handler.
         /// </returns>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static IHttpClientBuilder WithCorrelation(this IHttpClientBuilder builder) =>
-            W4kHttpClientBuilderExtensions.WithCorrelation(builder);
+            Correlator.HttpClientBuilderExtensions.WithCorrelation(builder);
 
         /// <summary>
         /// Configures HTTP client with configured <see cref="CorrelatorHttpMessageHandler"/>.
@@ -67,10 +67,10 @@ namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection
         /// <returns>
         /// HTTP client builder configured to use correlator message handler.
         /// </returns>
-        [Obsolete("Use extensions from `Microsoft.Extensions.DependencyInjection`.")]
+        [Obsolete("Use extensions from `W4k.AspNetCore.Correlator`.")]
         public static IHttpClientBuilder WithCorrelation(
             this IHttpClientBuilder builder,
             PropagationSettings propagationSettings) =>
-            W4kHttpClientBuilderExtensions.WithCorrelation(builder, propagationSettings);
+            Correlator.HttpClientBuilderExtensions.WithCorrelation(builder, propagationSettings);
     }
 }
