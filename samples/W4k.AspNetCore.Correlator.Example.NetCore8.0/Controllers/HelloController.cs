@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using W4k.AspNetCore.Correlator.Context;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore60.Controllers;
+namespace W4k.AspNetCore.Correlator.Example.NetCore80.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]

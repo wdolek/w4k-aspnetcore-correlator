@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using W4k.AspNetCore.Correlator.Options;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore60;
+namespace W4k.AspNetCore.Correlator.Example.NetCore80;
 
 public class Startup
 {

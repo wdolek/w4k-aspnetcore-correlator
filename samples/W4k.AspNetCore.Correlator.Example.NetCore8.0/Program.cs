@@ -3,7 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
-namespace W4k.AspNetCore.Correlator.Example.NetCore60;
+namespace W4k.AspNetCore.Correlator.Example.NetCore80;
 
 public class Program
 {
