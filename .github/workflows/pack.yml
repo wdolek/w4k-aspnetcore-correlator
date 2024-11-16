@@ -29,10 +29,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup .NET 8.0
+    - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8
+        dotnet-version: |
+          8.0.x
+          9.0.x
 
     - name: Install dependencies
       run: dotnet restore
@@ -41,7 +43,7 @@ jobs:
       run: dotnet build --nologo --no-restore --configuration Release
 
     - name: Test
-      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net8.0
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal
 
     - name: Pack
       run: dotnet pack --nologo --no-build --configuration Release -p:Version=${{ github.event.inputs.version }} src/W4k.AspNetCore.Correlator
