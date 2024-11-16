@@ -10,7 +10,7 @@ public sealed class CorrelationId : IEquatable<CorrelationId>
     /// <summary>
     /// Empty correlation ID.
     /// </summary>
-    public static readonly CorrelationId Empty = new CorrelationId(string.Empty);
+    public static readonly CorrelationId Empty = new(string.Empty);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CorrelationId"/> class.

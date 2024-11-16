@@ -5,14 +5,11 @@ namespace W4k.AspNetCore.Correlator.Logging;
 
 internal static partial class LoggerExtensions
 {
-    private static readonly EventId CorrelatedRequestBeginEvent =
-        new EventId(101, nameof(CorrelatedRequestBegin));
+    private static readonly EventId CorrelatedRequestBeginEvent = new(101, nameof(CorrelatedRequestBegin));
 
-    private static readonly EventId CorrelatedRequestEndEvent =
-        new EventId(102, nameof(CorrelatedRequestEnd));
+    private static readonly EventId CorrelatedRequestEndEvent = new(102, nameof(CorrelatedRequestEnd));
 
-    private static readonly EventId ReplacingTraceIdentifierEvent =
-        new EventId(103, nameof(ReplacingTraceIdentifier));
+    private static readonly EventId ReplacingTraceIdentifierEvent = new(103, nameof(ReplacingTraceIdentifier));
 
     private static readonly Action<ILogger, Exception?> LogCorrelatedRequestBegin =
         LoggerMessage.Define(

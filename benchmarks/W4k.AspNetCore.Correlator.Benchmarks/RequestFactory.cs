@@ -14,7 +14,7 @@ internal static class RequestFactory
         CreateCorrelatedRequest(CorrelationId);
 
     public static HttpRequestMessage CreateCorrelatedRequest(string correlationId) =>
-        new HttpRequestMessage(HttpMethod.Get, "/")
+        new(HttpMethod.Get, "/")
         {
             Content = new StringContent(JsonPayload, Encoding.UTF8, "application/json"),
             Headers =
@@ -25,7 +25,7 @@ internal static class RequestFactory
         };
 
     public static HttpRequestMessage CreateCorrelatedRequestWithAdditionalHeaders() =>
-        new HttpRequestMessage(HttpMethod.Get, "/")
+        new(HttpMethod.Get, "/")
         {
             Content = new StringContent(JsonPayload, Encoding.UTF8, "application/json"),
             Headers =
@@ -47,7 +47,7 @@ internal static class RequestFactory
         };
 
     public static HttpRequestMessage CreateRequestWithoutCorrelation() =>
-        new HttpRequestMessage(HttpMethod.Get, "/")
+        new(HttpMethod.Get, "/")
         {
             Content = new StringContent(JsonPayload, Encoding.UTF8, "application/json"),
             Headers =

@@ -13,12 +13,12 @@ public sealed class CorrelatorOptions
     /// <summary>
     /// Gets collection of header names to be used when reading correlation ID from request headers.
     /// </summary>
-    public List<string> ReadFrom { get; } = new()
-    {
+    public List<string> ReadFrom { get; } =
+    [
         HttpHeaders.CorrelationId,
         HttpHeaders.RequestId,
-        HttpHeaders.AspNetRequestId,
-    };
+        HttpHeaders.AspNetRequestId
+    ];
 
     /// <summary>
     /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.

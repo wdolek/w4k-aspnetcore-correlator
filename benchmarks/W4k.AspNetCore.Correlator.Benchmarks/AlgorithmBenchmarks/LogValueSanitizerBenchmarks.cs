@@ -197,7 +197,7 @@ file static class CorrelationIdValueSanitizer_HashSet
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
-    private static readonly HashSet<char> ValidCorrelationIdChars = new HashSet<char>(
+    private static readonly HashSet<char> ValidCorrelationIdChars = new(
         "!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
 
     public static string Sanitize(string value)

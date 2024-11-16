@@ -6,20 +6,16 @@ namespace W4k.AspNetCore.Correlator.Logging;
 
 internal static partial class LoggerExtensions
 {
-    private static readonly EventId NoCorrelationHeaderReceivedEvent =
-        new EventId(202, nameof(NoCorrelationHeaderReceived));
+    private static readonly EventId NoCorrelationHeaderReceivedEvent = new(202, nameof(NoCorrelationHeaderReceived));
 
-    private static readonly EventId CorrelationIdReceivedEvent =
-        new EventId(203, nameof(CorrelationIdReceived));
+    private static readonly EventId CorrelationIdReceivedEvent = new(203, nameof(CorrelationIdReceived));
 
     private static readonly EventId NoCorrelationIdFactoryConfiguredEvent =
-        new EventId(204, nameof(NoCorrelationIdFactoryConfigured));
+        new(204, nameof(NoCorrelationIdFactoryConfigured));
 
-    private static readonly EventId GeneratingCorrelationIdEvent =
-        new EventId(205, nameof(GeneratingCorrelationId));
+    private static readonly EventId GeneratingCorrelationIdEvent = new(205, nameof(GeneratingCorrelationId));
 
-    private static readonly EventId InvalidCorrelationValueEvent =
-        new EventId(206, nameof(InvalidCorrelationValue));
+    private static readonly EventId InvalidCorrelationValueEvent = new(206, nameof(InvalidCorrelationValue));
 
     private static readonly Action<ILogger, Exception> LogNoCorrelationHeaderReceived =
         LoggerMessage.Define(
