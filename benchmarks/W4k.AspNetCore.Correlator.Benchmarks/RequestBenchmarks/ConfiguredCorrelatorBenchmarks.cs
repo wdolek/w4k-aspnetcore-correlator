@@ -12,10 +12,11 @@ using W4k.AspNetCore.Correlator.Options;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net80, baseline: true)]
 [SimpleJob(RuntimeMoniker.Net90)]
+[CategoriesColumn]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 public class ConfiguredCorrelatorBenchmarks : IDisposable
 {
     private readonly TestServer _server;
