@@ -2,11 +2,14 @@
 using System.Buffers;
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Jobs;
 using Bogus;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net90)]
 public class LogValueSanitizerBenchmarks
 {
     private const string SafeChars = "!#$&+-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

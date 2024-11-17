@@ -97,7 +97,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
                 options.ReadFrom.Clear();
                 options.ReadFrom.Add("X-Correlation-Id");
 
-                options.Factory = _ => CorrelationId.FromString("le_correlation");
+                options.Factory = (HttpContext httpContext) => CorrelationId.FromString("le_correlation");
                 options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
                 options.ReplaceTraceIdentifier = false;
                 options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");
