@@ -9,7 +9,7 @@ to subsequent requests.
 
 Correlation ID is sent within HTTP headers. If header is not set, Correlator will happily generate new one for you.
 
-Apart of accepting or generating correlation ID, it is also possible to return correlation ID back to caller,
+Apart from accepting or generating correlation ID, it is also possible to return correlation ID back to caller,
 so in case when correlation ID is generated, caller is aware of that value.
 
 To forward correlation ID to subsequent request, it is necessary to use designated HTTP message handler, see
