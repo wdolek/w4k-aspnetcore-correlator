@@ -2,7 +2,6 @@
 
 ![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg)
 [![NuGet Version](https://img.shields.io/nuget/v/W4k.AspNetCore.Correlator)](https://www.nuget.org/packages/W4k.AspNetCore.Correlator/)
-[![CodeQL](https://github.com/wdolek/w4k-aspnetcore-correlator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/wdolek/w4k-aspnetcore-correlator/security/code-scanning)
 
 Correlator helps you with handling correlation ID (also "request ID"): reading, generating new one and forwarding
 to subsequent requests.
