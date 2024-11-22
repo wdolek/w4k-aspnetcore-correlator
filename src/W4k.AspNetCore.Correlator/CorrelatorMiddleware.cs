@@ -48,7 +48,7 @@ internal class CorrelatorMiddleware
         // emit correlation ID back to caller in response headers
         if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
         {
-            httpContext.Response.OnStarting((e) => ((ICorrelationEmitter)e).Emit(httpContext, correlationContext), _emitter);
+            httpContext.Response.OnStarting(e => ((ICorrelationEmitter)e).Emit(httpContext, correlationContext), _emitter);
         }
 
         var correlationId = correlationContext.CorrelationId;
