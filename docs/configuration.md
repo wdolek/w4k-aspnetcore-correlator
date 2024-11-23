@@ -17,7 +17,7 @@ By _default_, Correlator is configured following way:
 To adjust setting, use `AddDefaultCorrelator` or `AddCorrelator` overload:
 
 ```csharp
-services.AddDefaultCorrelator(
+builder.Services.AddDefaultCorrelator(
     correlatorOptions =>
     {
         // disable correlation ID factory

@@ -27,22 +27,17 @@ Distributed tracing and trace context is built in .NET, You can get more insight
 ### Startup class
 
 ```csharp
-public class MyLittleStartup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDefaultCorrelator();
-    }
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDefaultCorrelator();
 
-    public void Configure(IApplicationBuilder app)
-    {
-        // register as first middleware
-        // (or as soon as possible to benefit from having correlation ID)
-        app.UseCorrelator();
+var app = builder.Build();
 
-        app.UseMvc();
-    }
-}
+// register as first middleware
+// (or as soon as possible to benefit from having correlation ID)
+app.UseCorrelator();
+
+// ...
+app.Run();
 ```
 
 ### Accessing correlation ID
@@ -78,34 +73,28 @@ In order to pass correlation ID to subsequent requests, additional HTTP message 
 Add `CorrelatorHttpMessageHandler` to HTTP client's message handler pipeline like this:
 
 ```csharp
-public class MyLittleStartup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // named HTTP client
-        services
-            .AddHttpClient("DummyClient")
-            .WithCorrelation();
+// named HTTP client
+builder.Services
+    .AddHttpClient("DummyClient")
+    .WithCorrelation();
 
-        // typed HTTP client
-        services
-            .AddHttpClient<FooClient>()
-            .WithCorrelation();
+// typed HTTP client
+builder.Services
+    .AddHttpClient<FooClient>()
+    .WithCorrelation();
 
-        // registering HTTP message handler manually
-        services
-            .AddHttpClient("FizzClient")
-            .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
+// registering HTTP message handler manually
+builder.Services
+    .AddHttpClient("FizzClient")
+    .AddHttpMessageHandler<CorrelatorHttpMessageHandler>();
 
-        // registering HTTP client with custom settings
-        // (global options - CorrelatorOptions.Forward - won't be used)
-        services
-            .AddHttpClient<LegacyClient>()
-            .WithCorrelation(PropagationSettings.PropagateAs("X-Legacy-Correlation-Id"));
-    }
+// registering HTTP client with custom settings
+// (global options - CorrelatorOptions.Forward - won't be used)
+builder.Services
+    .AddHttpClient<LegacyClient>()
+    .WithCorrelation(PropagationSettings.PropagateAs("X-Legacy-Correlation-Id"));
 
-    // ...
-}
+// ...
 ```
 
 See "[Configure the HttpMessageHandler](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-2.1#configure-the-httpmessagehandler)" for more details about usage of HTTP message handler.
@@ -118,13 +107,10 @@ turned off. In order to turn validation on, implementation of `ICorrelationValid
 Correlator is shipped with lightweight validator, `CorrelationValueLengthValidator`, which decides whether received
 value is valid simply based on its length.
 
-```
-public void ConfigureServices(IServiceCollection services)
-{
-    services
-        .AddDefaultCorrelator()
-        .WithValidator(new CorrelationValueLengthValidator(64));
-}
+```csharp
+builder.Services
+    .AddDefaultCorrelator()
+    .WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
 ## Documentation
