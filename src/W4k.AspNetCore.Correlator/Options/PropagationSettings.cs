@@ -71,9 +71,11 @@ public readonly struct PropagationSettings : IEquatable<PropagationSettings>
     /// <returns>
     /// Propagation settings with custom header name.
     /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="headerName"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="headerName"/> is empty.</exception>
     public static PropagationSettings PropagateAs(string headerName)
     {
-        ThrowHelper.ThrowIfNullOrEmpty(headerName);
+        ArgumentException.ThrowIfNullOrEmpty(headerName);
         return new PropagationSettings(HeaderPropagation.UsePredefinedHeaderName, headerName);
     }
 

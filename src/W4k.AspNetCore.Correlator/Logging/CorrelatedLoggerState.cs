@@ -9,7 +9,7 @@ internal sealed class CorrelatedLoggerState : IEnumerable<KeyValuePair<string, o
 
     public CorrelatedLoggerState(string key, CorrelationId correlationId)
     {
-        _value = new(1) { new KeyValuePair<string, object>(key, correlationId) };
+        _value = [new KeyValuePair<string, object>(key, correlationId)];
     }
 
     public override string ToString() => $"{_value[0].Key}:{_value[0].Value}";

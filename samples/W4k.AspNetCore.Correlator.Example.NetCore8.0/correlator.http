@@ -1,0 +1,6 @@
+﻿### GET request without correlation id
+GET http://localhost:5000
+
+### GET request with correlation id
+GET http://localhost:5000
+X-Correlation-Id: 40-36-10N:104-44-30W

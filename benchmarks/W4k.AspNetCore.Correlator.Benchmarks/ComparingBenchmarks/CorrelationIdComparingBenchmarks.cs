@@ -6,6 +6,7 @@ using CorrelationId;
 using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
@@ -15,6 +16,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 [BenchmarkCategory("Comparison", "CorrelationId")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
+[CategoriesColumn]
 public class CorrelationIdComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
@@ -96,7 +98,7 @@ public class CorrelationIdComparingBenchmarks : IDisposable
                 options.ReadFrom.Clear();
                 options.ReadFrom.Add("X-Correlation-Id");
 
-                options.Factory = _ => CorrelationId.FromString("le_correlation");
+                options.Factory = (HttpContext httpContext) => CorrelationId.FromString("le_correlation");
                 options.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
                 options.ReplaceTraceIdentifier = false;
                 options.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("Correlation");

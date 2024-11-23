@@ -9,17 +9,15 @@ internal static class CorrelationIdValueSanitizer
 
     internal const string SafeCorrelationIdCharsString = "#+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz|~";
 
-    public static string Sanitize(string value)
-    {
-#if NET8_0_OR_GREATER
-        return CorrelationIdValueSanitizerNet8.Sanitize(value);
-#else
-        return CorrelationIdValueSanitizerNet6.Sanitize(value);
+    public static string Sanitize(string value) =>
+#if NET8_0
+        CorrelationIdValueSanitizerNet8.Sanitize(value);
+#elif NET9_0_OR_GREATER
+        CorrelationIdValueSanitizerNet9.Sanitize(value);
 #endif
-    }
 }
 
-#if NET8_0_OR_GREATER
+#if NET8_0
 file static class CorrelationIdValueSanitizerNet8
 {
     private static readonly System.Buffers.SearchValues<char> SafeCorrelationIdChars =
@@ -47,7 +45,7 @@ file static class CorrelationIdValueSanitizerNet8
 
     private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
     {
-        (int sourceIndex, string source) = state;
+        var (sourceIndex, source) = state;
 
         // copy all safe chars before first unsafe char
         source
@@ -81,47 +79,74 @@ file static class CorrelationIdValueSanitizerNet8
 }
 #endif
 
-#if !NET8_0_OR_GREATER
-file static class CorrelationIdValueSanitizerNet6
+#if NET9_0_OR_GREATER
+file static class CorrelationIdValueSanitizerNet9
 {
-    private static readonly System.Collections.Generic.HashSet<char> SafeCorrelationIdChars =
-        new(CorrelationIdValueSanitizer.SafeCorrelationIdCharsString);
+    private static readonly System.Buffers.SearchValues<char> SafeCorrelationIdChars =
+        System.Buffers.SearchValues.Create(CorrelationIdValueSanitizer.SafeCorrelationIdCharsString);
 
     public static string Sanitize(string value)
     {
         var valueLength = Math.Min(value.Length, CorrelationIdValueSanitizer.MaxValueLength);
+        var valueSpan = value.AsSpan(0, valueLength);
 
-        for (int charPosition = 0; charPosition < valueLength; charPosition++)
+        var firstUnsafeCharPosition = valueSpan.IndexOfAnyExcept(SafeCorrelationIdChars);
+        if (firstUnsafeCharPosition < 0)
         {
-            if (IsUnsafeChar(value[charPosition]))
-            {
-                return SanitizeToNewString(value, valueLength, charPosition);
-            }
+            return value.Length > CorrelationIdValueSanitizer.MaxValueLength
+                ? valueSpan.ToString()
+                : value;
         }
 
-        return value.Length > CorrelationIdValueSanitizer.MaxValueLength
-            ? value.Substring(0, valueLength)
-            : value;
+        return string.Create(valueLength, new SanitizeState(valueSpan, firstUnsafeCharPosition), CreateValue);
     }
 
-    // NB! we can't pass `ReadOnlySpan<char>` as state (as it's ref struct), see: https://github.com/dotnet/runtime/issues/30175
-    private static string SanitizeToNewString(string source, int length, int firstUnsafeCharPosition) =>
-        string.Create(length, (firstUnsafeCharPosition, source), CreateValue);
-
-    private static void CreateValue(Span<char> buffer, (int FirstUnsafeCharPos, string SourceValue) state)
+    private static void CreateValue(Span<char> buffer, SanitizeState state)
     {
-        (int firstUnsafeCharPosition, string source) = state;
+        var source = state.Source;
 
-        source.AsSpan(0, firstUnsafeCharPosition).CopyTo(buffer);
-        for (int i = firstUnsafeCharPosition; i < buffer.Length; i++)
+        var currentIdx = 0;
+        var unsafeCharIdx = state.UnsafeCharIndex;
+
+        do
         {
-            var c = source[i];
-            buffer[i] = IsUnsafeChar(c)
-                ? CorrelationIdValueSanitizer.SanitizedChar
-                : c;
+            source
+                .Slice(currentIdx, unsafeCharIdx - currentIdx)
+                .CopyTo(buffer.Slice(currentIdx));
+
+            buffer[unsafeCharIdx] = CorrelationIdValueSanitizer.SanitizedChar;
+            currentIdx = unsafeCharIdx + 1;
+
+            unsafeCharIdx =
+                source
+                    .Slice(currentIdx)
+                    .IndexOfAnyExcept(SafeCorrelationIdChars);
+
+            unsafeCharIdx = unsafeCharIdx < 0
+                ? buffer.Length
+                : unsafeCharIdx + currentIdx;
+        }
+        while (unsafeCharIdx < buffer.Length);
+
+        // copy remaining chars
+        if (currentIdx < buffer.Length)
+        {
+            source
+                .Slice(currentIdx)
+                .CopyTo(buffer.Slice(currentIdx));
         }
     }
 
-    private static bool IsUnsafeChar(char c) => !SafeCorrelationIdChars.Contains(c);
+    private readonly ref struct SanitizeState
+    {
+        public SanitizeState(ReadOnlySpan<char> source, int unsafeCharIndex)
+        {
+            UnsafeCharIndex = unsafeCharIndex;
+            Source = source;
+        }
+
+        public int UnsafeCharIndex { get; }
+        public ReadOnlySpan<char> Source { get; }
+    }
 }
 #endif

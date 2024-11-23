@@ -7,6 +7,7 @@ using Correlate.AspNetCore;
 using Correlate.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
@@ -16,6 +17,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 [BenchmarkCategory("Comparison", "Correlate")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
+[CategoriesColumn]
 public class CorrelateComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
@@ -97,7 +99,7 @@ public class CorrelateComparingBenchmarks : IDisposable
                 options.ReadFrom.Clear();
                 options.ReadFrom.Add("X-Correlation-Id");
 
-                options.Factory = _ =>
+                options.Factory = (HttpContext httpContext) =>
                     CorrelationId.FromString(
                         Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture));
 
@@ -121,10 +123,10 @@ public class CorrelateComparingBenchmarks : IDisposable
             services.AddCorrelate(options =>
             {
                 options.IncludeInResponse = true;
-                options.RequestHeaders = new[]
-                {
-                    "X-Correlation-ID",
-                };
+                options.RequestHeaders =
+                [
+                    "X-Correlation-ID"
+                ];
             });
         }
 

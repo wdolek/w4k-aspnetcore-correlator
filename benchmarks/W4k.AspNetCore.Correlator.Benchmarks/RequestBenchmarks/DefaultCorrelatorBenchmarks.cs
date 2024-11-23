@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -10,8 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net80, baseline: true)]
+[SimpleJob(RuntimeMoniker.Net90)]
+[CategoriesColumn]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 public class DefaultCorrelatorBenchmarks : IDisposable
 {
     private readonly TestServer _server;

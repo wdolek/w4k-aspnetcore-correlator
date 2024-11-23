@@ -49,7 +49,7 @@ internal class CorrelationEmitter : ICorrelationEmitter
                 requestCorrelationContext.Header,
 
             // keep incoming header name, correlation ID generated
-            (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext _) => propagation.HeaderName,
+            (HeaderPropagation.KeepIncomingHeaderName, GeneratedCorrelationContext) => propagation.HeaderName,
 
             // no propagation, not received and not generated, received invalid value
             _ => null,

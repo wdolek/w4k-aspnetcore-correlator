@@ -2,11 +2,16 @@
 using System.Buffers;
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Jobs;
 using Bogus;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 
 [MemoryDiagnoser]
+[SimpleJob(RuntimeMoniker.Net80, baseline: true)]
+[SimpleJob(RuntimeMoniker.Net90)]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByMethod)]
 public class LogValueSanitizerBenchmarks
 {
     private const string SafeChars = "!#$&+-.abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -197,7 +202,7 @@ file static class CorrelationIdValueSanitizer_HashSet
     private const int MaxValueLength = 64;
     private const char SanitizedChar = '_';
 
-    private static readonly HashSet<char> ValidCorrelationIdChars = new HashSet<char>(
+    private static readonly HashSet<char> ValidCorrelationIdChars = new(
         "!#$&+-./0123456789:=ABCDEFGHIJKLMNOPQRSTUVWXYZ^_`abcdefghijklmnopqrstuvwxyz|~");
 
     public static string Sanitize(string value)

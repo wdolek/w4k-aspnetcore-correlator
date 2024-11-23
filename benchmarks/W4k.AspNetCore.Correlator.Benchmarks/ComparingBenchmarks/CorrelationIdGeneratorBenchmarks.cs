@@ -6,6 +6,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
@@ -15,6 +16,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 [BenchmarkCategory("Comparison", "AspNet.CorrelationIdGenerator")]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
 [MemoryDiagnoser]
+[CategoriesColumn]
 public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
@@ -94,7 +96,7 @@ public class CorrelationIdGeneratorComparingBenchmarks : IDisposable
         {
             services.AddDefaultCorrelator(options =>
             {
-                options.Factory = _ =>
+                options.Factory = (HttpContext httpContext) =>
                     CorrelationId.FromString(Guid.NewGuid().ToString());
 
                 options.Emit = PropagationSettings.NoPropagation;

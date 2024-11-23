@@ -2,14 +2,13 @@
 
 ![W4k.AspNetCore.Correlator Build](https://github.com/wdolek/w4k-aspnetcore-correlator/workflows/Build%20and%20test/badge.svg)
 [![NuGet Version](https://img.shields.io/nuget/v/W4k.AspNetCore.Correlator)](https://www.nuget.org/packages/W4k.AspNetCore.Correlator/)
-[![CodeQL](https://github.com/wdolek/w4k-aspnetcore-correlator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/wdolek/w4k-aspnetcore-correlator/security/code-scanning)
 
 Correlator helps you with handling correlation ID (also "request ID"): reading, generating new one and forwarding
 to subsequent requests.
 
 Correlation ID is sent within HTTP headers. If header is not set, Correlator will happily generate new one for you.
 
-Apart of accepting or generating correlation ID, it is also possible to return correlation ID back to caller,
+Apart from accepting or generating correlation ID, it is also possible to return correlation ID back to caller,
 so in case when correlation ID is generated, caller is aware of that value.
 
 To forward correlation ID to subsequent request, it is necessary to use designated HTTP message handler, see

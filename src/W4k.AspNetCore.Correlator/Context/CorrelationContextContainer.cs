@@ -26,8 +26,5 @@ internal class CorrelationContextContainer
         return new CorrelationScope(this);
     }
 
-    public void Dispose()
-    {
-        LocalContext.Value = null;
-    }
+    public void Dispose() => LocalContext.Value = null;
 }
