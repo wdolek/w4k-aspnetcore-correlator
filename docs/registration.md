@@ -4,49 +4,43 @@ Apart of registering default implementations of `ICorrelationContextFactory` and
 also provide own implementation.
 
 ```csharp
-public class MyLittleStartup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services
-            .AddCorrelator()
-            .WithCorrelationContextFactory<MyLittleCorrelationContextFactory>()
-            .WithCorrelationEmitter<MyLittleCorrelationEmitter>();
-    }
+var builder = WebApplication.CreateBuilder(args);
 
-    // ...
-}
+builder.Services
+    .AddCorrelator()
+    .WithCorrelationContextFactory<MyLittleCorrelationContextFactory>()
+    .WithCorrelationEmitter<MyLittleCorrelationEmitter>();
 ```
 
 ### Simple registration
 
-```
-services.AddDefaultCorrelator();
+```csharp
+builder.Services.AddDefaultCorrelator();
 
 // or
-services.AddDefaultCorrelator(options => { /* */ });
+builder.Services.AddDefaultCorrelator(options => { /* */ });
 ```
 
 ### Custom registration
 
-```
-ICorrelatorBuilder builder = services.AddCorrelator();
+```csharp
+ICorrelatorBuilder correlationBuilder = builder.Services.AddCorrelator();
 
 // or
-ICorrelatorBuilder builder = services.AddCorrelator(options => { /* */ });
+ICorrelatorBuilder correlationBuilder = builder.Services.AddCorrelator(options => { /* */ });
 ```
 
 ... and then either of:
-```
+```csharp
 // correlation context factory
-builder.WithDefaultCorrelationContextFactory(); // default implementation
-builder.WithCorrelationContextFactory<T>(); // type registration
-builder.WithCorrelationContextFactory(T factory); // instance registration
+correlationBuilder.WithDefaultCorrelationContextFactory(); // default implementation
+correlationBuilder.WithCorrelationContextFactory<T>(); // type registration
+correlationBuilder.WithCorrelationContextFactory(T factory); // instance registration
 
 // correlation emitter
-builder.WithDefaultCorrelationEmitter(); // default implementation
-builder.WithCorrelationEmitter<T>(); // type registration
-builder.WithCorrelationEmitter(T emitter); // instance registration
+correlationBuilder.WithDefaultCorrelationEmitter(); // default implementation
+correlationBuilder.WithCorrelationEmitter<T>(); // type registration
+correlationBuilder.WithCorrelationEmitter(T emitter); // instance registration
 ```
 
 Both `ICorrelationContextFactory` and `ICorrelationEmitter` are registered as singletons.
@@ -58,8 +52,8 @@ end up with exception.
 
 Optionally, you can register correlation validator like this (by default, no validator is registered):
 
-```
-builder.WithValidator(new CorrelationValueLengthValidator(64));
+```csharp
+correlationBuilder.WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
 `ICorrelationValidator` is registered as singleton.
