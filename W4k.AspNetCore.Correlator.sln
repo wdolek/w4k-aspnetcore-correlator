@@ -48,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.Benchmarks", "benchmarks\W4k.AspNetCore.Correlator.Benchmarks\W4k.AspNetCore.Correlator.Benchmarks.csproj", "{E664BDE9-C851-4D1C-87DB-05995AA6440F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNetCore.Correlator.Example.NetCore8.0", "samples\W4k.AspNetCore.Correlator.Example.NetCore8.0\W4k.AspNetCore.Correlator.Example.NetCore8.0.csproj", "{3B3C5105-08C5-4CD3-9E90-355A2720AEF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "W4k.AspNet.Correlator.Example.Net80", "samples\W4k.AspNet.Correlator.Example.Net80\W4k.AspNet.Correlator.Example.Net80.csproj", "{3B3C5105-08C5-4CD3-9E90-355A2720AEF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
