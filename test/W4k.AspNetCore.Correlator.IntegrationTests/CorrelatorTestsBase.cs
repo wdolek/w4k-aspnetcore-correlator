@@ -2,13 +2,14 @@ using System;
 using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 
 namespace W4k.AspNetCore.Correlator;
 
 public abstract class CorrelatorTestsBase<TStartup> : IDisposable
     where TStartup : class
 {
-    private readonly TestServer _server;
+    private readonly IHost _host;
     private readonly Lazy<HttpClient> _client;
 
     protected CorrelatorTestsBase()
@@ -16,10 +17,12 @@ public abstract class CorrelatorTestsBase<TStartup> : IDisposable
     {
     }
 
-    protected CorrelatorTestsBase(IWebHostBuilder builder)
+    protected CorrelatorTestsBase(IHostBuilder builder)
     {
-        _server = new TestServer(builder);
-        _client = new Lazy<HttpClient>(() => _server.CreateClient());
+        _host = builder.Build();
+        _host.Start();
+
+        _client = new Lazy<HttpClient>(() => _host.GetTestServer().CreateClient());
     }
 
     protected HttpClient Client => _client.Value;
@@ -35,10 +38,15 @@ public abstract class CorrelatorTestsBase<TStartup> : IDisposable
         if (disposing)
         {
             Client.Dispose();
-            _server.Dispose();
+            _host.Dispose();
         }
     }
 
-    private static IWebHostBuilder CreateTestWebHostBuilder() =>
-        new WebHostBuilder().UseStartup<TStartup>();
+    private static IHostBuilder CreateTestWebHostBuilder() =>
+        new HostBuilder().ConfigureWebHost(webHostBuilder =>
+        {
+            webHostBuilder
+                .UseTestServer()
+                .UseStartup<TStartup>();
+        });
 }
