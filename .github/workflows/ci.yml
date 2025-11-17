@@ -39,7 +39,7 @@ jobs:
       run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net10.0
 
     - name: Test (net9.0)
-      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net9.0
+      run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net9.0 ./test/W4k.AspNetCore.Correlator.UnitTests/
 
     - name: Test (net8.0)
       run: dotnet test --nologo --no-build --configuration Release --verbosity normal -f net8.0 ./test/W4k.AspNetCore.Correlator.UnitTests/
