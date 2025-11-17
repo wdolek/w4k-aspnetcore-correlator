@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <VersionPrefix>3.2.0</VersionPrefix>
+    <VersionPrefix>3.4.0</VersionPrefix>
     <Authors>Zdenek Havlin</Authors>
     <Description>
       ASP.NET Core middleware processing incoming request correlation ID, together with HTTP message handler
