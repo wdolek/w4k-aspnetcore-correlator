@@ -8,23 +8,33 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, baseline: true)]
+[SimpleJob(RuntimeMoniker.Net10_0, baseline: true)]
 [SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net80)]
 [CategoriesColumn]
-[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory)]
+[GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory, BenchmarkLogicalGroupRule.ByJob)]
 public class DefaultCorrelatorBenchmarks : IDisposable
 {
-    private readonly TestServer _server;
+    private readonly IHost _host;
     private readonly HttpClient _client;
 
     public DefaultCorrelatorBenchmarks()
     {
-        _server = new TestServer(new WebHostBuilder().UseStartup<DefaultCorrelatorStartup>());
-        _client = _server.CreateClient();
+        _host = new HostBuilder().ConfigureWebHost(webHostBuilder =>
+            {
+                webHostBuilder
+                    .UseTestServer()
+                    .UseStartup<DefaultCorrelatorStartup>();
+            })
+            .Build();
+
+        _host.Start();
+        _client = _host.GetTestClient();
     }
 
     [Benchmark(Baseline = true)]
@@ -53,8 +63,7 @@ public class DefaultCorrelatorBenchmarks : IDisposable
 
     public void Dispose()
     {
-        _client?.Dispose();
-        _server?.Dispose();
+        _host?.Dispose();
     }
 }
 

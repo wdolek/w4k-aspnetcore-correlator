@@ -6,9 +6,7 @@ using BenchmarkDotNet.Configs;
 using Correlate.AspNetCore;
 using Correlate.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -21,19 +19,12 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.ComparingBenchmarks;
 public class CorrelateComparingBenchmarks : IDisposable
 {
     private readonly TestServerContainer _correlator;
-    private readonly TestServerContainer _correlationId;
+    private readonly TestServerContainer _correlate;
 
     public CorrelateComparingBenchmarks()
     {
-        _correlator =
-            new TestServerContainer(
-                new TestServer(
-                    new WebHostBuilder().UseStartup<CorrelatorStartup>()));
-
-        _correlationId =
-            new TestServerContainer(
-                new TestServer(
-                    new WebHostBuilder().UseStartup<CorrelateStartup>()));
+        _correlator = TestServerContainer.Create<CorrelatorStartup>();
+        _correlate = TestServerContainer.Create<CorrelateStartup>();
     }
 
     [Benchmark(Description = "Correlator: Short", Baseline = true)]
@@ -49,7 +40,7 @@ public class CorrelateComparingBenchmarks : IDisposable
     public async Task CorrelateRequest()
     {
         var requestMessage = RequestFactory.CreateCorrelatedRequest();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlate.HttpClient.SendAsync(requestMessage);
     }
 
     [Benchmark(Description = "Correlator: Long", Baseline = true)]
@@ -65,7 +56,7 @@ public class CorrelateComparingBenchmarks : IDisposable
     public async Task CorrelateRequestWithAdditionalHeaders()
     {
         var requestMessage = RequestFactory.CreateCorrelatedRequestWithAdditionalHeaders();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlate.HttpClient.SendAsync(requestMessage);
     }
 
     [Benchmark(Description = "Correlator: Empty", Baseline = true)]
@@ -81,13 +72,13 @@ public class CorrelateComparingBenchmarks : IDisposable
     public async Task CorrelateRequestWithoutCorrelation()
     {
         var requestMessage = RequestFactory.CreateRequestWithoutCorrelation();
-        await _correlationId.HttpClient.SendAsync(requestMessage);
+        await _correlate.HttpClient.SendAsync(requestMessage);
     }
 
     public void Dispose()
     {
         _correlator?.Dispose();
-        _correlationId?.Dispose();
+        _correlate?.Dispose();
     }
 
     private class CorrelatorStartup

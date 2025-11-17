@@ -9,8 +9,9 @@ using Bogus;
 namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 
 [MemoryDiagnoser]
-[SimpleJob(RuntimeMoniker.Net80, baseline: true)]
+[SimpleJob(RuntimeMoniker.Net10_0, baseline: true)]
 [SimpleJob(RuntimeMoniker.Net90)]
+[SimpleJob(RuntimeMoniker.Net80)]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByMethod)]
 public class LogValueSanitizerBenchmarks
 {
