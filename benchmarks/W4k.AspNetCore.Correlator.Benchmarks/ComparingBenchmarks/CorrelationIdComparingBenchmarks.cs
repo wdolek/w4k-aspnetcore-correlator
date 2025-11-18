@@ -5,9 +5,7 @@ using BenchmarkDotNet.Configs;
 using CorrelationId;
 using CorrelationId.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Options;
 
@@ -24,15 +22,8 @@ public class CorrelationIdComparingBenchmarks : IDisposable
 
     public CorrelationIdComparingBenchmarks()
     {
-        _correlator =
-            new TestServerContainer(
-                new TestServer(
-                    new WebHostBuilder().UseStartup<CorrelatorStartup>()));
-
-        _correlationId =
-            new TestServerContainer(
-                new TestServer(
-                    new WebHostBuilder().UseStartup<CorrelationIdStartup>()));
+        _correlator = TestServerContainer.Create<CorrelatorStartup>();
+        _correlationId = TestServerContainer.Create<CorrelationIdStartup>();
     }
 
     [Benchmark(Description = "Correlator: Short", Baseline = true)]

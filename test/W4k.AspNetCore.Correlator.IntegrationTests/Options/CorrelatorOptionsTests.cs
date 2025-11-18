@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -14,14 +15,21 @@ public class CorrelatorOptionsTests
     {
         Assert.Throws<OptionsValidationException>(() =>
         {
-            using var _ = new TestServer(CreateTestWebHostBuilder());
+            using var host = CreateTestWebHostBuilder().Build();
+            host.Start();
+
+            _ = host.GetTestServer();
         });
     }
 
-    private static IWebHostBuilder CreateTestWebHostBuilder() =>
-        new WebHostBuilder()
-            .UseEnvironment("test")
-            .UseStartup<LocalStartup>();
+    private static IHostBuilder CreateTestWebHostBuilder() =>
+        new HostBuilder().ConfigureWebHost(webHostBuilder =>
+        {
+            webHostBuilder
+                .UseEnvironment("test")
+                .UseTestServer()
+                .UseStartup<LocalStartup>();
+        });
 
     private class LocalStartup
     {
