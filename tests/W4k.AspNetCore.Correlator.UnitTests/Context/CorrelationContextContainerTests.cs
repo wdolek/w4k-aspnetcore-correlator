@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Moq;
+using TUnit.Mocks;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 
@@ -12,7 +12,7 @@ public class CorrelationContextContainerTests
 
     public CorrelationContextContainerTests()
     {
-        _factory = new Mock<ICorrelationContextFactory>();
+        _factory = Mock.Of<ICorrelationContextFactory>();
     }
 
     [Test]
@@ -26,9 +26,7 @@ public class CorrelationContextContainerTests
         using var scope = container.CreateScope(httpContext);
 
         // assert
-        _factory.Verify(
-            f => f.CreateContext(It.Is<HttpContext>(ctx => ctx == httpContext)),
-            Times.Once);
+        _factory.CreateContext(httpContext).WasCalled(Times.Once);
     }
 
     [Test]
@@ -41,7 +39,7 @@ public class CorrelationContextContainerTests
         var correlationContext = new RequestCorrelationContext(correlationId, HttpHeaders.CorrelationId);
 
         _factory
-            .Setup(f => f.CreateContext(It.IsAny<HttpContext>()))
+            .CreateContext(Any<HttpContext>())
             .Returns(correlationContext);
 
         // act

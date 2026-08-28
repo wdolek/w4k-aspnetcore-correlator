@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Moq;
+using TUnit.Mocks;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
@@ -108,10 +108,10 @@ public class CorrelationContextFactoryTests
         };
 
         var validationResult = ValidationResult.Valid;
-        var validator = new Mock<ICorrelationValidator>();
+        var validator = Mock.Of<ICorrelationValidator>();
 
         validator
-            .Setup(v => v.Validate(It.Is<string>(val => string.Equals(correlationId, val))))
+            .Validate(correlationId)
             .Returns(validationResult);
 
         // act
@@ -144,10 +144,10 @@ public class CorrelationContextFactoryTests
         };
 
         var validationResult = ValidationResult.Invalid("invalid");
-        var validator = new Mock<ICorrelationValidator>();
+        var validator = Mock.Of<ICorrelationValidator>();
 
         validator
-            .Setup(v => v.Validate(It.Is<string>(val => string.Equals(correlationId, val))))
+            .Validate(correlationId)
             .Returns(validationResult);
 
         // act
