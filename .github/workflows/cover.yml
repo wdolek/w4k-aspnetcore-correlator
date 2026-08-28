@@ -22,7 +22,7 @@ jobs:
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
     - name: Test coverage
-      run: dotnet test --project test/W4k.AspNetCore.Correlator.UnitTests --configuration Release --coverage --coverage-output-format cobertura --results-directory ./TestResults
+      run: dotnet test --project tests/W4k.AspNetCore.Correlator.UnitTests --configuration Release --coverage --coverage-output-format cobertura --results-directory ./TestResults
 
     - name: Generate report (lcov)
       run: reportgenerator -reports:"TestResults/*.cobertura.xml" -targetdir:"TestResults/lcov" -reporttypes:lcov
