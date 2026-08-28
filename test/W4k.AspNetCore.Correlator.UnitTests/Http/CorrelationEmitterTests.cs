@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Http;
 
@@ -17,7 +16,7 @@ public class CorrelationEmitterTests
         _logger = new NullLogger<CorrelationEmitter>();
     }
 
-    [Fact]
+    [Test]
     public async Task Emits_WhenKeepingIncomingHeader_ExpectCorrelationIdEmittedWithIncomingHeader()
     {
         // arrange
@@ -35,11 +34,11 @@ public class CorrelationEmitterTests
         await emitter.Emit(httpContext, correlationContext);
 
         // assert
-        Assert.Contains(headerName, httpContext.Response.Headers);
-        Assert.Equal("123", httpContext.Response.Headers[headerName]);
+        await Assert.That(httpContext.Response.Headers).ContainsKey(headerName);
+        await Assert.That(httpContext.Response.Headers[headerName].ToString()).IsEqualTo("123");
     }
 
-    [Fact]
+    [Test]
     public async Task Emits_WhenKeepingIncomingHeaderButCorrelationIdGenerated_ExpectCorrelationIdEmittedWithPredefinedHeader()
     {
         // arrange
@@ -55,11 +54,11 @@ public class CorrelationEmitterTests
         await emitter.Emit(httpContext, correlationContext);
 
         // assert
-        Assert.Contains(headerName, httpContext.Response.Headers);
-        Assert.Equal("123", httpContext.Response.Headers[headerName].ToString());
+        await Assert.That(httpContext.Response.Headers).ContainsKey(headerName);
+        await Assert.That(httpContext.Response.Headers[headerName].ToString()).IsEqualTo("123");
     }
 
-    [Fact]
+    [Test]
     public async Task Emits_WhenEmmitingUsingCustomHeader_ExpectCorrelationIdEmittedWithPredefinedHeader()
     {
         // arrange
@@ -78,11 +77,11 @@ public class CorrelationEmitterTests
         await emitter.Emit(httpContext, correlationContext);
 
         // assert
-        Assert.Contains(outgoingHeader, httpContext.Response.Headers);
-        Assert.Equal("123", httpContext.Response.Headers[outgoingHeader]);
+        await Assert.That(httpContext.Response.Headers).ContainsKey(outgoingHeader);
+        await Assert.That(httpContext.Response.Headers[outgoingHeader].ToString()).IsEqualTo("123");
     }
 
-    [Fact]
+    [Test]
     public async Task Emits_WhenNoEmit_ExpectNoCorrelationIdEmitted()
     {
         // arrange
@@ -100,7 +99,7 @@ public class CorrelationEmitterTests
         await emitter.Emit(httpContext, correlationContext);
 
         // assert
-        Assert.DoesNotContain(incomingHeader, httpContext.Response.Headers);
+        await Assert.That(httpContext.Response.Headers).DoesNotContainKey(incomingHeader);
     }
 
     private static IOptions<CorrelatorOptions> CreateEmitOptions(PropagationSettings emitSettings)

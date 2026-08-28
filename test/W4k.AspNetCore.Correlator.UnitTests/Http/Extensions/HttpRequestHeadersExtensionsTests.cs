@@ -1,13 +1,13 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator.Http.Extensions;
 
 public class HttpRequestHeadersExtensionsTests
 {
-    [Fact]
-    public void AddIfNotSet_ExpectHeaderToBeAdded()
+    [Test]
+    public async Task AddIfNotSet_ExpectHeaderToBeAdded()
     {
         // arrange
         // (NB! there's no public ctor for `HttpRequestHeaders`)
@@ -17,12 +17,12 @@ public class HttpRequestHeadersExtensionsTests
         headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "123");
 
         // assert
-        Assert.True(headers.Contains("X-Correlation-ID"));
-        Assert.Contains("123", headers.GetValues("X-Correlation-ID"));
+        await Assert.That(headers.Contains("X-Correlation-ID")).IsTrue();
+        await Assert.That(headers.GetValues("X-Correlation-ID")).Contains("123");
     }
 
-    [Fact]
-    public void AddIfNotSet_HeaderAlreadySet_ExpectKeepingOldValue()
+    [Test]
+    public async Task AddIfNotSet_HeaderAlreadySet_ExpectKeepingOldValue()
     {
         // arrange
         HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;
@@ -33,14 +33,14 @@ public class HttpRequestHeadersExtensionsTests
         headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "999");
 
         // assert
-        Assert.True(headers.Contains("X-Correlation-ID"));
-        Assert.Contains("123", headers.GetValues("X-Correlation-ID"));
+        await Assert.That(headers.Contains("X-Correlation-ID")).IsTrue();
+        await Assert.That(headers.GetValues("X-Correlation-ID")).Contains("123");
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void AddIfNotSet_WhenHeaderNameEmpty_ExpectNoChange(string? headerName)
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    public async Task AddIfNotSet_WhenHeaderNameEmpty_ExpectNoChange(string? headerName)
     {
         // arrange
         HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;
@@ -49,13 +49,13 @@ public class HttpRequestHeadersExtensionsTests
         headers = headers.AddHeaderIfNotSet(headerName, "999");
 
         // assert
-        Assert.Empty(headers);
+        await Assert.That(headers).IsEmpty();
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void AddIfNotSet_WhenHeaderValueEmpty_ExpectNoChange(string? headerValue)
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    public async Task AddIfNotSet_WhenHeaderValueEmpty_ExpectNoChange(string? headerValue)
     {
         // arrange
         HttpRequestHeaders headers = new HttpClient().DefaultRequestHeaders;
@@ -64,6 +64,6 @@ public class HttpRequestHeadersExtensionsTests
         headers = headers.AddHeaderIfNotSet("X-Correlation-ID", headerValue);
 
         // assert
-        Assert.Empty(headers);
+        await Assert.That(headers).IsEmpty();
     }
 }

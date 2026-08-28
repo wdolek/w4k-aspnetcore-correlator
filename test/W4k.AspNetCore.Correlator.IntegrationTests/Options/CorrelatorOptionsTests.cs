@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Options;
 
 public class CorrelatorOptionsTests
 {
-    [Fact]
+    [Test]
     public void Invoke_WhenMisconfigured_ExpectOptionsValidationException()
     {
         Assert.Throws<OptionsValidationException>(() =>

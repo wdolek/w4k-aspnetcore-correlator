@@ -10,16 +10,16 @@ using Microsoft.Extensions.Hosting;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator;
 
-public sealed class CorrelationPropagationTests : IDisposable
+public sealed class CorrelationPropagationTests
 {
-    private readonly IHost _hostAlpha;
-    private readonly IHost _hostBeta;
+    private IHost _hostAlpha = null!;
+    private IHost _hostBeta = null!;
 
-    public CorrelationPropagationTests()
+    [Before(Test)]
+    public async Task SetUpTestHosts()
     {
         _hostAlpha = Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webBuilder =>
@@ -43,11 +43,11 @@ public sealed class CorrelationPropagationTests : IDisposable
             })
             .Build();
 
-        _hostAlpha.Start();
-        _hostBeta.Start();
+        await _hostAlpha.StartAsync();
+        await _hostBeta.StartAsync();
     }
 
-    [Fact]
+    [Test]
     public async Task ForwardCorrelation_WhenChangingHeader_ExpectCorrelationSent()
     {
         // arrange
@@ -75,14 +75,24 @@ public sealed class CorrelationPropagationTests : IDisposable
         var receivedValue = await response.Content.ReadAsStringAsync();
 
         // assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal($"X-Request-Id:{correlation}", receivedValue);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(receivedValue).IsEqualTo($"X-Request-Id:{correlation}");
     }
 
-    public void Dispose()
+    [After(Test)]
+    public async Task TearDownTestHosts()
     {
-        _hostAlpha.Dispose();
-        _hostBeta.Dispose();
+        if (_hostAlpha is not null)
+        {
+            await _hostAlpha.StopAsync();
+            _hostAlpha.Dispose();
+        }
+
+        if (_hostBeta is not null)
+        {
+            await _hostBeta.StopAsync();
+            _hostBeta.Dispose();
+        }
     }
 
     private class StartupAlpha

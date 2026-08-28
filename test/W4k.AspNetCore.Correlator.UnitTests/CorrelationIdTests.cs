@@ -1,67 +1,67 @@
-using Xunit;
+using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator;
 
 public class CorrelationIdTests
 {
-    [Fact]
-    public void StringTypeCast_ExpectInternalValue()
+    [Test]
+    public async Task StringTypeCast_ExpectInternalValue()
     {
         var correlationId = CorrelationId.FromString("123");
         string value = correlationId;
 
-        Assert.NotNull(value);
-        Assert.Equal("123", value);
+        await Assert.That(value).IsNotNull();
+        await Assert.That(value).IsEqualTo("123");
     }
 
-    [Theory]
-    [InlineData("123", "123")]
-    [InlineData("test", "test")]
-    [InlineData("test", "TEST")]
-    public void Equals_MultipleOverrides_ExpectToBeEqual(string right, string left)
+    [Test]
+    [Arguments("123", "123")]
+    [Arguments("test", "test")]
+    [Arguments("test", "TEST")]
+    public async Task Equals_MultipleOverrides_ExpectToBeEqual(string right, string left)
     {
         var c1 = CorrelationId.FromString(right);
         var c2 = CorrelationId.FromString(left);
 
-        Assert.True(c1.Equals(c2));
-        Assert.True(c1 == c2);
-        Assert.Equal(c1, c2);
+        await Assert.That(c1.Equals(c2)).IsTrue();
+        await Assert.That(c1 == c2).IsTrue();
+        await Assert.That(c2).IsEqualTo(c1);
     }
 
-    [Theory]
-    [InlineData("test_1", "TEST_2")]
-    public void NotEqual_MultipleOverrides_ExpectToBeNotEqual(string right, string left)
+    [Test]
+    [Arguments("test_1", "TEST_2")]
+    public async Task NotEqual_MultipleOverrides_ExpectToBeNotEqual(string right, string left)
     {
         var c1 = CorrelationId.FromString(right);
         var c2 = CorrelationId.FromString(left);
 
-        Assert.True(!c1.Equals(c2));
-        Assert.True(c1 != c2);
-        Assert.NotEqual(c1, c2);
+        await Assert.That(!c1.Equals(c2)).IsTrue();
+        await Assert.That(c1 != c2).IsTrue();
+        await Assert.That(c2).IsNotEqualTo(c1);
     }
-    [Fact]
-    public void Empty_ExpectTrueIfEmpty()
+    [Test]
+    public async Task Empty_ExpectTrueIfEmpty()
     {
         var correlationId = CorrelationId.Empty;
 
-        Assert.True(correlationId.IsEmpty);
+        await Assert.That(correlationId.IsEmpty).IsTrue();
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData(null)]
-    public void FromEmptyString_ExpectTrueIfEmpty(string? value)
+    [Test]
+    [Arguments("")]
+    [Arguments(null)]
+    public async Task FromEmptyString_ExpectTrueIfEmpty(string? value)
     {
         var correlationId = CorrelationId.FromString(value);
 
-        Assert.True(correlationId.IsEmpty);
+        await Assert.That(correlationId.IsEmpty).IsTrue();
     }
 
-    [Fact]
-    public void FromString_ExpectNotToBeEmpty()
+    [Test]
+    public async Task FromString_ExpectNotToBeEmpty()
     {
         var correlationId = CorrelationId.FromString("123");
 
-        Assert.False(correlationId.IsEmpty);
+        await Assert.That(correlationId.IsEmpty).IsFalse();
     }
 }
