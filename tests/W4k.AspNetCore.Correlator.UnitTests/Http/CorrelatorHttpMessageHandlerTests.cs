@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
+using TUnit.Mocks;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
@@ -19,7 +19,7 @@ public class CorrelatorHttpMessageHandlerTests
 
     public CorrelatorHttpMessageHandlerTests()
     {
-        _correlationContextAccessor = new Mock<ICorrelationContextAccessor>();
+        _correlationContextAccessor = Mock.Of<ICorrelationContextAccessor>();
     }
 
     [Test]
@@ -31,7 +31,7 @@ public class CorrelatorHttpMessageHandlerTests
         var propagationSettings = PropagationSettings.PropagateAs(outgoingHeader);
 
         _correlationContextAccessor
-            .Setup(a => a.CorrelationContext)
+            .CorrelationContext
             .Returns(correlationContext);
 
         async Task AssertRequest(HttpRequestMessage r)
@@ -40,7 +40,7 @@ public class CorrelatorHttpMessageHandlerTests
             await Assert.That(r.Headers.GetValues(outgoingHeader)).Contains(TestCorrelationId.Value);
         }
 
-        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
+        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor.Object, AssertRequest);
 
         // act & assert (via test delegating handler)
         var client = new HttpClient(handler);
@@ -55,10 +55,10 @@ public class CorrelatorHttpMessageHandlerTests
         var propagationSettings = PropagationSettings.KeepIncomingHeaderName();
 
         _correlationContextAccessor
-            .Setup(a => a.CorrelationContext)
+            .CorrelationContext
             .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
 
-        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
+        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor.Object, AssertRequest);
 
         // act & assert (via test delegating handler)
         var client = new HttpClient(handler);
@@ -80,10 +80,10 @@ public class CorrelatorHttpMessageHandlerTests
         var propagationSettings = PropagationSettings.KeepIncomingHeaderName(incomingHeader);
 
         _correlationContextAccessor
-            .Setup(a => a.CorrelationContext)
+            .CorrelationContext
             .Returns(new GeneratedCorrelationContext(TestCorrelationId));
 
-        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
+        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor.Object, AssertRequest);
 
         // act & assert (via test delegating handler)
         var client = new HttpClient(handler);
@@ -105,10 +105,10 @@ public class CorrelatorHttpMessageHandlerTests
         var propagationSettings = PropagationSettings.NoPropagation;
 
         _correlationContextAccessor
-            .Setup(a => a.CorrelationContext)
+            .CorrelationContext
             .Returns(new RequestCorrelationContext(TestCorrelationId, incomingHeader));
 
-        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
+        var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor.Object, AssertRequest);
 
         // act & assert (via test delegating handler)
         var client = new HttpClient(handler);
@@ -140,10 +140,10 @@ public class CorrelatorHttpMessageHandlerTests
 
     private static CorrelatorHttpMessageHandler CreateMessageHandler(
         PropagationSettings propagationSettings,
-        Mock<ICorrelationContextAccessor> contextAccessor,
+        ICorrelationContextAccessor contextAccessor,
         Func<HttpRequestMessage, Task> assertRequest)
     {
-        return new CorrelatorHttpMessageHandler(propagationSettings, contextAccessor.Object)
+        return new CorrelatorHttpMessageHandler(propagationSettings, contextAccessor)
         {
             InnerHandler = new TestDelegatingHandler(assertRequest)
         };
