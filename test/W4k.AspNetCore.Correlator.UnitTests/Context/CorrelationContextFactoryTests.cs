@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -7,7 +8,6 @@ using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Options;
 using W4k.AspNetCore.Correlator.Validation;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Context;
 
@@ -29,9 +29,9 @@ public class CorrelationContextFactoryTests
         _logger = new NullLogger<CorrelationContextFactory>();
     }
 
-    [Theory]
-    [MemberData(nameof(GenerateKnownHeaderNames))]
-    public void CreateContext_WhenIncomingHeaderPresent_ExpectRequestCorrelationContext(string incomingHeader)
+    [Test]
+    [MethodDataSource(nameof(GenerateKnownHeaderNames))]
+    public async Task CreateContext_WhenIncomingHeaderPresent_ExpectRequestCorrelationContext(string incomingHeader)
     {
         // arrange
         var correlationId = "123";
@@ -51,13 +51,13 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        var requestCorrelationContext = Assert.IsType<RequestCorrelationContext>(correlationContext);
-        Assert.Equal(correlationId, correlationContext.CorrelationId.Value);
-        Assert.Equal(incomingHeader, requestCorrelationContext.Header);
+        var requestCorrelationContext = await Assert.That(correlationContext).IsTypeOf<RequestCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.Value).IsEqualTo(correlationId);
+        await Assert.That(requestCorrelationContext!.Header).IsEqualTo(incomingHeader);
     }
 
-    [Fact]
-    public void CreateContext_WhenGeneratingCorrelation_ExpectGeneratedCorrelationContext()
+    [Test]
+    public async Task CreateContext_WhenGeneratingCorrelation_ExpectGeneratedCorrelationContext()
     {
         // arrange
         var correlationId = "123";
@@ -70,12 +70,12 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        Assert.IsType<GeneratedCorrelationContext>(correlationContext);
-        Assert.Equal(correlationId, correlationContext.CorrelationId.Value);
+        await Assert.That(correlationContext).IsTypeOf<GeneratedCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.Value).IsEqualTo(correlationId);
     }
 
-    [Fact]
-    public void CreateContext_WhenNoFactory_ExpectEmptyCorrelationContext()
+    [Test]
+    public async Task CreateContext_WhenNoFactory_ExpectEmptyCorrelationContext()
     {
         // arrange
         var httpContext = new DefaultHttpContext();
@@ -87,12 +87,12 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        Assert.IsType<EmptyCorrelationContext>(correlationContext);
-        Assert.True(correlationContext.CorrelationId.IsEmpty);
+        await Assert.That(correlationContext).IsTypeOf<EmptyCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.IsEmpty).IsTrue();
     }
 
-    [Fact]
-    public void CreateContext_WhenValidValue_ExpectRequestCorrelationContext()
+    [Test]
+    public async Task CreateContext_WhenValidValue_ExpectRequestCorrelationContext()
     {
         // arrange
         var correlationId = "valid_correlation";
@@ -123,12 +123,12 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        Assert.IsType<RequestCorrelationContext>(correlationContext);
-        Assert.Equal(correlationId, correlationContext.CorrelationId.Value);
+        await Assert.That(correlationContext).IsTypeOf<RequestCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.Value).IsEqualTo(correlationId);
     }
 
-    [Fact]
-    public void CreateContext_WhenInvalidValue_ExpectInvalidCorrelationContext()
+    [Test]
+    public async Task CreateContext_WhenInvalidValue_ExpectInvalidCorrelationContext()
     {
         // arrange
         var correlationId = "invalid_correlation";
@@ -159,14 +159,14 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        var invalidCorrelationContext = Assert.IsType<InvalidCorrelationContext>(correlationContext);
-        Assert.True(correlationContext.CorrelationId.IsEmpty);
-        Assert.Equal(HttpHeaders.CorrelationId, invalidCorrelationContext.Header);
-        Assert.Equal(invalidCorrelationContext.ValidationResult, validationResult);
+        var invalidCorrelationContext = await Assert.That(correlationContext).IsTypeOf<InvalidCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.IsEmpty).IsTrue();
+        await Assert.That(invalidCorrelationContext!.Header).IsEqualTo(HttpHeaders.CorrelationId);
+        await Assert.That(validationResult).IsEqualTo(invalidCorrelationContext.ValidationResult);
     }
 
-    [Fact]
-    public void CreateContext_WhenUnknownCorrelationHeader_ExpectEmptyCorrelationContext()
+    [Test]
+    public async Task CreateContext_WhenUnknownCorrelationHeader_ExpectEmptyCorrelationContext()
     {
         // arrange
         var httpContext = new DefaultHttpContext
@@ -187,8 +187,8 @@ public class CorrelationContextFactoryTests
         var correlationContext = factory.CreateContext(httpContext);
 
         // assert
-        Assert.IsType<EmptyCorrelationContext>(correlationContext);
-        Assert.True(correlationContext.CorrelationId.IsEmpty);
+        await Assert.That(correlationContext).IsTypeOf<EmptyCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.IsEmpty).IsTrue();
     }
 
     public static IEnumerable<object[]> GenerateKnownHeaderNames()

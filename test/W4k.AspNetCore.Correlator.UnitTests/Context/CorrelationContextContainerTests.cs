@@ -1,8 +1,8 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Context;
 
@@ -15,7 +15,7 @@ public class CorrelationContextContainerTests
         _factory = new Mock<ICorrelationContextFactory>();
     }
 
-    [Fact]
+    [Test]
     public void CreateScope_ExpectCorrelationContextFactoryBeingCalled()
     {
         // arrange
@@ -31,8 +31,8 @@ public class CorrelationContextContainerTests
             Times.Once);
     }
 
-    [Fact]
-    public void CreateScope_ExpectCorrelationContextPresent()
+    [Test]
+    public async Task CreateScope_ExpectCorrelationContextPresent()
     {
         // arrange
         var httpContext = new DefaultHttpContext();
@@ -50,22 +50,22 @@ public class CorrelationContextContainerTests
 
         // assert
         // -> container content
-        Assert.Equal(correlationContext, container.CorrelationContext);
-        Assert.Equal(correlationId, container.CorrelationContext.CorrelationId);
+        await Assert.That(container.CorrelationContext).IsEqualTo(correlationContext);
+        await Assert.That(container.CorrelationContext.CorrelationId).IsEqualTo(correlationId);
 
         // -> scope content
-        Assert.Equal(correlationContext, scope.CorrelationContext);
-        Assert.Equal(correlationId, scope.CorrelationContext.CorrelationId);
+        await Assert.That(scope.CorrelationContext).IsEqualTo(correlationContext);
+        await Assert.That(scope.CorrelationContext.CorrelationId).IsEqualTo(correlationId);
     }
 
-    [Fact]
-    public void GetCorrelationContext_WhenContainerNotPopulated_ExpectEmptyCorrelationContext()
+    [Test]
+    public async Task GetCorrelationContext_WhenContainerNotPopulated_ExpectEmptyCorrelationContext()
     {
         // arrange
         var container = new CorrelationContextContainer(_factory.Object);
         var correlationContext = container.CorrelationContext;
 
         // assert
-        Assert.IsType<EmptyCorrelationContext>(correlationContext);
+        await Assert.That(correlationContext).IsTypeOf<EmptyCorrelationContext>();
     }
 }

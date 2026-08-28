@@ -1,43 +1,51 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 
 namespace W4k.AspNetCore.Correlator;
 
-public abstract class CorrelatorTestsBase<TStartup> : IDisposable
+public abstract class CorrelatorTestsBase<TStartup>
     where TStartup : class
 {
-    private readonly IHost _host;
-    private readonly Lazy<HttpClient> _client;
+    private IHost _host = null!;
+    private Lazy<HttpClient> _client = null!;
 
     protected CorrelatorTestsBase()
-        : this(CreateTestWebHostBuilder())
     {
     }
 
     protected CorrelatorTestsBase(IHostBuilder builder)
     {
-        _host = builder.Build();
-        _host.Start();
+        Builder = builder;
+    }
+
+    protected IHostBuilder? Builder { get; }
+
+    protected HttpClient Client => _client.Value;
+
+    [Before(Test)]
+    public async Task SetUpTestHost()
+    {
+        _host = (Builder ?? CreateTestWebHostBuilder()).Build();
+        await _host.StartAsync();
 
         _client = new Lazy<HttpClient>(() => _host.GetTestServer().CreateClient());
     }
 
-    protected HttpClient Client => _client.Value;
-
-    public void Dispose()
+    [After(Test)]
+    public async Task TearDownTestHost()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
+        if (_client is not null && _client.IsValueCreated)
         {
             Client.Dispose();
+        }
+
+        if (_host is not null)
+        {
+            await _host.StopAsync();
             _host.Dispose();
         }
     }

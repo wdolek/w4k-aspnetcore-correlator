@@ -8,7 +8,6 @@ using Moq;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Http;
 
@@ -23,8 +22,8 @@ public class CorrelatorHttpMessageHandlerTests
         _correlationContextAccessor = new Mock<ICorrelationContextAccessor>();
     }
 
-    [Theory]
-    [MemberData(nameof(GenerateIncomingCorrelationContext))]
+    [Test]
+    [MethodDataSource(nameof(GenerateIncomingCorrelationContext))]
     public async Task Forward_PropagateAsPredefined_ExpectPredefinedHeader(CorrelationContext correlationContext)
     {
         // arrange
@@ -35,10 +34,10 @@ public class CorrelatorHttpMessageHandlerTests
             .Setup(a => a.CorrelationContext)
             .Returns(correlationContext);
 
-        void AssertRequest(HttpRequestMessage r)
+        async Task AssertRequest(HttpRequestMessage r)
         {
-            Assert.True(r.Headers.Contains(outgoingHeader));
-            Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(outgoingHeader));
+            await Assert.That(r.Headers.Contains(outgoingHeader)).IsTrue();
+            await Assert.That(r.Headers.GetValues(outgoingHeader)).Contains(TestCorrelationId.Value);
         }
 
         var handler = CreateMessageHandler(propagationSettings, _correlationContextAccessor, AssertRequest);
@@ -48,7 +47,7 @@ public class CorrelatorHttpMessageHandlerTests
         _ = await client.GetAsync("https://www.example.com/");
     }
 
-    [Fact]
+    [Test]
     public async Task Forward_KeepIncomingHeader_ExpectIncomingHeader()
     {
         // arrange
@@ -66,14 +65,14 @@ public class CorrelatorHttpMessageHandlerTests
         _ = await client.GetAsync("https://www.example.com/");
         return;
 
-        void AssertRequest(HttpRequestMessage r)
+        async Task AssertRequest(HttpRequestMessage r)
         {
-            Assert.True(r.Headers.Contains(incomingHeader));
-            Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
+            await Assert.That(r.Headers.Contains(incomingHeader)).IsTrue();
+            await Assert.That(r.Headers.GetValues(incomingHeader)).Contains(TestCorrelationId.Value);
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Forward_KeepIncomingHeaderWithGeneratedCorrelationId_ExpectPredefinedIncomingHeader()
     {
         // arrange
@@ -91,14 +90,14 @@ public class CorrelatorHttpMessageHandlerTests
         _ = await client.GetAsync("https://www.example.com/");
         return;
 
-        void AssertRequest(HttpRequestMessage r)
+        async Task AssertRequest(HttpRequestMessage r)
         {
-            Assert.True(r.Headers.Contains(incomingHeader));
-            Assert.Contains(TestCorrelationId.Value, r.Headers.GetValues(incomingHeader));
+            await Assert.That(r.Headers.Contains(incomingHeader)).IsTrue();
+            await Assert.That(r.Headers.GetValues(incomingHeader)).Contains(TestCorrelationId.Value);
         }
     }
 
-    [Fact]
+    [Test]
     public async Task Forward_WhenForwardingDisabled_ExpectNoCorrelationInRequestMessage()
     {
         // arrange
@@ -116,12 +115,12 @@ public class CorrelatorHttpMessageHandlerTests
         _ = await client.GetAsync("https://www.example.com/");
         return;
 
-        void AssertRequest(HttpRequestMessage r)
+        async Task AssertRequest(HttpRequestMessage r)
         {
             foreach (var header in r.Headers)
             {
-                Assert.NotEqual(incomingHeader, header.Key);
-                Assert.DoesNotContain(TestCorrelationId.Value, header.Value);
+                await Assert.That(header.Key).IsNotEqualTo(incomingHeader);
+                await Assert.That(header.Value).DoesNotContain(TestCorrelationId.Value);
             }
         }
     }
@@ -142,7 +141,7 @@ public class CorrelatorHttpMessageHandlerTests
     private static CorrelatorHttpMessageHandler CreateMessageHandler(
         PropagationSettings propagationSettings,
         Mock<ICorrelationContextAccessor> contextAccessor,
-        Action<HttpRequestMessage> assertRequest)
+        Func<HttpRequestMessage, Task> assertRequest)
     {
         return new CorrelatorHttpMessageHandler(propagationSettings, contextAccessor.Object)
         {
@@ -152,20 +151,20 @@ public class CorrelatorHttpMessageHandlerTests
 
     private class TestDelegatingHandler : DelegatingHandler
     {
-        private readonly Action<HttpRequestMessage> _assertRequest;
+        private readonly Func<HttpRequestMessage, Task> _assertRequest;
 
-        public TestDelegatingHandler(Action<HttpRequestMessage> assertRequest)
+        public TestDelegatingHandler(Func<HttpRequestMessage, Task> assertRequest)
         {
             _assertRequest = assertRequest;
         }
 
-        protected override Task<HttpResponseMessage> SendAsync(
+        protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            _assertRequest(request);
+            await _assertRequest(request);
 
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK));
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
     }
 }

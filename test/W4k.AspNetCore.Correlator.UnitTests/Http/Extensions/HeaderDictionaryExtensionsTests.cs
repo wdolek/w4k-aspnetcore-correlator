@@ -1,12 +1,12 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Http.Extensions;
 
 public class HttpRequestHeadersExtensions
 {
-    [Fact]
-    public void AddIfNotSet_ExpectHeaderToBeAdded()
+    [Test]
+    public async Task AddIfNotSet_ExpectHeaderToBeAdded()
     {
         // arrange
         IHeaderDictionary headers = new HeaderDictionary();
@@ -15,12 +15,12 @@ public class HttpRequestHeadersExtensions
         headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "123");
 
         // assert
-        Assert.True(headers.ContainsKey("X-Correlation-ID"));
-        Assert.Equal("123", headers["X-Correlation-ID"]);
+        await Assert.That(headers.ContainsKey("X-Correlation-ID")).IsTrue();
+        await Assert.That(headers["X-Correlation-ID"].ToString()).IsEqualTo("123");
     }
 
-    [Fact]
-    public void AddIfNotSet_HeaderAlreadySet_ExpectKeepingOldValue()
+    [Test]
+    public async Task AddIfNotSet_HeaderAlreadySet_ExpectKeepingOldValue()
     {
         // arrange
         IHeaderDictionary headers = new HeaderDictionary
@@ -33,14 +33,14 @@ public class HttpRequestHeadersExtensions
         headers = headers.AddHeaderIfNotSet("X-Correlation-ID", "999");
 
         // assert
-        Assert.True(headers.ContainsKey("X-Correlation-ID"));
-        Assert.Equal("123", headers["X-Correlation-ID"]);
+        await Assert.That(headers.ContainsKey("X-Correlation-ID")).IsTrue();
+        await Assert.That(headers["X-Correlation-ID"].ToString()).IsEqualTo("123");
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void AddIfNoSet_WhenHeaderNameIsEmpty_ExpectNoChange(string? headerName)
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    public async Task AddIfNoSet_WhenHeaderNameIsEmpty_ExpectNoChange(string? headerName)
     {
         // arrange
         IHeaderDictionary headers = new HeaderDictionary();
@@ -49,6 +49,6 @@ public class HttpRequestHeadersExtensions
         headers = headers.AddHeaderIfNotSet(headerName, "123");
 
         // assert
-        Assert.Empty(headers);
+        await Assert.That(headers).IsEmpty();
     }
 }

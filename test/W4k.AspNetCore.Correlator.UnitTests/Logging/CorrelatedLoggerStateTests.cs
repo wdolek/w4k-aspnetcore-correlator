@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator.Logging;
 
 public class CorrelatedLoggerStateTests
 {
-    [Fact]
-    public void Ctor_ExpectStringValueAndStructure()
+    [Test]
+    public async Task Ctor_ExpectStringValueAndStructure()
     {
         // arrange
         var correlationKey = "CorrelationKey";
@@ -17,13 +17,13 @@ public class CorrelatedLoggerStateTests
         var state = new CorrelatedLoggerState("CorrelationKey", correlationId);
 
         // assert
-        Assert.Equal("CorrelationKey:correlation_id", state.ToString());
+        await Assert.That(state.ToString()).IsEqualTo("CorrelationKey:correlation_id");
 
-        Assert.IsAssignableFrom<IEnumerable<KeyValuePair<string, object>>>(state);
+        await Assert.That(state).IsAssignableTo<IEnumerable<KeyValuePair<string, object>>>();
 
         var stateArray = state.ToArray();
-        Assert.Single(stateArray);
-        Assert.Equal(correlationKey, stateArray[0].Key);
-        Assert.Equal(correlationId, stateArray[0].Value);
+        await Assert.That(stateArray).HasSingleItem();
+        await Assert.That(stateArray[0].Key).IsEqualTo(correlationKey);
+        await Assert.That(stateArray[0].Value).IsEqualTo(correlationId);
     }
 }

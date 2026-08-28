@@ -4,13 +4,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using W4k.AspNetCore.Correlator.Startup;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator;
 
 public class ConfiguredCorrelatorTests : CorrelatorTestsBase<ConfiguredCorrelatorStartup>
 {
-    [Fact]
+    [Test]
     public async Task CorrelationIdReadFromRequest()
     {
         // arrange
@@ -23,13 +22,13 @@ public class ConfiguredCorrelatorTests : CorrelatorTestsBase<ConfiguredCorrelato
         HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
         // assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.True(response.Headers.Contains("X-CID"));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(response.Headers.Contains("X-CID")).IsTrue();
 
         string correlationIdEmitted = response.Headers.GetValues("X-CID").First();
-        Assert.Equal("123", correlationIdEmitted);
+        await Assert.That(correlationIdEmitted).IsEqualTo("123");
 
         string correlationId = await response.Content.ReadAsStringAsync();
-        Assert.Equal("123", correlationId);
+        await Assert.That(correlationId).IsEqualTo("123");
     }
 }

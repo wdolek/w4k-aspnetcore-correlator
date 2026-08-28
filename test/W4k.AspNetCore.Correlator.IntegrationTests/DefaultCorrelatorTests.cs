@@ -4,17 +4,16 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using W4k.AspNetCore.Correlator.Startup;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator;
 
 public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultCorrelatorStartup>
 {
-    [Theory]
-    [InlineData("Request-Id")]
-    [InlineData("X-Correlation-ID")]
-    [InlineData("x-correlation-id")]
-    [InlineData("X-Request-ID")]
+    [Test]
+    [Arguments("Request-Id")]
+    [Arguments("X-Correlation-ID")]
+    [Arguments("x-correlation-id")]
+    [Arguments("X-Request-ID")]
     public async Task CorrelationIdReadFromRequest(string correlationHeaderName)
     {
         // arrange
@@ -25,13 +24,13 @@ public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultCorrelatorStart
         HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
         // assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         string correlationId = await response.Content.ReadAsStringAsync();
-        Assert.Equal("123", correlationId);
+        await Assert.That(correlationId).IsEqualTo("123");
     }
 
-    [Fact]
+    [Test]
     public async Task CorrelationIdGenerated()
     {
         // arrange
@@ -41,14 +40,14 @@ public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultCorrelatorStart
         HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
         // assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
 
         string correlationId = await response.Content.ReadAsStringAsync();
-        Assert.NotEmpty(correlationId);
-        Assert.True(Guid.TryParse(correlationId, out Guid _));
+        await Assert.That(correlationId).IsNotEmpty();
+        await Assert.That(Guid.TryParse(correlationId, out Guid _)).IsTrue();
     }
 
-    [Fact]
+    [Test]
     public async Task CorrelationIdNotFound()
     {
         // arrange
@@ -59,11 +58,11 @@ public class DefaultCorrelatorTests : CorrelatorTestsBase<DefaultCorrelatorStart
         HttpResponseMessage response = await Client.SendAsync(request, CancellationToken.None);
 
         // assert
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.False(response.Headers.Contains("X-Dummy-Correlation-Id"));
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
+        await Assert.That(response.Headers.Contains("X-Dummy-Correlation-Id")).IsFalse();
 
         string correlationId = await response.Content.ReadAsStringAsync();
-        Assert.NotEqual("123", correlationId);
-        Assert.True(Guid.TryParse(correlationId, out Guid _));
+        await Assert.That(correlationId).IsNotEqualTo("123");
+        await Assert.That(Guid.TryParse(correlationId, out Guid _)).IsTrue();
     }
 }

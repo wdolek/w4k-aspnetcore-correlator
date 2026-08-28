@@ -1,32 +1,32 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator.Logging;
 
 public class CorrelationIdValueSanitizerTests
 {
-    [Theory]
-    [InlineData("Invalid:<value>!\n", "Invalid:*value***")]
-    [InlineData("<2345", "*2345")]
-    [InlineData("1<345", "1*345")]
-    [InlineData("123>5", "123*5")]
-    [InlineData("1234>", "1234*")]
-    [InlineData("<<3>>", "**3**")]
-    [InlineData("1<3>5", "1*3*5")]
-    [InlineData("X Z", "X*Z")]
-    [InlineData("\r \n \t \b", "*******")]
-    [InlineData("バトル・ロワイアル", "*********")]
-    [InlineData("\"%'()*,?@{}", "***********")]
-    public void Sanitize_ExpectSanitizedValue(string input, string expected)
+    [Test]
+    [Arguments("Invalid:<value>!\n", "Invalid:*value***")]
+    [Arguments("<2345", "*2345")]
+    [Arguments("1<345", "1*345")]
+    [Arguments("123>5", "123*5")]
+    [Arguments("1234>", "1234*")]
+    [Arguments("<<3>>", "**3**")]
+    [Arguments("1<3>5", "1*3*5")]
+    [Arguments("X Z", "X*Z")]
+    [Arguments("\r \n \t \b", "*******")]
+    [Arguments("バトル・ロワイアル", "*********")]
+    [Arguments("\"%'()*,?@{}", "***********")]
+    public async Task Sanitize_ExpectSanitizedValue(string input, string expected)
     {
         // act
         var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(input);
 
         // assert
-        Assert.Equal(expected, sanitizedValue);
+        await Assert.That(sanitizedValue).IsEqualTo(expected);
     }
 
-    [Fact]
-    public void Sanitize_ExpectSameReferenceForValidValue()
+    [Test]
+    public async Task Sanitize_ExpectSameReferenceForValidValue()
     {
         // arrange
         var value = "ValidValue";
@@ -35,13 +35,13 @@ public class CorrelationIdValueSanitizerTests
         var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Same(value, sanitizedValue);
+        await Assert.That(sanitizedValue).IsSameReferenceAs(value);
     }
 
-    [Theory]
-    [InlineData('a')]
-    [InlineData('?')]
-    public void Sanitize_ExpectTruncatedValue(char c)
+    [Test]
+    [Arguments('a')]
+    [Arguments('?')]
+    public async Task Sanitize_ExpectTruncatedValue(char c)
     {
         // arrange
         var value = new string(c, 100);
@@ -50,6 +50,6 @@ public class CorrelationIdValueSanitizerTests
         var sanitizedValue = CorrelationIdValueSanitizer.Sanitize(value);
 
         // assert
-        Assert.Equal(80, sanitizedValue.Length);
+        await Assert.That(sanitizedValue.Length).IsEqualTo(80);
     }
 }

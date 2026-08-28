@@ -1,63 +1,63 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using W4k.AspNetCore.Correlator.Http;
-using Xunit;
 
 namespace W4k.AspNetCore.Correlator.Options;
 
 public class PropagationSettingsTests
 {
-    [Fact]
-    public void Factory_NoPropagation_ExpectNoPropagationEnum()
+    [Test]
+    public async Task Factory_NoPropagation_ExpectNoPropagationEnum()
     {
         var settings = PropagationSettings.NoPropagation;
 
-        Assert.Equal(HeaderPropagation.NoPropagation, settings.Settings);
+        await Assert.That(settings.Settings).IsEqualTo(HeaderPropagation.NoPropagation);
     }
 
-    [Fact]
-    public void Factory_KeepIncoming_ExpectKeepIncomingSettings()
+    [Test]
+    public async Task Factory_KeepIncoming_ExpectKeepIncomingSettings()
     {
         var settings = PropagationSettings.KeepIncomingHeaderName();
 
-        Assert.Equal(HeaderPropagation.KeepIncomingHeaderName, settings.Settings);
-        Assert.Equal(HttpHeaders.CorrelationId, settings.HeaderName);
+        await Assert.That(settings.Settings).IsEqualTo(HeaderPropagation.KeepIncomingHeaderName);
+        await Assert.That(settings.HeaderName).IsEqualTo(HttpHeaders.CorrelationId);
     }
 
-    [Fact]
-    public void Factory_Predefined_ExpectPredefinedSettings()
+    [Test]
+    public async Task Factory_Predefined_ExpectPredefinedSettings()
     {
         var settings = PropagationSettings.PropagateAs("X-Test-Correlation-Id");
 
-        Assert.Equal(HeaderPropagation.UsePredefinedHeaderName, settings.Settings);
-        Assert.Equal("X-Test-Correlation-Id", settings.HeaderName);
+        await Assert.That(settings.Settings).IsEqualTo(HeaderPropagation.UsePredefinedHeaderName);
+        await Assert.That(settings.HeaderName).IsEqualTo("X-Test-Correlation-Id");
     }
 
-    [Theory]
-    [MemberData(nameof(GenerateDefaultPropagationSettings))]
-    public void Ctor_InstantiatedUsingDefault_ExpectNoPropagation(PropagationSettings propagation)
+    [Test]
+    [MethodDataSource(nameof(GenerateDefaultPropagationSettings))]
+    public async Task Ctor_InstantiatedUsingDefault_ExpectNoPropagation(PropagationSettings propagation)
     {
-        Assert.Equal(HttpHeaders.CorrelationId, propagation.HeaderName);
-        Assert.Equal(HeaderPropagation.NoPropagation, propagation.Settings);
+        await Assert.That(propagation.HeaderName).IsEqualTo(HttpHeaders.CorrelationId);
+        await Assert.That(propagation.Settings).IsEqualTo(HeaderPropagation.NoPropagation);
     }
 
-    [Theory]
-    [InlineData(null, typeof(ArgumentNullException))]
-    [InlineData("", typeof(ArgumentException))]
+    [Test]
+    [Arguments(null, typeof(ArgumentNullException))]
+    [Arguments("", typeof(ArgumentException))]
     public void PropagateAs_WhenEmptyInput_Throws(string? input, Type exceptionType)
     {
         Assert.Throws(exceptionType, () => PropagationSettings.PropagateAs(input!));
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void KeepIncomingHeader_WhenEmpty_ExpectDefault(string? input)
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    public async Task KeepIncomingHeader_WhenEmpty_ExpectDefault(string? input)
     {
         var settings = PropagationSettings.KeepIncomingHeaderName(input);
 
-        Assert.Equal(HeaderPropagation.KeepIncomingHeaderName, settings.Settings);
-        Assert.Equal(HttpHeaders.CorrelationId, settings.HeaderName);
+        await Assert.That(settings.Settings).IsEqualTo(HeaderPropagation.KeepIncomingHeaderName);
+        await Assert.That(settings.HeaderName).IsEqualTo(HttpHeaders.CorrelationId);
     }
 
     public static IEnumerable<object[]> GenerateDefaultPropagationSettings()

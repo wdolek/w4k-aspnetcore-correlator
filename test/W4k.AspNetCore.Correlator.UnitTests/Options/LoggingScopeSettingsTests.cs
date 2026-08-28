@@ -1,39 +1,39 @@
 using System;
 using System.Collections.Generic;
-using Xunit;
+using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator.Options;
 
 public class LoggingScopeSettingsTests
 {
-    [Fact]
-    public void Factory_IncludeScope_ExpectIncludeLoggingScopeSettings()
+    [Test]
+    public async Task Factory_IncludeScope_ExpectIncludeLoggingScopeSettings()
     {
         var settings = LoggingScopeSettings.IncludeLoggingScope();
 
-        Assert.True(settings.IncludeScope);
-        Assert.Equal("Correlation", settings.CorrelationKey);
+        await Assert.That(settings.IncludeScope).IsTrue();
+        await Assert.That(settings.CorrelationKey).IsEqualTo("Correlation");
     }
 
-    [Fact]
-    public void Factory_NoScope_ExpectNoScopeSettings()
+    [Test]
+    public async Task Factory_NoScope_ExpectNoScopeSettings()
     {
         var settings = LoggingScopeSettings.NoScope;
 
-        Assert.False(settings.IncludeScope);
+        await Assert.That(settings.IncludeScope).IsFalse();
     }
 
-    [Theory]
-    [MemberData(nameof(GenerateDefaultLoggingScopeSettings))]
-    public void Ctor_InstantiatedUsingDefault_ExpectNoPropagation(LoggingScopeSettings loggingScope)
+    [Test]
+    [MethodDataSource(nameof(GenerateDefaultLoggingScopeSettings))]
+    public async Task Ctor_InstantiatedUsingDefault_ExpectNoPropagation(LoggingScopeSettings loggingScope)
     {
-        Assert.False(loggingScope.IncludeScope);
-        Assert.Equal("Correlation", loggingScope.CorrelationKey);
+        await Assert.That(loggingScope.IncludeScope).IsFalse();
+        await Assert.That(loggingScope.CorrelationKey).IsEqualTo("Correlation");
     }
 
-    [Theory]
-    [InlineData(null, typeof(ArgumentNullException))]
-    [InlineData("", typeof(ArgumentException))]
+    [Test]
+    [Arguments(null, typeof(ArgumentNullException))]
+    [Arguments("", typeof(ArgumentException))]
     public void IncludeLoggingScope_WhenEmptyInput_Throws(string? input, Type exceptionType)
     {
         Assert.Throws(exceptionType, () => LoggingScopeSettings.IncludeLoggingScope(input!));

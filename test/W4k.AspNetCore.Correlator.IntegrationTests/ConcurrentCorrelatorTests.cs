@@ -1,31 +1,25 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using W4k.AspNetCore.Correlator.Startup;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace W4k.AspNetCore.Correlator;
 
 public class ConcurrentCorrelatorTests : CorrelatorTestsBase<ConfiguredCorrelatorStartup>
 {
-    private readonly ITestOutputHelper _output;
     private readonly int _concurrency;
 
-    public ConcurrentCorrelatorTests(ITestOutputHelper output)
+    public ConcurrentCorrelatorTests()
     {
-        _output = output;
         _concurrency = Environment.ProcessorCount * 4;
     }
 
-    [Fact]
-    [SuppressMessage("Usage", "xUnit1031", Justification = "Accessing results when all tasks have been awaited.")]
+    [Test]
     public async Task CorrelationCorrectForEachRequest()
     {
-        _output.WriteLine($"'Concurrency' level: {_concurrency} (number of request tasks to be executed)");
+        Console.WriteLine($"'Concurrency' level: {_concurrency} (number of request tasks to be executed)");
 
         var tasks = Enumerable
             .Range(0, _concurrency)
@@ -38,8 +32,8 @@ public class ConcurrentCorrelatorTests : CorrelatorTestsBase<ConfiguredCorrelato
         foreach (var task in tasks)
         {
             var testContext = task.Result;
-            Assert.Equal(testContext.Expected, testContext.Header);
-            Assert.Equal(testContext.Expected, testContext.Body);
+            await Assert.That(testContext.Header).IsEqualTo(testContext.Expected);
+            await Assert.That(testContext.Body).IsEqualTo(testContext.Expected);
         }
     }
 

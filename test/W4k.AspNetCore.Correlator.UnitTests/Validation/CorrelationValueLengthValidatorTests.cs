@@ -1,44 +1,44 @@
-using Xunit;
+using System.Threading.Tasks;
 
 namespace W4k.AspNetCore.Correlator.Validation;
 
 public class CorrelationValueLengthValidatorTests
 {
-    [Theory]
-    [InlineData(" _ ")]
-    [InlineData("test")]
-    [InlineData("1")]
-    [InlineData("123456789")]
-    [InlineData("1234567890")]
-    public void Validate_WhenMaxLengthIs10_ExpectAllShorterInputsValid(string input)
+    [Test]
+    [Arguments(" _ ")]
+    [Arguments("test")]
+    [Arguments("1")]
+    [Arguments("123456789")]
+    [Arguments("1234567890")]
+    public async Task Validate_WhenMaxLengthIs10_ExpectAllShorterInputsValid(string input)
     {
         var validator = new CorrelationValueLengthValidator(10);
         var result = validator.Validate(input);
 
-        Assert.True(result.IsValid);
+        await Assert.That(result.IsValid).IsTrue();
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    public void Validate_WhenEmptyInput_ExpectInvalidResult(string? input)
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    public async Task Validate_WhenEmptyInput_ExpectInvalidResult(string? input)
     {
         var validator = new CorrelationValueLengthValidator(10);
         var result = validator.Validate(input);
 
-        Assert.False(result.IsValid);
-        Assert.Equal("Value is null or empty", result.Reason);
+        await Assert.That(result.IsValid).IsFalse();
+        await Assert.That(result.Reason).IsEqualTo("Value is null or empty");
     }
 
-    [Theory]
-    [InlineData("12345678901")]
-    [InlineData("this_is_very_long_correlation_id_value")]
-    public void Validate_WhenInputIsLong_ExpectInvalidResult(string input)
+    [Test]
+    [Arguments("12345678901")]
+    [Arguments("this_is_very_long_correlation_id_value")]
+    public async Task Validate_WhenInputIsLong_ExpectInvalidResult(string input)
     {
         var validator = new CorrelationValueLengthValidator(10);
         var result = validator.Validate(input);
 
-        Assert.False(result.IsValid);
-        Assert.Matches(@"Received value of length: \d+, expecting max length 10", result.Reason);
+        await Assert.That(result.IsValid).IsFalse();
+        await Assert.That(result.Reason).Matches(@"Received value of length: \d+, expecting max length 10");
     }
 }
