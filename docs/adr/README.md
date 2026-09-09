@@ -5,7 +5,7 @@ using the [MADR](https://adr.github.io/madr/) format (Markdown Any/Decision Reco
 
 > **Note:** ADRs 0001-0012 are retrospective - they document decisions already implemented in the library
 > (as of v3.4.0) in order to make them explicit and enable future changes to be evaluated against them.
-> New decisions should be added **before** implementation, following the same format.
+> New decisions (0013 onwards) are added **before** implementation, following the same format.
 
 | # | Title | Status |
 |---|-------|--------|
@@ -21,5 +21,6 @@ using the [MADR](https://adr.github.io/madr/) format (Markdown Any/Decision Reco
 | [0010](0010-public-api-governance.md) | Public API governance via analyzers and root-namespace extensions | Accepted |
 | [0011](0011-multi-targeting-strategy.md) | Multi-target current .NET support waves with version-locked extension packages | Accepted |
 | [0012](0012-minimal-dependency-footprint.md) | Minimal dependency footprint - no hosting, lazy options validation | Accepted |
+| [0013](0013-opt-in-invalid-correlation-policy.md) | Opt-in policy for invalid correlation values (`OnInvalid`) | Accepted |
 
 Proposals for changing or extending these decisions are tracked in [../plans](../plans).
