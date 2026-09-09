@@ -5,7 +5,9 @@ By _default_, Correlator is configured following way:
 - **Accepting** Correlation ID from following headers (in order):
   - `X-Correlation-Id`
   - `X-Request-Id`
-  - `Request-Id` (set by ASP.NET when sending request with `HttpClient`)
+  - `Request-Id` (legacy header injected by `HttpClient` activity propagation on .NET Core 3.x;
+    current .NET sends W3C `traceparent` instead, see
+    [.NET distributed tracing](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing))
 - Correlation ID **is forwarded** to subsequent requests as `X-Correlation-Id` (when using `CorrelatorHttpMessageHandler`)
 - Correlation ID **is not set** to HTTP response headers
 - Correlation ID **does not replace** [`HttpContext.TraceIdentifier`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier)
