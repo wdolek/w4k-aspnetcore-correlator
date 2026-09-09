@@ -44,7 +44,6 @@
     <PackageTags>aspnetcore, correlation, correlationid, correlate, requestid, tracing</PackageTags>
     <PackageProjectUrl>https://github.com/wdolek/w4k-aspnetcore-correlator</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://github.com/wdolek/w4k-aspnetcore-correlator/blob/master/images/correlator_128px.png</PackageIconUrl>
     <PackageIcon>_img/correlator_128px.png</PackageIcon>
     <RepositoryUrl>https://github.com/wdolek/w4k-aspnetcore-correlator.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

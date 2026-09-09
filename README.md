@@ -119,6 +119,7 @@ builder.Services
 - [Dependency injection](docs/registration.md) registration
 - [Components](docs/components.md) description
 - [Alternative packages and further reading](docs/alternatives.md)
+- [Changelog](CHANGELOG.md)
 
 ---
 

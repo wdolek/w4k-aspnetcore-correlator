@@ -3,7 +3,7 @@
 namespace W4k.AspNetCore.Correlator.Context;
 
 /// <summary>
-/// Base correlation context classs.
+/// Base correlation context class.
 /// </summary>
 public abstract class CorrelationContext
 {
