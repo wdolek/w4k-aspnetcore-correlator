@@ -127,6 +127,24 @@ correlatorOptions.Emit = PropagationSettings.PropagateAs("X-Correlation-Id");
 correlatorOptions.Forward = PropagationSettings.PropagateAs("X-Correlation-Id");
 ```
 
+### Exposing emitted header to browsers (CORS)
+
+The correlation ID response header is a custom header and as such is **not** accessible to
+browser clients (JavaScript) unless it is explicitly exposed by the CORS policy. This concerns
+browser clients only - CORS is enforced by browsers, so server-to-server (machine-to-machine)
+communication is not affected and such clients can read custom response headers without any
+extra configuration:
+
+```csharp
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        policy.WithExposedHeaders("X-Correlation-Id"));
+});
+```
+
+Remember to update the header name if you emit the correlation ID under a custom header.
+
 ### Replace Trace Identifier
 
 Property `ReplaceTraceIdentifier`, of type `bool`.
