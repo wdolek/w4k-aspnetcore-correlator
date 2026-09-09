@@ -5,7 +5,7 @@ performance, API design and usability. Findings reference the [ADRs](../adr/READ
 relevant and include concrete code locations.
 
 > Revised: 2026-09-09 - security items reclassified per non-breaking policy, TFM/CI finding closed,
-> U1/U2/U4/U5 status recorded.
+> U1/U4/U5 status recorded.
 
 Guiding constraints (deliberate design decisions - not defects):
 
@@ -40,7 +40,6 @@ Guiding constraints (deliberate design decisions - not defects):
 | A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates minimal-footprint decision (ADR 0012) | Maintenance | Medium | S | Open |
 | A7 | `default(PropagationSettings)` silently behaves as `PropagateAs("X-Correlation-Id")` instead of `NoPropagation` | API | Medium | S | Open |
 | U1 | `docs/configuration.md` sample won't compile | Docs | High | S | **Fixed** - `docs/u1-fix-configuration-sample` |
-| U2 | No documented EventId catalog | Docs | Low | S | **Fixed** - `docs/u2-logging-eventids` |
 | U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S | **Fixed** - `docs/u4-cors-note` |
 | U5 | Minor items: `PackageIconUrl`, XML doc typo, `Request-Id` claim, CHANGELOG | Docs | Low | S | **Fixed** - `docs/u5-minor-fixes` |
 | T1 | No integration tests for sync `HttpClient.Send` forwarding (would currently fail, see P4) and for `Emit` + invalid-value paths | Testing | High | S | Open |
@@ -281,7 +280,7 @@ maintainers (it exists only because of the `default` struct case). Consider an i
 
 ## Usability & docs
 
-> U1, U2, U4 and U5 were implemented on per-fix branches on 2026-09-09 (not yet merged). Status
+> U1, U4 and U5 were implemented on per-fix branches on 2026-09-09 (not yet merged). Status
 > recorded for traceability; details kept for context.
 
 ### U1. `docs/configuration.md` sample does not compile - FIXED
@@ -289,12 +288,6 @@ maintainers (it exists only because of the `default` struct case). Consider an i
 Fixed on `docs/u1-fix-configuration-sample`: invalid lambda syntax in the "Adjusting default
 configuration" sample (`ReplaceTraceIdentifier = true,` inside a lambda body) and nonexistent
 `correlatorOptions.Add(...)` method - corrected to `ReadFrom.Add(...)`.
-
-### U2. Undocumented EventIds - FIXED
-
-Fixed on `docs/u2-logging-eventids`: new `docs/logging.md` with the EventId catalog (101-103,
-202-206, 301), sanitization notes and the silencing examples (moved from `configuration.md`);
-README links added.
 
 ### U4. CORS note missing - FIXED
 
@@ -362,7 +355,7 @@ net8.0 EOL (2026-11-10). Scope when executing:
 ## Suggested sequencing
 
 1. **Quick wins (no breaking changes, no new dependencies):** merge the U-branch fixes
-   (U1, U2, U4, U5); P4 (sync `Send`) + T1 tests; A6 (remove unused DataAnnotations reference).
+   (U1, U4, U5); P4 (sync `Send`) + T1 tests; A6 (remove unused DataAnnotations reference).
 2. **Hardening, strictly opt-in (minor-version friendly):** S1/A3/A1 (security guidance +
    shipped charset validator + overloads), S5 docs part, S3
    decision (fail-fast on already-broken paths; opt-in for `ReadFrom`).
