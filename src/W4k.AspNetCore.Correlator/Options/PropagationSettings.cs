@@ -72,10 +72,16 @@ public readonly struct PropagationSettings : IEquatable<PropagationSettings>
     /// Propagation settings with custom header name.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="headerName"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="headerName"/> is empty.</exception>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="headerName"/> is empty or is not a valid HTTP header name.</exception>
     public static PropagationSettings PropagateAs(string headerName)
     {
         ArgumentException.ThrowIfNullOrEmpty(headerName);
+
+        if (!HeaderNameValidator.IsValidHeaderName(headerName))
+        {
+            throw new ArgumentException($"Invalid HTTP header name: '{headerName}'", nameof(headerName));
+        }
+
         return new PropagationSettings(HeaderPropagation.UsePredefinedHeaderName, headerName);
     }
 
@@ -86,8 +92,14 @@ public readonly struct PropagationSettings : IEquatable<PropagationSettings>
     /// <returns>
     /// Propagation settings for keeping incoming header, or using <paramref name="defaultHeaderName"/> if generated.
     /// </returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="defaultHeaderName"/> is not a valid HTTP header name (when provided).</exception>
     public static PropagationSettings KeepIncomingHeaderName(string? defaultHeaderName = null)
     {
+        if (!string.IsNullOrEmpty(defaultHeaderName) && !HeaderNameValidator.IsValidHeaderName(defaultHeaderName))
+        {
+            throw new ArgumentException($"Invalid HTTP header name: '{defaultHeaderName}'", nameof(defaultHeaderName));
+        }
+
         defaultHeaderName = string.IsNullOrEmpty(defaultHeaderName)
             ? HttpHeaders.CorrelationId
             : defaultHeaderName;

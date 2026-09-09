@@ -50,6 +50,24 @@ public class PropagationSettingsTests
     }
 
     [Test]
+    [Arguments("X CID")]
+    [Arguments("X-Correlation:Id")]
+    [Arguments("X-Correlation-Id ")]
+    [Arguments("X-Correlation-Id\n")]
+    public void PropagateAs_WhenInvalidHeaderName_Throws(string headerName)
+    {
+        Assert.Throws<ArgumentException>(() => PropagationSettings.PropagateAs(headerName));
+    }
+
+    [Test]
+    [Arguments("X CID")]
+    [Arguments("X-Correlation-Id\n")]
+    public void KeepIncomingHeaderName_WhenInvalidHeaderName_Throws(string defaultHeaderName)
+    {
+        Assert.Throws<ArgumentException>(() => PropagationSettings.KeepIncomingHeaderName(defaultHeaderName));
+    }
+
+    [Test]
     [Arguments(null)]
     [Arguments("")]
     public async Task KeepIncomingHeader_WhenEmpty_ExpectDefault(string? input)

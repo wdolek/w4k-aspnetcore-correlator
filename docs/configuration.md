@@ -83,6 +83,16 @@ correlatorOptions.ReadFrom.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
 
 If you are sure about correlation header name, feel free to use just that and avoid unnecessary lookup in request headers.
 
+A typo in a header name (e.g. `"X CID"`) is otherwise silently ignored - the header never matches.
+To fail fast on invalid header names, enable header name validation:
+
+```csharp
+correlatorOptions.ValidateHeaderNames = true;
+```
+
+Header names used within propagation settings (`PropagateAs`/`KeepIncomingHeaderName`) are always
+validated when the settings are created.
+
 ### Invalid correlation value policy
 
 Property `CorrelatorOptions.InvalidValuePolicy`, of type `InvalidCorrelationPolicy`.

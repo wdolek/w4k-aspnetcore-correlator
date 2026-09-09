@@ -14,20 +14,33 @@ public class CorrelatorOptionsTests
     {
         Assert.Throws<OptionsValidationException>(() =>
         {
-            using var host = CreateTestWebHostBuilder().Build();
+            using var host = CreateTestWebHostBuilder<LocalStartup>().Build();
             host.Start();
 
             _ = host.GetTestServer();
         });
     }
 
-    private static IHostBuilder CreateTestWebHostBuilder() =>
+    [Test]
+    public void Invoke_WhenValidateHeaderNamesAndInvalidHeaderName_ExpectOptionsValidationException()
+    {
+        Assert.Throws<OptionsValidationException>(() =>
+        {
+            using var host = CreateTestWebHostBuilder<ValidateHeaderNamesStartup>().Build();
+            host.Start();
+
+            _ = host.GetTestServer();
+        });
+    }
+
+    private static IHostBuilder CreateTestWebHostBuilder<TStartup>()
+        where TStartup : class =>
         new HostBuilder().ConfigureWebHost(webHostBuilder =>
         {
             webHostBuilder
                 .UseEnvironment("test")
                 .UseTestServer()
-                .UseStartup<LocalStartup>();
+                .UseStartup<TStartup>();
         });
 
     private class LocalStartup
@@ -37,6 +50,28 @@ public class CorrelatorOptionsTests
             services.AddDefaultCorrelator(o =>
             {
                 o.ReadFrom.Clear();
+            });
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseCorrelator();
+            app.Use(async (_, next) =>
+            {
+                await next();
+            });
+        }
+    }
+
+    private class ValidateHeaderNamesStartup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDefaultCorrelator(o =>
+            {
+                o.ReadFrom.Clear();
+                o.ReadFrom.Add("X CID");
+                o.ValidateHeaderNames = true;
             });
         }
 

@@ -1,0 +1,2 @@
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ValidateHeaderNames.get -> bool
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ValidateHeaderNames.set -> void
