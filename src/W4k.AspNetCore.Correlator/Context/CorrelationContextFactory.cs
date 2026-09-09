@@ -45,7 +45,7 @@ internal class CorrelationContextFactory : ICorrelationContextFactory
             if (!validationResult.IsValid)
             {
                 _logger.InvalidCorrelationValue(headerName, validationResult.Reason);
-                return new InvalidCorrelationContext(headerName, validationResult);
+                return HandleInvalidValue(httpContext, headerName, validationResult);
             }
         }
 
@@ -100,5 +100,20 @@ internal class CorrelationContextFactory : ICorrelationContextFactory
 
         _logger.GeneratingCorrelationId();
         return new GeneratedCorrelationContext(generateCorrelationId(httpContext));
+    }
+
+    private CorrelationContext HandleInvalidValue(
+        HttpContext httpContext,
+        string headerName,
+        ValidationResult validationResult)
+    {
+        var generateCorrelationId = _options.Factory;
+        if (_options.OnInvalid == InvalidCorrelationPolicy.GenerateNew && generateCorrelationId is not null)
+        {
+            _logger.RegeneratingCorrelationId();
+            return new RegeneratedCorrelationContext(generateCorrelationId(httpContext), headerName, validationResult);
+        }
+
+        return new InvalidCorrelationContext(headerName, validationResult);
     }
 }

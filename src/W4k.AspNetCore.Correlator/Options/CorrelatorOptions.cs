@@ -21,6 +21,17 @@ public sealed class CorrelatorOptions
     ];
 
     /// <summary>
+    /// Gets or sets policy applied when received correlation value is found invalid
+    /// by registered correlation validator.
+    /// </summary>
+    /// <remarks>
+    /// Default policy is <see cref="InvalidCorrelationPolicy.KeepEmpty"/>: request is processed
+    /// without correlation ID. Policy is relevant only when correlation validator is registered,
+    /// otherwise received values are accepted as-is.
+    /// </remarks>
+    public InvalidCorrelationPolicy OnInvalid { get; set; }
+
+    /// <summary>
     /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.
     /// </summary>
     public Func<HttpContext, CorrelationId>? Factory { get; set; } =

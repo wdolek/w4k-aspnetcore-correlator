@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
+using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Http;
 using W4k.AspNetCore.Correlator.Logging;
 using W4k.AspNetCore.Correlator.Options;
@@ -45,6 +46,14 @@ internal class CorrelatorMiddleware
 
     private async Task Invoke(HttpContext httpContext, CorrelationContext correlationContext)
     {
+        // reject request with invalid correlation ID before processing
+        if (_options.OnInvalid == InvalidCorrelationPolicy.Reject && correlationContext is InvalidCorrelationContext)
+        {
+            _logger.RejectingInvalidCorrelation();
+            httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            return;
+        }
+
         // emit correlation ID back to caller in response headers
         if (_options.Emit.Settings != HeaderPropagation.NoPropagation)
         {

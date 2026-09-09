@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context.Types;
 using W4k.AspNetCore.Correlator.Options;
+using W4k.AspNetCore.Correlator.Validation;
 
 namespace W4k.AspNetCore.Correlator.Http;
 
@@ -79,6 +80,29 @@ public class CorrelationEmitterTests
         // assert
         await Assert.That(httpContext.Response.Headers).ContainsKey(outgoingHeader);
         await Assert.That(httpContext.Response.Headers[outgoingHeader].ToString()).IsEqualTo("123");
+    }
+
+    [Test]
+    public async Task Emits_WhenKeepingIncomingHeaderButCorrelationIdRegenerated_ExpectCorrelationIdEmittedWithIncomingHeader()
+    {
+        // arrange
+        var incomingHeader = "X-Incoming-Request-Id";
+
+        var options = CreateEmitOptions(PropagationSettings.KeepIncomingHeaderName());
+
+        var httpContext = new DefaultHttpContext();
+        var correlationContext = new RegeneratedCorrelationContext(
+            CorrelationId.FromString("123"),
+            incomingHeader,
+            ValidationResult.Invalid("invalid"));
+
+        // act
+        var emitter = new CorrelationEmitter(options, _logger);
+        await emitter.Emit(httpContext, correlationContext);
+
+        // assert
+        await Assert.That(httpContext.Response.Headers).ContainsKey(incomingHeader);
+        await Assert.That(httpContext.Response.Headers[incomingHeader].ToString()).IsEqualTo("123");
     }
 
     [Test]

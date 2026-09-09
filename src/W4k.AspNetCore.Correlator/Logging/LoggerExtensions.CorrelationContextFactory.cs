@@ -17,6 +17,8 @@ internal static partial class LoggerExtensions
 
     private static readonly EventId InvalidCorrelationValueEvent = new(206, nameof(InvalidCorrelationValue));
 
+    private static readonly EventId RegeneratingCorrelationIdEvent = new(207, nameof(RegeneratingCorrelationId));
+
     private static readonly Action<ILogger, Exception> LogNoCorrelationHeaderReceived =
         LoggerMessage.Define(
             LogLevel.Warning,
@@ -47,6 +49,12 @@ internal static partial class LoggerExtensions
             InvalidCorrelationValueEvent,
             "Correlation header ({Header}) value is invalid with: {Reason}");
 
+    private static readonly Action<ILogger, Exception?> LogRegeneratingCorrelationId =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            RegeneratingCorrelationIdEvent,
+            "Invalid correlation value received, generating new correlation ID");
+
     public static void NoCorrelationHeaderReceived(this ILogger logger) =>
         LogNoCorrelationHeaderReceived(logger, null!);
 
@@ -68,4 +76,7 @@ internal static partial class LoggerExtensions
 
     public static void InvalidCorrelationValue(this ILogger logger, string header, string reason) =>
         LogInvalidCorrelationValue(logger, header, reason, null!);
+
+    public static void RegeneratingCorrelationId(this ILogger logger) =>
+        LogRegeneratingCorrelationId(logger, null);
 }

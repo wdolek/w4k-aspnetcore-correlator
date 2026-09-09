@@ -75,6 +75,11 @@ public sealed class CorrelatorHttpMessageHandler : DelegatingHandler
                     _settings.HeaderName,
                     generatedCorrelationContext.CorrelationId),
 
+            (HeaderPropagation.KeepIncomingHeaderName, RegeneratedCorrelationContext regeneratedCorrelationContext) =>
+                requestHeaders.AddHeaderIfNotSet(
+                    regeneratedCorrelationContext.Header,
+                    regeneratedCorrelationContext.CorrelationId),
+
             _ => requestHeaders,
         };
     }
