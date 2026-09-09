@@ -1,6 +1,11 @@
 W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions
 W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ServiceCollectionExtensions
 W4k.AspNetCore.Correlator.Extensions.DependencyInjection.HttpClientBuilderExtensions
+W4k.AspNetCore.Correlator.Validation.CorrelationValuePatternValidator
+W4k.AspNetCore.Correlator.Validation.CorrelationValuePatternValidator.CorrelationValuePatternValidator(int maxLength = 80) -> void
+W4k.AspNetCore.Correlator.Validation.CorrelationValuePatternValidator.DefaultMaxLength = 80 -> int
+W4k.AspNetCore.Correlator.Validation.CorrelationValuePatternValidator.Validate(string? value) -> W4k.AspNetCore.Correlator.Validation.ValidationResult
+static W4k.AspNetCore.Correlator.CorrelatorBuilderExtensions.WithDefaultValidator(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
 static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithCorrelationContextFactory<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
 static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithCorrelationEmitter<T>(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!
 static W4k.AspNetCore.Correlator.Extensions.DependencyInjection.CorrelatorBuilderExtensions.WithDefaultCorrelationContextFactory(this W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder! builder) -> W4k.AspNetCore.Correlator.Extensions.DependencyInjection.ICorrelatorBuilder!

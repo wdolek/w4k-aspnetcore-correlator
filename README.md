@@ -113,6 +113,31 @@ builder.Services
     .WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
+## Security
+
+If your API is reachable by untrusted parties, keep in mind that correlation header values are
+attacker-controlled input. Without a registered validator, any received value is accepted and
+propagated further: returned to the caller (when `Emit` is enabled), forwarded to subsequent
+requests (via `CorrelatorHttpMessageHandler`), added to your logs (when logging scope is enabled)
+and - when `ReplaceTraceIdentifier` is enabled - assigned to
+[`HttpContext.TraceIdentifier`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httpcontext.traceidentifier),
+reaching ASP.NET trace logs as well. Correlator's own log messages are always sanitized, see
+[ADR 0007](docs/adr/0007-log-value-sanitization.md).
+
+Validation is opt-in, so deployments on trusted networks (e.g. intranet) pay no per-request cost.
+To harden an internet-facing API, register the shipped default validator - a single line:
+
+```csharp
+builder.Services
+    .AddDefaultCorrelator()
+    .WithDefaultValidator();
+```
+
+`WithDefaultValidator()` registers `CorrelationValuePatternValidator`, which accepts non-empty
+values up to 80 characters consisting of characters safe for logging (letters, digits and
+`# + - . / : = _ | ~`). For custom policies, implement `ICorrelationValidator`, or use
+`CorrelationValueLengthValidator` for a length-only check. See also [detailed configuration](docs/configuration.md).
+
 ## Documentation
 
 - [Detailed configuration](docs/configuration.md) description

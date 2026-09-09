@@ -173,6 +173,21 @@ correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope();
 correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope("CorrelationId");
 ```
 
+## Security
+
+If the API is reachable by untrusted parties, register a correlation value validator - otherwise
+any received correlation value is accepted and propagated further (response headers, forwarded
+requests, logging scope and `TraceIdentifier`). The quickest way is the shipped default validator:
+
+```csharp
+builder.Services
+    .AddDefaultCorrelator()
+    .WithDefaultValidator();
+```
+
+See [validation of correlation ID](../README.md#validation-of-correlation-id) and
+[registration](registration.md) for more details.
+
 ## Silencing logger
 
 If you find Correlator to be too chatty, you can always silence logging by:

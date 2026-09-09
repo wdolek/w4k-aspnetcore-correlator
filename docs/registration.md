@@ -53,7 +53,12 @@ end up with exception.
 Optionally, you can register correlation validator like this (by default, no validator is registered):
 
 ```csharp
-correlationBuilder.WithValidator(new CorrelationValueLengthValidator(64));
+// shipped default validator: non-empty value, max 80 characters,
+// characters safe for logging only
+builder.WithDefaultValidator();
+
+// length-only validator
+builder.WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
 `ICorrelationValidator` is registered as singleton.
