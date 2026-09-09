@@ -4,43 +4,50 @@ Review of the current solution (`W4k.AspNetCore.Correlator` v3.4.0) focused on s
 performance, API design and usability. Findings reference the [ADRs](../adr/README.md) where
 relevant and include concrete code locations.
 
-Guiding constraints (per ADR 0004 and ADR 0012, deliberate design decisions - not defects):
+> Revised: 2026-09-09 - security items reclassified per non-breaking policy, TFM/CI finding closed,
+> U1-U5 status recorded.
+
+Guiding constraints (deliberate design decisions - not defects):
 
 - **High-availability APIs:** no unconditional per-request cost may be added. Validation is opt-in
   by design; trusted-network (intranet) deployments pay nothing for validation they don't need.
 - **Minimal dependency footprint:** no `Microsoft.Extensions.Hosting` dependency; options
   validation is lazy (`Validate(...)` only, no `ValidateOnStart`).
-
-All proposals below respect these constraints: anything runtime-priced is opt-in, anything
-startup-priced happens at registration time, and no proposal adds a package dependency.
+- **Non-breaking policy (2026-09-09):** fixes must not change the library's default behavior.
+  Anything that would change behavior ships as an **opt-in feature** (new option, new registration,
+  new component) with the current behavior as default - or is deferred to the next major version.
+- **Runtime lifecycle:** net8.0/net9.0 are near (or past) end of support; no effort is spent
+  broadening their coverage (see R1 - planned TFM removal instead).
 
 ## Summary
 
-| #  | Finding | Area | Priority | Effort |
-|----|---------|------|----------|--------|
-| S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S |
-| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation (opt-in policy proposed) | Security/UX | High | M |
-| S3 | Header names in options are not validated at registration time (garbage names fail silently or as late 500s) | Security/UX | Medium | S |
-| S4 | Invalid header value reaching response emission fails as late 500 (server-side header validation) | Security | Medium | S |
-| S5 | `ReplaceTraceIdentifier` injects unsanitized value into ASP.NET/platform trace logs | Security | Medium | S |
-| S6 | Lazy options validation is deliberate (ADR 0012) - but undocumented; consumers should know to call `ValidateOnStart()` themselves | Docs | Low | S |
-| P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S |
-| P2 | `CorrelatedLoggerState` allocations per request when logging scope enabled | Performance | Low | S |
-| P3 | `CorrelationId` equality is `OrdinalIgnoreCase` - subtle correctness + slower | API/Perf | Medium | S |
-| P4 | `CorrelatorHttpMessageHandler` overrides only `SendAsync` - synchronous `HttpClient.Send` path silently skips correlation forwarding | API/Correctness | High | S |
-| A1 | No type-based `WithValidator<T>()` overload (inconsistent with factory/emitter registration) | API | Low | S |
-| A2 | Single-validator limit - no built-in composite | API | Low | M |
-| A3 | No charset/format validator shipped despite having a safe-char allowlist internally | API/Security | Medium | S |
-| A4 | `ICorrelationContextAccessor` silently returns `EmptyCorrelationContext` when middleware not used - misconfiguration is invisible | API/UX | Medium | S |
-| A5 | Options not bindable from `IConfiguration` (delegates, structs, get-only list) - documented pattern only, per ADR 0012 | Usability | Low | M |
-| A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates the minimal-footprint decision (ADR 0012) | Maintenance | Medium | S |
-| A7 | `default(PropagationSettings)` silently behaves as `PropagateAs("X-Correlation-Id")` instead of `NoPropagation` | API | Medium | S |
-| U1 | `docs/configuration.md` sample won't compile (invalid lambda syntax, nonexistent `Add` method) | Docs | High | S |
-| U2 | No documented EventId catalog for consumers filtering correlator log output | Docs | Low | S |
-| U3 | `TestResults/`, `BenchmarkDotNet.Artifacts/` and `.idea/` artifacts committed to the repo | Maintenance | Low | S |
-| U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S |
-| T1 | No integration tests for sync `HttpClient.Send` forwarding (would currently fail, see P4) and for `Emit` + invalid-value paths | Testing | High | S |
-| T2 | CI: integration tests run `net10.0` only, Linux only (see ADR 0011) | Testing | Low | M |
+| #  | Finding | Area | Priority | Effort | Status |
+|----|---------|------|----------|--------|--------|
+| S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S | Open |
+| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | Open |
+| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | Open (needs decision) |
+| S4 | Invalid header value reaching response emission fails as late 500 - behavior-preserving options only | Security | Medium | S | Open (optional feature) |
+| S5 | `ReplaceTraceIdentifier` injects unsanitized value into platform trace logs - docs-first; sanitize only as opt-in | Security | Medium | S | Open |
+| S6 | Lazy options validation is deliberate (ADR 0012) - document it, don't change it | Docs | Low | S | Open |
+| P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S | Open |
+| P2 | `CorrelatedLoggerState` allocations per request when logging scope enabled | Performance | Low | S | Open |
+| P3 | `CorrelationId` equality is `OrdinalIgnoreCase` - behavior change, next major | API/Perf | Medium | S | Open (next major) |
+| P4 | `CorrelatorHttpMessageHandler` overrides only `SendAsync` - sync `HttpClient.Send` path silently skips forwarding | API/Correctness | High | S | Open |
+| A1 | No type-based `WithValidator<T>()` overload (inconsistent with factory/emitter registration) | API | Low | S | Open |
+| A2 | Single-validator limit - no built-in composite | API | Low | M | Open |
+| A3 | No charset/format validator shipped despite having a safe-char allowlist internally | API/Security | Medium | S | Open |
+| A4 | `ICorrelationContextAccessor` silently returns `EmptyCorrelationContext` when middleware not used | API/UX | Medium | S | Open (next major) |
+| A5 | Options not bindable from `IConfiguration` - documented pattern only, per ADR 0012 | Usability | Low | M | Open |
+| A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates minimal-footprint decision (ADR 0012) | Maintenance | Medium | S | Open |
+| A7 | `default(PropagationSettings)` silently behaves as `PropagateAs("X-Correlation-Id")` instead of `NoPropagation` | API | Medium | S | Open |
+| U1 | `docs/configuration.md` sample won't compile | Docs | High | S | **Fixed** - `docs/u1-fix-configuration-sample` |
+| U2 | No documented EventId catalog | Docs | Low | S | **Fixed** - `docs/u2-logging-eventids` |
+| U3 | ~~Build artifacts committed~~ - disproven: untracked, already gitignored | Maintenance | - | - | **Closed** - no action needed |
+| U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S | **Fixed** - `docs/u4-cors-note` |
+| U5 | Minor items: `PackageIconUrl`, XML doc typo, `Request-Id` claim, CHANGELOG | Docs | Low | S | **Fixed** - `docs/u5-minor-fixes` |
+| T1 | No integration tests for sync `HttpClient.Send` forwarding (would currently fail, see P4) and for `Emit` + invalid-value paths | Testing | High | S | Open |
+| T2 | ~~CI: integration tests net10.0 only, Linux only~~ - won't fix: net8.0/net9.0 near EOL, older runtimes to be dropped (R1) | Testing | - | - | **Closed - won't fix** |
+| R1 | Drop net8.0/net9.0 TFMs once out of support; simplifies csproj conditionals, sanitizer dual implementation, test matrix | Maintenance | Low | M | Open (post-EOL, e.g. net8 EOL 2026-11) |
 
 ---
 
@@ -48,11 +55,14 @@ startup-priced happens at registration time, and no proposal adds a package depe
 
 Design context (ADR 0004): validation is deliberately opt-in. Trusted-network deployments - the
 library's primary audience - get a validation-free hot path; log injection via correlator's own
-output is already closed unconditionally by sanitization (ADR 0007). The findings below are about
-making the *opt-in* path easy, safe-by-configuration and well-guided - not about changing the
-default.
+output is already closed unconditionally by sanitization (ADR 0007).
+
+**Policy (2026-09-09):** skip anything that changes default behavior; implement as opt-in feature
+where valuable. Each item below states its breaking-change classification.
 
 ### S1. Security guidance and discoverable opt-in helpers for internet-facing deployments
+
+**Non-breaking** (docs + new opt-in APIs).
 
 For internet-facing APIs the opt-in validator is strongly advisable, but today it requires knowing
 `CorrelationValueLengthValidator` exists. README/docs contain no security section at all.
@@ -66,7 +76,11 @@ For internet-facing APIs the opt-in validator is strongly advisable, but today i
   charset validator (A3), so hardening is a single line instead of a custom implementation.
   Zero cost for consumers who don't call it - the opt-in default is unchanged (ADR 0004).
 
-### S2. Invalid value: neither rejected nor regenerated (opt-in policy)
+### S2. Invalid value: opt-in policy for what happens after failed validation
+
+**Non-breaking as opt-in feature.** New `CorrelationOptions` property, default preserving current
+behavior; new behavior only when explicitly configured (and only meaningful when a validator is
+registered - zero cost otherwise).
 
 When validation fails, `InvalidCorrelationContext` is created with `CorrelationId.Empty`
 (`CorrelationContextFactory.cs:47-49`). The request then proceeds **without any correlation ID** -
@@ -74,56 +88,77 @@ the generated-ID factory is not consulted for the fallback. A request with a bog
 uncorrelated in logs and for downstream calls, which harms traceability exactly for (potentially
 malicious) traffic.
 
-**Recommendation:** an *opt-in* invalid-value policy, meaningful only when a validator is
-registered (zero cost otherwise, consistent with ADR 0004):
+**Recommendation:**
 
 ```csharp
-options.OnInvalid = InvalidCorrelationPolicy.GenerateNew; // default: KeepEmpty (current behavior)
+// default: InvalidCorrelationPolicy.KeepEmpty (current behavior, unchanged)
+options.OnInvalid = InvalidCorrelationPolicy.GenerateNew; // opt-in
+// InvalidCorrelationPolicy.Reject (400) - optional, for hardened deployments
 ```
 
-Optionally also `Reject` (400) for hardened deployments that want an explicit contract. Requires a
-new context type or a `GeneratedCorrelationContext` variant carrying the original header name and
-validation result. Amends ADR 0004 (new behavior branch), so it should get its own ADR before
-implementation.
+Requires a new context type or a `GeneratedCorrelationContext` variant carrying the original
+header name and validation result. Amends ADR 0004 - needs its own ADR before implementation.
 
-### S3. Header names are not validated anywhere
+### S3. Header names are not validated - decision needed (potential break)
+
+**Potentially breaking if done strictly** - today's behavior differs per location:
 
 - `ReadFrom` entries are used verbatim in `IHeaderDictionary.TryGetValue` - an invalid header name
-  (e.g. `"X CID"` or `""` empty string) simply never matches, failing silently.
-- `PropagationSettings.PropagateAs(name)` accepts any non-empty string; an invalid name surfaces
-  only when the emitter runs (`OnStarting` -> late 500) or when the message handler adds it
-  (`HttpRequestHeaders.Add` -> throw mid-request).
+  (e.g. `"X CID"` or `""` empty string) silently never matches. Strict validation would make such
+  configs fail at startup: a **behavior change** for garbage-but-harmless configurations.
+- `PropagationSettings.PropagateAs(name)` accepts any non-empty string; an invalid name already
+  fails today - but *late* (emitter `OnStarting` -> 500, or `HttpRequestHeaders.Add` throw
+  mid-request). Failing at registration time converts a guaranteed runtime failure into a startup
+  failure - same class of failure, earlier.
 
-**Recommendation:** validate header names (RFC 7230 token charset) at **registration time** - in
-the options `Validate(...)` callback in `AddCorrelator` (`ServiceCollectionExtensions.cs:69`) and in
-`PropagationSettings.PropagateAs`/`KeepIncomingHeaderName` factories. Startup-time cost only, no
-per-request overhead, no new dependency (ADR 0012).
+**Recommendation (opt-in / fail-fast on already-broken paths only):**
 
-### S4. Invalid *value* reaching response emission fails late
+- `PropagateAs`/`KeepIncomingHeaderName` factories: validate header name (RFC 7230 token charset)
+  at construction - converts existing guaranteed request-time failure into registration-time
+  failure. Recommend accepting this as a bug-fix-grade change, maintainer decision required.
+- `ReadFrom`: strict validation would be a breaking change -> do **not** throw by default.
+  Options: (a) validation only via an opt-in knob, or (b) no library change, covered by S1
+  guidance. Recommend (a) or leave as docs note - needs decision.
+
+### S4. Invalid *value* reaching response emission fails late - optional feature only
+
+**Behavior change if implemented as unconditional skip** (today: 500 at response start; after:
+header silently skipped) - so not eligible as a default-path fix under the non-breaking policy.
 
 `AddHeaderIfNotSet` (`HeaderDictionaryExtensions.cs:16`) `TryAdd`s the value; Kestrel rejects
 values containing invalid characters (e.g. CR/LF) only when the response actually starts - the
 `OnStarting` callback throwing produces a 500 with no useful diagnostics.
 
-**Recommendation:** covered by S1/S2 guidance (register a validator on untrusted boundaries) and
-S3; additionally, the default `CorrelationEmitter` could defensively skip values containing
-control characters when writing the response header - a cheap scan of a typically short value on
-the emit path only (skipped entirely when `Emit` is disabled), consistent with the HA goal.
+**Recommendation:**
 
-### S5. `ReplaceTraceIdentifier` + unsanitized value
+- Primary mitigation is already opt-in: register a validator on untrusted boundaries (S1/S2).
+- Optional feature (needs decision): skip response emission for values containing control
+  characters - either unconditionally (arguably a bug fix of an attacker-triggered crash path,
+  but technically a behavior change) or as an opt-in emitter setting. If implemented, pair with a
+  test documenting the new behavior and an ADR-0008 amendment.
 
-`CorrelatorMiddleware.Invoke` (`CorrelatorMiddleware.cs:58-62`) assigns the raw correlation value to
-`TraceIdentifier`, which then appears in ASP.NET's own request logs / W3C logs / `Activity`
+### S5. `ReplaceTraceIdentifier` + unsanitized value - docs-first, sanitize only as opt-in
+
+**Behavior change if sanitized unconditionally** (the assigned `TraceIdentifier` would differ
+from the raw correlation value) - so docs-first.
+
+`CorrelatorMiddleware.Invoke` (`CorrelatorMiddleware.cs:58-62`) assigns the raw correlation value
+to `TraceIdentifier`, which then appears in ASP.NET's own request logs / W3C logs / `Activity`
 diagnostics - outside the reach of `CorrelationIdValueSanitizer` (which protects only correlator's
 log messages, ADR 0007).
 
-**Recommendation:** either sanitize the value before assigning it as `TraceIdentifier` (cost only
-when `ReplaceTraceIdentifier` is enabled and value contains unsafe chars - same profile as the
-existing sanitizer fast path), or document prominently that `ReplaceTraceIdentifier` should be
-combined with a validator on untrusted boundaries. Low implementation cost, removes a whole class
-of log-injection complaints.
+**Recommendation:**
+
+- Docs (non-breaking): document in README/configuration that `ReplaceTraceIdentifier` should be
+  combined with a validator when the API is reachable by untrusted parties; include in the S1
+  security section.
+- Optional feature (needs decision + ADR-0003 amendment): `options.SanitizeTraceIdentifier`
+  (default `false`), sanitizing before assignment - cost only for opted-in requests with unsafe
+  values, same fast-path profile as the existing sanitizer.
 
 ### S6. Lazy options validation - document it, don't change it
+
+**Non-breaking** (docs only).
 
 `AddCorrelator` calls `.Validate(options => options.ReadFrom.Count > 0, ...)` but never
 `ValidateOnStart()` (`ServiceCollectionExtensions.cs:66-71`): eager validation would require the
@@ -170,15 +205,13 @@ per request when logging scope is enabled. A single-element array (or a struct i
 `IReadOnlyList<KeyValuePair<string, object>>`) plus a precomputed `ToString` removes one
 allocation. Same caveat: benchmark first.
 
-### P3. `CorrelationId` equality semantics
+### P3. `CorrelationId` equality semantics - next major
 
 `CorrelationId.Equals/GetHashCode` use `OrdinalIgnoreCase` (`CorrelationId.cs:77-89`). Header
 *names* are case-insensitive in HTTP, but correlation *values* are opaque tokens - treating
 `"abc"` and `"ABC"` as the same correlation is surprising, slightly slower, and can cause false
-deduplication (e.g. grouping log entries).
-
-**Recommendation:** switch to `Ordinal` in the next major (behavior change); document the current
-semantics meanwhile.
+deduplication (e.g. grouping log entries). **Behavior change** - defer to the next major version;
+document the current semantics meanwhile.
 
 ---
 
@@ -190,7 +223,7 @@ The handler overrides only `SendAsync` (`CorrelatorHttpMessageHandler.cs:37`). S
 `HttpClient.Send`/sync paths call `HttpMessageHandler.Send`, which the base `DelegatingHandler`
 forwards without correlation headers. Consumers using sync APIs (or libraries doing so internally)
 silently lose correlation forwarding - for a correlation library this is a correctness bug, not
-just an optimization miss.
+just an optimization miss. **Non-breaking** (fixes a silent no-op path).
 
 **Recommendation:** override `protected override HttpResponseMessage Send(HttpRequestMessage,
 CancellationToken)` with the same forwarding logic and test both paths. High value, trivial fix, no
@@ -202,6 +235,7 @@ Factory and emitter have type-based registration (`WithCorrelationContextFactory
 `WithCorrelationEmitter<T>`), validator only instance-based (`WithValidator<T>(T validator)`,
 `CorrelatorBuilderExtensions.cs:105`). Add `WithValidator<T>() where T : class,
 ICorrelationValidator` for consistency (and `WithDefaultValidator()` when S1 introduces one).
+**Non-breaking** (new overloads).
 
 ### A2. Single-validator limit without built-in composite
 
@@ -213,7 +247,7 @@ builder.WithValidators(new CorrelationValueLengthValidator(64), new CorrelationV
 ```
 
 or at minimum a public `CompositeCorrelationValidator` they can assemble themselves. All opt-in;
-unchanged default path.
+unchanged default path. **Non-breaking.**
 
 ### A3. Ship a charset/pattern validator
 
@@ -221,18 +255,15 @@ The library already maintains a safe-char allowlist for logging
 (`CorrelationIdValueSanitizer.SafeCorrelationIdCharsString`). Expose a
 `CorrelationValuePatternValidator` (allowlist-based, optionally length-bounded) reusing the same
 char set. Cheap to implement, directly serves S1's guidance (hardening one-liner for
-internet-facing APIs), and pairs naturally with the sanitizer.
+internet-facing APIs), and pairs naturally with the sanitizer. **Non-breaking** (new opt-in type).
 
-### A4. Accessor masks misconfiguration
+### A4. Accessor masks misconfiguration - next major
 
 `ICorrelationContextAccessor.CorrelationContext` returns `EmptyCorrelationContext.Instance` both
 for "no correlation received/generated" and "middleware never used / accessed outside request"
 (`CorrelationContextContainer.cs:20`). A consumer with a DI misconfiguration silently gets empty
-IDs everywhere.
-
-**Recommendation (vNext):** consider exposing `bool HasContext` (or making the ambient value
-nullable internally while keeping the public contract); at minimum, document the fallback in
-`ICorrelationContextAccessor` XML docs. Zero runtime cost either way.
+IDs everywhere. Changing the returned contract is a **behavior change** - next major. In the
+meantime: document the fallback in `ICorrelationContextAccessor` XML docs (**non-breaking**).
 
 ### A5. Options not bindable from `IConfiguration`
 
@@ -241,8 +272,7 @@ nullable internally while keeping the public contract); at minimum, document the
 binding support would add a parsing/binding subsystem the library deliberately avoids (ADR 0012).
 
 **Recommendation:** document a consumer-side pattern (bind a POCO, map to `CorrelatorOptions` in
-the configure delegate; or `AddCorrelator().BindConfiguration(...)` helper left as an exercise).
-Keep `Factory` code-only by design.
+the configure delegate). Keep `Factory` code-only by design.
 
 ### A6. Unused package reference contradicts the minimal-footprint decision
 
@@ -252,7 +282,7 @@ takes this transitive dependency for nothing - directly at odds with ADR 0012.
 
 **Recommendation:** remove the reference from all TFMs (options rules stay as plain
 `Validate(...)` callbacks). Pure win: smaller dependency graph, better alignment with the stated
-principle.
+principle. **Non-breaking** (dependency-graph only; assemblies unchanged).
 
 ### A7. `default(PropagationSettings)` trap
 
@@ -261,62 +291,53 @@ principle.
 `Settings` defaults to 0 (`NoPropagation`) but `HeaderName` "recovers", so the enum check saves it
 today. Still, the `HeaderName ?? HttpHeaders.CorrelationId` fallback is a footgun for future
 maintainers (it exists only because of the `default` struct case). Consider an internal
-`IsDefault` check or documenting it (ADR 0005 already flags it).
+`IsDefault` check or documenting it (ADR 0005 already flags it). **Non-breaking** (internal/doc).
 
 ---
 
 ## Usability & docs
 
-### U1. `docs/configuration.md` sample does not compile
+> U1-U5 were implemented on per-fix branches on 2026-09-09 (not yet merged). Status recorded for
+> traceability; details kept for context.
 
-Lines 20-46 mix statement syntax with member-declaration syntax inside a lambda:
+### U1. `docs/configuration.md` sample does not compile - FIXED
 
-```csharp
-builder.Services.AddDefaultCorrelator(
-    correlatorOptions =>
-    {
-        ...
-        ReplaceTraceIdentifier = true,          // <- invalid in a lambda body
-        LoggingScope = LoggingScopeSettings.IncludeLoggingScope(),
-    });
-```
+Fixed on `docs/u1-fix-configuration-sample`: invalid lambda syntax in the "Adjusting default
+configuration" sample (`ReplaceTraceIdentifier = true,` inside a lambda body) and nonexistent
+`correlatorOptions.Add(...)` method - corrected to `ReadFrom.Add(...)`.
 
-Also `correlatorOptions.Add("X-Yet-Another-Request-ID")` (lines 76-80) - `CorrelatorOptions` has
-no `Add` method; it must be `correlatorOptions.ReadFrom.Add(...)`. These are the docs most users
-copy first; fix both and consider a docs-compile test (see T3).
+### U2. Undocumented EventIds - FIXED
 
-### U2. Undocumented EventIds
+Fixed on `docs/u2-logging-eventids`: new `docs/logging.md` with the EventId catalog (101-103,
+202-206, 301), sanitization notes and the silencing examples (moved from `configuration.md`);
+README links added.
 
-Correlator logs use EventIds 101-103 (middleware), 202-206 (context factory), 301 (emitter)
-(`Logging/LoggerExtensions.*.cs`). Consumers filtering or alerting on correlator logs need the
-catalog. Add a table to `docs/components.md` or a new `docs/logging.md`.
+### U3. Build artifacts in the repository - CLOSED (disproven)
 
-### U3. Committed build artifacts
+**Correction of the initial review:** `TestResults/`, `BenchmarkDotNet.Artifacts/` and `.idea/`
+are **not** checked into the repository - they exist on the local disk only and are already
+covered by `.gitignore` (`[Tt]est[Rr]esult*/`, `BenchmarkDotNet.Artifacts/`, `.idea/`,
+`*.DotSettings.user`). The only tracked solution-level file,
+`W4k.AspNetCore.Correlator.sln.DotSettings`, is a team-shared settings file and is intentional.
+No changes required; finding closed.
 
-`TestResults/`, `BenchmarkDotNet.Artifacts/` (including multi-MB reports) and Rider's `.idea/`
-workspace files are checked in. Add to `.gitignore` and remove from the repo (`.idea` at least the
-`workspace.xml`). Also `W4k.AspNetCore.Correlator.sln.DotSettings.user` should be ignored.
+### U4. CORS note missing - FIXED
 
-### U4. CORS note missing
+Fixed on `docs/u4-cors-note`: "Exposing emitted header to browsers (CORS)" section added to
+`docs/configuration.md` with a `WithExposedHeaders` sample.
 
-When `Emit` is enabled, browsers cannot read the correlation header unless the API exposes it
-(`CorsPolicyBuilder.WithExposedHeaders(...)`). Document in `docs/configuration.md` - a very common
-consumer complaint with custom response headers.
+### U5. Minor docs/README items - FIXED
 
-### U5. Minor docs/README items
-
-- `PackageIconUrl` is deprecated; `PackageIcon` already set - drop the URL variant
-  (`W4k.AspNetCore.Correlator.csproj:47`).
-- `CorrelationContext` XML doc typo: "classs" (`CorrelationContext.cs:6`).
-- README mentions `Request-Id` "(set by ASP.NET when sending request with `HttpClient`)" - worth
-  verifying the statement still applies for current target frameworks and referencing docs.
-- Consider a CHANGELOG (releases currently only visible via GitHub releases / commit log).
+Fixed on `docs/u5-minor-fixes`: deprecated `PackageIconUrl` dropped from the csproj; "classs" XML
+doc typo in `CorrelationContext.cs`; `Request-Id` claim corrected (legacy header injected by
+`HttpClient` activity propagation on .NET Core 3.x - current .NET sends W3C `traceparent`);
+`CHANGELOG.md` added (Keep-a-Changelog format) and linked from README.
 
 ---
 
 ## Testing & CI
 
-### T1. Coverage gaps for current behavior (drive P4/S2 fixes)
+### T1. Coverage gaps for current behavior (drive P4 fix)
 
 Missing integration/unit tests:
 
@@ -324,34 +345,55 @@ Missing integration/unit tests:
 - `Emit` + invalid correlation value (no response header, no 500),
 - `Emit` when app pre-sets the correlation response header (first-wins semantics, ADR 0008),
 - correlation value with CRLF reaching emitter without validator (documents current 500 behavior;
-  mitigated by S1/S4 guidance),
+  see S4),
 - fire-and-forget task accessing `ICorrelationContextAccessor` after scope disposal (documents
   `EmptyCorrelationContext` semantics, ADR 0002).
 
-### T2. CI matrix
+### T2. CI matrix / multi-TFM integration tests - CLOSED (won't fix)
 
-Integration tests target `net10.0` only and CI runs `ubuntu-latest` only (ADR 0011). Consider a
-matrix (`os: [ubuntu-latest, windows-latest]`, TFM per ADR 0011 policy) - `AsyncLocal` and
-`IHeaderDictionary` behavior differences across runtimes are exactly the risk area this library
-lives in. Cost/benefit: at minimum add a Windows leg for integration tests.
+Integration tests target `net10.0` only and CI runs `ubuntu-latest` only. **Decision (2026-09-09):**
+not worth addressing - net9.0 is already out of support and net8.0 reaches EOL within months
+(2026-11); broadening coverage for runtimes about to be dropped is wasted effort. Instead, older
+TFMs will be removed outright (R1), after which the single-TFM story holds naturally.
 
 ### T3. Docs sample compilation
 
 The broken configuration sample (U1) recurring suggests a small "docs snippets" test project
 referenced from `docs/` samples, compiled in CI (docs paths currently ignored in CI, which is why
 U1 went unnoticed). A tiny console project with the documented snippets as source would prevent
-drift.
+drift. Still relevant after U1 - guards future docs regressions.
+
+---
+
+## Maintenance & lifecycle
+
+### R1. Drop net8.0/net9.0 TFMs once out of support
+
+Per maintainer direction (2026-09-09): older runtime support will be removed soon. Trigger: after
+net8.0 EOL (2026-11-10). Scope when executing:
+
+- remove `net8.0`/`net9.0` from `TargetFrameworks` in src/tests/benchmarks csproj and drop the
+  per-TFM conditional `PackageReference` ItemGroups (`W4k.AspNetCore.Correlator.csproj:71-87`),
+- remove the net8 sanitizer implementation (`CorrelationIdValueSanitizer.cs`, `#if NET8_0`
+  branch) - single implementation remains,
+- drop the `RestoreEnablePackagePruning` workaround (`W4k.AspNetCore.Correlator.csproj:15`),
+- update `global.json`/CI workflow .NET versions accordingly (`.github/workflows/ci.yml`),
+- update ADR 0011 (supersede the multi-targeting decision) and add a CHANGELOG entry; minor or
+  major version bump per SemVer policy for dropped framework support (normally a major bump -
+  decide whether the soon-EOL status justifies calling it breaking).
 
 ---
 
 ## Suggested sequencing
 
-1. **Quick wins (no breaking changes, no new dependencies):** P4 (sync `Send`), A6 (remove unused
-   DataAnnotations reference), U1 (docs fix), T1 (tests for the above).
-2. **Hardening, strictly opt-in (minor-version friendly):** S3 (registration-time header name
-   validation), S5 (sanitize `TraceIdentifier`), S1/A3/A1 (validator guidance + shipped charset
-   validator + overloads), S6 (document lazy validation).
-3. **Behavior additions (need an ADR each before implementation):** S2 (opt-in invalid-value
-   policy, amends ADR 0004), P3 (`Ordinal` equality - next major), A4 (accessor semantics).
-4. **Ongoing:** P1/P2 micro-optimizations guarded by benchmarks; T2 CI matrix; U2/U4/U5 docs
-   hygiene.
+1. **Quick wins (no breaking changes, no new dependencies):** merge the U1-U5 branches; P4
+   (sync `Send`) + T1 tests; A6 (remove unused DataAnnotations reference).
+2. **Hardening, strictly opt-in (minor-version friendly):** S1/A3/A1 (security guidance +
+   shipped charset validator + overloads), S6 (document lazy validation), S5 docs part, S3
+   decision (fail-fast on already-broken paths; opt-in for `ReadFrom`).
+3. **Opt-in features (need an ADR each before implementation):** S2 (`OnInvalid` policy, amends
+   ADR 0004), S4 (emitter control-char skip, amends ADR 0008), S5 optional
+   `SanitizeTraceIdentifier` (amends ADR 0003).
+4. **Next major:** P3 (`Ordinal` equality), A4 (accessor semantics) - each with ADR updates.
+5. **Post-EOL:** R1 (drop net8.0/net9.0, supersedes ADR 0011's multi-target wave).
+6. **Ongoing:** P1/P2 micro-optimizations guarded by benchmarks; T3 docs-compile guard.
