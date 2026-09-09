@@ -39,10 +39,10 @@ builder.Services.AddDefaultCorrelator(
         correlatorOptions.Forward = PropagationSettings.KeepIncomingHeaderName();
 
         // replace `HttpContext.TraceIdentifier`
-        ReplaceTraceIdentifier = true,
+        correlatorOptions.ReplaceTraceIdentifier = true;
 
         // create logging scope with default key
-        LoggingScope = LoggingScopeSettings.IncludeLoggingScope(),
+        correlatorOptions.LoggingScope = LoggingScopeSettings.IncludeLoggingScope();
     });
 ```
 
@@ -73,11 +73,11 @@ First header satisfying match is read. Collection must not be empty.
 
 ```csharp
 // add after default headers
-correlatorOptions.Add("X-Yet-Another-Request-ID");
+correlatorOptions.ReadFrom.Add("X-Yet-Another-Request-ID");
 
 // read only from given header
-correlatorOptions.Clear();
-correlatorOptions.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
+correlatorOptions.ReadFrom.Clear();
+correlatorOptions.ReadFrom.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
 ```
 
 If you are sure about correlation header name, feel free to use just that and avoid unnecessary lookup in request headers.
