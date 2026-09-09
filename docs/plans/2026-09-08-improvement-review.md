@@ -28,7 +28,6 @@ Guiding constraints (deliberate design decisions - not defects):
 | S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | Open (needs decision) |
 | S4 | Invalid header value reaching response emission fails as late 500 - behavior-preserving options only | Security | Medium | S | Open (optional feature) |
 | S5 | `ReplaceTraceIdentifier` injects unsanitized value into platform trace logs - docs-first; sanitize only as opt-in | Security | Medium | S | Open |
-| S6 | Lazy options validation is deliberate (ADR 0012) - document it, don't change it | Docs | Low | S | Open |
 | P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S | Open |
 | P2 | `CorrelatedLoggerState` allocations per request when logging scope enabled | Performance | Low | S | Open |
 | P3 | `CorrelationId` equality is `OrdinalIgnoreCase` - behavior change, next major | API/Perf | Medium | S | Open (next major) |
@@ -154,20 +153,6 @@ log messages, ADR 0007).
 - Optional feature (needs decision + ADR-0003 amendment): `options.SanitizeTraceIdentifier`
   (default `false`), sanitizing before assignment - cost only for opted-in requests with unsafe
   values, same fast-path profile as the existing sanitizer.
-
-### S6. Lazy options validation - document it, don't change it
-
-**Non-breaking** (docs only).
-
-`AddCorrelator` calls `.Validate(options => options.ReadFrom.Count > 0, ...)` but never
-`ValidateOnStart()` (`ServiceCollectionExtensions.cs:66-71`): eager validation would require the
-hosting/startup-validator machinery, i.e. an extra dependency - deliberately rejected (ADR 0012).
-An empty `ReadFrom` therefore surfaces when options are first resolved, not at application start.
-
-**Recommendation (docs only):** document in `docs/registration.md` that options validation is
-lazy by design, and that consumers using hosting can call `.ValidateOnStart()` on the options
-builder themselves if they want startup fail-fast - their app already has the dependency, the
-library doesn't.
 
 ---
 
@@ -379,7 +364,7 @@ net8.0 EOL (2026-11-10). Scope when executing:
 1. **Quick wins (no breaking changes, no new dependencies):** merge the U-branch fixes
    (U1, U2, U4, U5); P4 (sync `Send`) + T1 tests; A6 (remove unused DataAnnotations reference).
 2. **Hardening, strictly opt-in (minor-version friendly):** S1/A3/A1 (security guidance +
-   shipped charset validator + overloads), S6 (document lazy validation), S5 docs part, S3
+   shipped charset validator + overloads), S5 docs part, S3
    decision (fail-fast on already-broken paths; opt-in for `ReadFrom`).
 3. **Opt-in features (need an ADR each before implementation):** S2 (`OnInvalid` policy, amends
    ADR 0004), S4 (emitter control-char skip, amends ADR 0008), S5 optional

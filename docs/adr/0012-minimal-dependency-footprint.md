@@ -54,7 +54,6 @@ As a consequence:
 - **Positive:** no hidden startup registrations (hosted services, startup validators) beyond what
   the user explicitly adds.
 - **Negative:** misconfiguration (e.g. empty `ReadFrom`) surfaces on first options use rather than
-  at startup - accepted; documented as consumer-side guidance ("call `ValidateOnStart()` yourself
-  if you use hosting").
+  at startup - accepted, considered obvious to .NET users.
 - **Negative:** configuration binding is left as an exercise/pattern instead of a built-in
   convenience.
