@@ -298,7 +298,10 @@ maintainers (it exists only because of the `default` struct case). Consider an i
 ## Usability & docs
 
 > U1-U5 were implemented on per-fix branches on 2026-09-09 (not yet merged). Status recorded for
-> traceability; details kept for context.
+> traceability; details kept for context. **U3 branch note:** `chore/u3-untrack-build-artifacts`
+> contains only the initial plan correction (made before the finding was disproven), which is
+> superseded by this revised plan - there is nothing to merge from that branch and it can be
+> deleted.
 
 ### U1. `docs/configuration.md` sample does not compile - FIXED
 
@@ -320,6 +323,10 @@ covered by `.gitignore` (`[Tt]est[Rr]esult*/`, `BenchmarkDotNet.Artifacts/`, `.i
 `*.DotSettings.user`). The only tracked solution-level file,
 `W4k.AspNetCore.Correlator.sln.DotSettings`, is a team-shared settings file and is intentional.
 No changes required; finding closed.
+
+**Branch note:** the `chore/u3-untrack-build-artifacts` branch contains only the initial plan
+correction (recording the "closed" status before this revision), which is fully superseded by this
+revised plan. Nothing needs merging from it - the branch can be deleted.
 
 ### U4. CORS note missing - FIXED
 
