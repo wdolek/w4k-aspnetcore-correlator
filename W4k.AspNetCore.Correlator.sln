@@ -22,7 +22,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{8F
 		README.md = README.md
 		run-bench-cmp.bat = run-bench-cmp.bat
 		run-bench.bat = run-bench.bat
-		stylecop.json = stylecop.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{260DCE5E-0649-40BF-9E55-84DFEBFC4F78}"
