@@ -113,6 +113,23 @@ builder.Services
     .WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
+## Security
+
+Correlation header values are attacker-controlled input. Without a registered validator, any
+received value is accepted and propagated further: returned to the caller, forwarded to
+subsequent requests and written to logs. For internet-facing APIs, register the shipped
+default validator:
+
+```csharp
+builder.Services
+    .AddDefaultCorrelator()
+    .WithDefaultValidator();
+```
+
+`WithDefaultValidator()` registers `CorrelationValuePatternValidator`, which accepts non-empty
+values up to 80 characters consisting of characters safe for logging. For custom policies,
+implement `ICorrelationValidator`, see [detailed configuration](docs/configuration.md).
+
 ## Documentation
 
 - [Detailed configuration](docs/configuration.md) description

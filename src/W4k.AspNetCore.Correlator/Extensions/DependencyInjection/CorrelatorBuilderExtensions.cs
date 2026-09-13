@@ -117,6 +117,27 @@ namespace W4k.AspNetCore.Correlator
 
             return builder;
         }
+
+        /// <summary>
+        /// Registers default correlation validator.
+        /// </summary>
+        /// <remarks>
+        /// Default validator is <see cref="CorrelationValuePatternValidator"/>: only non-empty values
+        /// up to <see cref="CorrelationValuePatternValidator.DefaultMaxLength"/> characters consisting
+        /// of characters safe for logging are considered valid.
+        /// </remarks>
+        /// <param name="builder">Correlator builder.</param>
+        /// <returns>
+        /// Same instance of Correlator builder.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="builder"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when trying to register correlation validator second time.</exception>
+        public static ICorrelatorBuilder WithDefaultValidator(this ICorrelatorBuilder builder)
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+
+            return builder.WithValidator(new CorrelationValuePatternValidator());
+        }
     }
 }
 
