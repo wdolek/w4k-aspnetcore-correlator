@@ -8,10 +8,10 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.0.x
@@ -31,7 +31,7 @@ jobs:
       run: reportgenerator -reports:"TestResults/*.cobertura.xml" -targetdir:"TestResults/html" -reporttypes:html
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: w4k-aspnetcore-correlator-test-results-${{ github.sha }}
         path: TestResults
