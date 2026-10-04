@@ -19,7 +19,7 @@ public class RejectPolicyStartup
                     o.Emit = PropagationSettings.KeepIncomingHeaderName();
 
                     // reject request when received value is invalid
-                    o.OnInvalid = InvalidCorrelationPolicy.Reject;
+                    o.InvalidValuePolicy = InvalidCorrelationPolicy.Reject;
                 })
             .WithValidator(new CorrelationValueLengthValidator(8));
 

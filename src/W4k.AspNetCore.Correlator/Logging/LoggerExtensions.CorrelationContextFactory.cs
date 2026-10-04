@@ -19,6 +19,9 @@ internal static partial class LoggerExtensions
 
     private static readonly EventId RegeneratingCorrelationIdEvent = new(207, nameof(RegeneratingCorrelationId));
 
+    private static readonly EventId NoCorrelationIdFactoryConfiguredForInvalidValueEvent =
+        new(208, nameof(NoCorrelationIdFactoryConfiguredForInvalidValue));
+
     private static readonly Action<ILogger, Exception> LogNoCorrelationHeaderReceived =
         LoggerMessage.Define(
             LogLevel.Warning,
@@ -55,6 +58,12 @@ internal static partial class LoggerExtensions
             RegeneratingCorrelationIdEvent,
             "Invalid correlation value received, generating new correlation ID");
 
+    private static readonly Action<ILogger, Exception?> LogNoCorrelationIdFactoryConfiguredForInvalidValue =
+        LoggerMessage.Define(
+            LogLevel.Warning,
+            NoCorrelationIdFactoryConfiguredForInvalidValueEvent,
+            "Correlation ID factory not configured, keeping request without correlation ID");
+
     public static void NoCorrelationHeaderReceived(this ILogger logger) =>
         LogNoCorrelationHeaderReceived(logger, null!);
 
@@ -79,4 +88,7 @@ internal static partial class LoggerExtensions
 
     public static void RegeneratingCorrelationId(this ILogger logger) =>
         LogRegeneratingCorrelationId(logger, null);
+
+    public static void NoCorrelationIdFactoryConfiguredForInvalidValue(this ILogger logger) =>
+        LogNoCorrelationIdFactoryConfiguredForInvalidValue(logger, null);
 }

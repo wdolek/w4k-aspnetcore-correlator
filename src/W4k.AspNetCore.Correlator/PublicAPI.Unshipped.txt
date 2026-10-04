@@ -2,8 +2,8 @@ W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext
 W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.Header.get -> string!
 W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.RegeneratedCorrelationContext(W4k.AspNetCore.Correlator.CorrelationId! correlationId, string! header, W4k.AspNetCore.Correlator.Validation.ValidationResult validationResult) -> void
 W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.ValidationResult.get -> W4k.AspNetCore.Correlator.Validation.ValidationResult
-W4k.AspNetCore.Correlator.Options.CorrelatorOptions.OnInvalid.get -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
-W4k.AspNetCore.Correlator.Options.CorrelatorOptions.OnInvalid.set -> void
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.InvalidValuePolicy.get -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.InvalidValuePolicy.set -> void
 W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
 W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy.GenerateNew = 1 -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
 W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy.KeepEmpty = 0 -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy

@@ -47,7 +47,7 @@ internal class CorrelatorMiddleware
     private async Task Invoke(HttpContext httpContext, CorrelationContext correlationContext)
     {
         // reject request with invalid correlation ID before processing
-        if (_options.OnInvalid == InvalidCorrelationPolicy.Reject && correlationContext is InvalidCorrelationContext)
+        if (_options.InvalidValuePolicy == InvalidCorrelationPolicy.Reject && correlationContext is InvalidCorrelationContext)
         {
             _logger.RejectingInvalidCorrelation();
             httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;

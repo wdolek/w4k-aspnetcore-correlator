@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases up to and including 3.3.0 are documented on the
 [GitHub releases page](https://github.com/wdolek/w4k-aspnetcore-correlator/releases).
 
+## [3.6.0]
+
+### Added
+
+- `CorrelatorOptions.InvalidValuePolicy`: policy applied when received correlation value is found invalid
+  by registered correlation validator (`KeepEmpty` by default, `GenerateNew` or `Reject`)
+
 ## [3.5.0] - 2026-09-13
 
 ### Added

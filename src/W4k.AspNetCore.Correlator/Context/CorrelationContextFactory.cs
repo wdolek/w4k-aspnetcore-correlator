@@ -108,10 +108,20 @@ internal class CorrelationContextFactory : ICorrelationContextFactory
         ValidationResult validationResult)
     {
         var generateCorrelationId = _options.Factory;
-        if (_options.OnInvalid == InvalidCorrelationPolicy.GenerateNew && generateCorrelationId is not null)
+        if (_options.InvalidValuePolicy == InvalidCorrelationPolicy.GenerateNew)
         {
-            _logger.RegeneratingCorrelationId();
-            return new RegeneratedCorrelationContext(generateCorrelationId(httpContext), headerName, validationResult);
+            if (generateCorrelationId is null)
+            {
+                _logger.NoCorrelationIdFactoryConfiguredForInvalidValue();
+            }
+            else
+            {
+                _logger.RegeneratingCorrelationId();
+                return new RegeneratedCorrelationContext(
+                    generateCorrelationId(httpContext),
+                    headerName,
+                    validationResult);
+            }
         }
 
         return new InvalidCorrelationContext(headerName, validationResult);

@@ -113,6 +113,10 @@ builder.Services
     .WithValidator(new CorrelationValueLengthValidator(64));
 ```
 
+When validation is enabled, received invalid values are by default replaced with empty correlation
+ID and the request is processed without correlation. This behavior can be changed with
+`InvalidValuePolicy`, see [invalid correlation value policy](docs/configuration.md#invalid-correlation-value-policy).
+
 ## Security
 
 Correlation header values are attacker-controlled input. Without a registered validator, any

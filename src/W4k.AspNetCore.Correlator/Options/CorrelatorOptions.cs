@@ -29,7 +29,7 @@ public sealed class CorrelatorOptions
     /// without correlation ID. Policy is relevant only when correlation validator is registered,
     /// otherwise received values are accepted as-is.
     /// </remarks>
-    public InvalidCorrelationPolicy OnInvalid { get; set; }
+    public InvalidCorrelationPolicy InvalidValuePolicy { get; set; }
 
     /// <summary>
     /// Gets or sets factory of correlation IDs. If <c>null</c>, correlation ID is not generated.

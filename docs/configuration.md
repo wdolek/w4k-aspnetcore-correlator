@@ -83,6 +83,32 @@ correlatorOptions.ReadFrom.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
 
 If you are sure about correlation header name, feel free to use just that and avoid unnecessary lookup in request headers.
 
+### Invalid correlation value policy
+
+Property `CorrelatorOptions.InvalidValuePolicy`, of type `InvalidCorrelationPolicy`.
+
+Policy applied when received correlation value is found invalid by registered correlation validator.
+Policy is relevant only when a correlation validator is registered, otherwise received values are
+accepted as-is.
+
+Available policies:
+
+- `KeepEmpty` (default): request is processed without correlation ID
+- `GenerateNew`: invalid value is replaced with newly generated correlation ID
+  (falls back to `KeepEmpty` when correlation ID factory is disabled)
+- `Reject`: request is rejected with `400 Bad Request` before processing
+
+```csharp
+// keep empty correlation ID (default)
+correlatorOptions.InvalidValuePolicy = InvalidCorrelationPolicy.KeepEmpty;
+
+// generate new correlation ID when received value is invalid
+correlatorOptions.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
+
+// reject request with 400 Bad Request when received value is invalid
+correlatorOptions.InvalidValuePolicy = InvalidCorrelationPolicy.Reject;
+```
+
 ### Correlation ID propagation
 
 There are two directions to propagate correlation ID:

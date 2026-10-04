@@ -181,7 +181,7 @@ public class CorrelationContextFactoryTests
             }
         };
 
-        _baseOptions.OnInvalid = InvalidCorrelationPolicy.GenerateNew;
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
         _baseOptions.Factory = _ => CorrelationId.FromString(correlationId);
 
         var validationResult = ValidationResult.Invalid("invalid");
@@ -220,7 +220,7 @@ public class CorrelationContextFactoryTests
             }
         };
 
-        _baseOptions.OnInvalid = InvalidCorrelationPolicy.GenerateNew;
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
         _baseOptions.Factory = null;
 
         var validator = Mock.Of<ICorrelationValidator>();
@@ -256,7 +256,7 @@ public class CorrelationContextFactoryTests
             }
         };
 
-        _baseOptions.OnInvalid = InvalidCorrelationPolicy.KeepEmpty;
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.KeepEmpty;
         _baseOptions.Factory = _ => CorrelationId.FromString("123");
 
         var validator = Mock.Of<ICorrelationValidator>();

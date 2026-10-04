@@ -21,7 +21,7 @@ public class GenerateNewPolicyStartup
                     o.Emit = PropagationSettings.KeepIncomingHeaderName();
 
                     // generate new correlation ID when received value is invalid
-                    o.OnInvalid = InvalidCorrelationPolicy.GenerateNew;
+                    o.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
                 })
             .WithValidator(new CorrelationValueLengthValidator(8));
 
