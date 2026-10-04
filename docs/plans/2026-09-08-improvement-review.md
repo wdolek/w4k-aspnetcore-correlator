@@ -1,11 +1,18 @@
 # Improvement review - 2026-09-08
 
-Review of the current solution (`W4k.AspNetCore.Correlator` v3.4.0) focused on security,
+Review of `W4k.AspNetCore.Correlator` (originally reviewed at v3.4.0) focused on security,
 performance, API design and usability. Findings reference the [ADRs](../adr/README.md) where
 relevant and include concrete code locations.
 
 > Revised: 2026-09-09 - security items reclassified per non-breaking policy, TFM/CI finding closed,
 > U1/U4/U5 status recorded.
+>
+> Re-reviewed: 2026-09-13 - statuses refreshed against current master: U1/U4/U5 merged
+> (#73/#74/#75), S1 merged (#76) and released as 3.5.0 (StyleCop.Analyzers removed in the same
+> release prep; CI/pack workflows fixed in #77-#79), S2/S3 implemented on branches and pending
+> merge - both need rebasing first (3.5.0 release moved all `PublicAPI.Unshipped.txt` entries to
+> `Shipped`, so the branches' additions conflict). All other findings re-verified as still
+> applicable to current code.
 
 Guiding constraints (deliberate design decisions - not defects):
 
@@ -23,9 +30,9 @@ Guiding constraints (deliberate design decisions - not defects):
 
 | #  | Finding | Area | Priority | Effort | Status |
 |----|---------|------|----------|--------|--------|
-| S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S | Open |
-| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | Open |
-| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | Open (needs decision) |
+| S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S | **Merged** (#76), shipped in 3.5.0 |
+| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | **Implemented** - `feature/s2-invalid-correlation-policy` (needs rebase) |
+| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | **Implemented** - `feature/s3-header-name-validation` (needs rebase) |
 | S4 | Invalid header value reaching response emission fails as late 500 - behavior-preserving options only | Security | Medium | S | Open (optional feature) |
 | S5 | `ReplaceTraceIdentifier` injects unsanitized value into platform trace logs - docs-first; sanitize only as opt-in | Security | Medium | S | Open |
 | P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S | Open |
@@ -34,14 +41,14 @@ Guiding constraints (deliberate design decisions - not defects):
 | P4 | `CorrelatorHttpMessageHandler` overrides only `SendAsync` - sync `HttpClient.Send` path silently skips forwarding | API/Correctness | High | S | Open |
 | A1 | No type-based `WithValidator<T>()` overload (inconsistent with factory/emitter registration) | API | Low | S | Open |
 | A2 | Single-validator limit - no built-in composite | API | Low | M | Open |
-| A3 | No charset/format validator shipped despite having a safe-char allowlist internally | API/Security | Medium | S | Open |
+| A3 | No charset/format validator shipped despite having a safe-char allowlist internally | API/Security | Medium | S | **Done** - `CorrelationValuePatternValidator` shipped in #76 |
 | A4 | `ICorrelationContextAccessor` silently returns `EmptyCorrelationContext` when middleware not used | API/UX | Medium | S | Open (next major) |
 | A5 | Options not bindable from `IConfiguration` - documented pattern only, per ADR 0012 | Usability | Low | M | Open |
 | A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates minimal-footprint decision (ADR 0012) | Maintenance | Medium | S | Open |
 | A7 | `default(PropagationSettings)` silently behaves as `PropagateAs("X-Correlation-Id")` instead of `NoPropagation` | API | Medium | S | Open |
-| U1 | `docs/configuration.md` sample won't compile | Docs | High | S | **Fixed** - `docs/u1-fix-configuration-sample` |
-| U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S | **Fixed** - `docs/u4-cors-note` |
-| U5 | Minor items: `PackageIconUrl`, XML doc typo, `Request-Id` claim, CHANGELOG | Docs | Low | S | **Fixed** - `docs/u5-minor-fixes` |
+| U1 | `docs/configuration.md` sample won't compile | Docs | High | S | **Merged** (#73) |
+| U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S | **Merged** (#74) |
+| U5 | Minor items: `PackageIconUrl`, XML doc typo, `Request-Id` claim, CHANGELOG | Docs | Low | S | **Merged** (#75) |
 | T1 | No integration tests for sync `HttpClient.Send` forwarding (would currently fail, see P4) and for `Emit` + invalid-value paths | Testing | High | S | Open |
 | T2 | ~~CI: integration tests net10.0 only, Linux only~~ - won't fix: net8.0/net9.0 near EOL, older runtimes to be dropped (R1) | Testing | - | - | **Closed - won't fix** |
 | R1 | Drop net8.0/net9.0 TFMs once out of support; simplifies csproj conditionals, sanitizer dual implementation, test matrix | Maintenance | Low | M | Open (post-EOL, e.g. net8 EOL 2026-11) |
@@ -57,7 +64,10 @@ output is already closed unconditionally by sanitization (ADR 0007).
 **Policy (2026-09-09):** skip anything that changes default behavior; implement as opt-in feature
 where valuable. Each item below states its breaking-change classification.
 
-### S1. Security guidance and discoverable opt-in helpers for internet-facing deployments
+### S1. Security guidance and discoverable opt-in helpers for internet-facing deployments - MERGED (#76)
+
+**Implemented and shipped in 3.5.0:** README "Security" section, `WithDefaultValidator()` one-liner
+and `CorrelationValuePatternValidator` (also covers A3). Kept below for context.
 
 **Non-breaking** (docs + new opt-in APIs).
 
@@ -74,6 +84,12 @@ For internet-facing APIs the opt-in validator is strongly advisable, but today i
   Zero cost for consumers who don't call it - the opt-in default is unchanged (ADR 0004).
 
 ### S2. Invalid value: opt-in policy for what happens after failed validation
+
+**Implemented on `feature/s2-invalid-correlation-policy`** (`OnInvalid` policy with `KeepEmpty`/
+`GenerateNew`/`Reject`, `RegeneratedCorrelationContext`, middleware 400, ADR 0013 on the
+docs/adrs-and-plans branch, unit + integration tests) - pending merge; rebase first (3.5.0 moved
+all `PublicAPI.Unshipped.txt` entries to `Shipped`, so the branch's additions conflict). Kept
+below for context.
 
 **Non-breaking as opt-in feature.** New `CorrelationOptions` property, default preserving current
 behavior; new behavior only when explicitly configured (and only meaningful when a validator is
@@ -97,6 +113,11 @@ Requires a new context type or a `GeneratedCorrelationContext` variant carrying 
 header name and validation result. Amends ADR 0004 - needs its own ADR before implementation.
 
 ### S3. Header names are not validated - decision needed (potential break)
+
+**Implemented on `feature/s3-header-name-validation`** per the recommendation below: strict
+validation in `PropagateAs`/`KeepIncomingHeaderName` factories + opt-in `ValidateHeaderNames`
+knob for `ReadFrom` (default off, non-breaking), with tests - pending merge; rebase first (same
+`PublicAPI` conflict as S2). Kept below for context.
 
 **Potentially breaking if done strictly** - today's behavior differs per location:
 
@@ -232,7 +253,11 @@ builder.WithValidators(new CorrelationValueLengthValidator(64), new CorrelationV
 or at minimum a public `CompositeCorrelationValidator` they can assemble themselves. All opt-in;
 unchanged default path. **Non-breaking.**
 
-### A3. Ship a charset/pattern validator
+### A3. Ship a charset/pattern validator - DONE (#76)
+
+**Shipped in 3.5.0 as `CorrelationValuePatternValidator`** (allowlist-based, length-bounded,
+reusing the sanitizer's safe-char set) together with `.WithDefaultValidator()`. Kept below for
+context.
 
 The library already maintains a safe-char allowlist for logging
 (`CorrelationIdValueSanitizer.SafeCorrelationIdCharsString`). Expose a
@@ -280,23 +305,24 @@ maintainers (it exists only because of the `default` struct case). Consider an i
 
 ## Usability & docs
 
-> U1, U4 and U5 were implemented on per-fix branches on 2026-09-09 (not yet merged). Status
-> recorded for traceability; details kept for context.
+> U1, U4 and U5 were implemented on per-fix branches on 2026-09-09 and merged as #73/#74/#75.
+> Status recorded for traceability; details kept for context.
 
-### U1. `docs/configuration.md` sample does not compile - FIXED
+### U1. `docs/configuration.md` sample does not compile - MERGED (#73)
 
-Fixed on `docs/u1-fix-configuration-sample`: invalid lambda syntax in the "Adjusting default
+Merged: invalid lambda syntax in the "Adjusting default
 configuration" sample (`ReplaceTraceIdentifier = true,` inside a lambda body) and nonexistent
 `correlatorOptions.Add(...)` method - corrected to `ReadFrom.Add(...)`.
 
-### U4. CORS note missing - FIXED
+### U4. CORS note missing - MERGED (#74)
 
-Fixed on `docs/u4-cors-note`: "Exposing emitted header to browsers (CORS)" section added to
-`docs/configuration.md` with a `WithExposedHeaders` sample.
+Merged: "Exposing emitted header to browsers (CORS)" section added to
+`docs/configuration.md` with a `WithExposedHeaders` sample, including the clarification that CORS
+concerns browser clients only and is unrelated to machine-to-machine communication.
 
-### U5. Minor docs/README items - FIXED
+### U5. Minor docs/README items - MERGED (#75)
 
-Fixed on `docs/u5-minor-fixes`: deprecated `PackageIconUrl` dropped from the csproj; "classs" XML
+Merged: deprecated `PackageIconUrl` dropped from the csproj; "classs" XML
 doc typo in `CorrelationContext.cs`; `Request-Id` claim corrected (legacy header injected by
 `HttpClient` activity propagation on .NET Core 3.x - current .NET sends W3C `traceparent`);
 `CHANGELOG.md` added (Keep-a-Changelog format) and linked from README.
@@ -354,14 +380,17 @@ net8.0 EOL (2026-11-10). Scope when executing:
 
 ## Suggested sequencing
 
-1. **Quick wins (no breaking changes, no new dependencies):** merge the U-branch fixes
-   (U1, U4, U5); P4 (sync `Send`) + T1 tests; A6 (remove unused DataAnnotations reference).
-2. **Hardening, strictly opt-in (minor-version friendly):** S1/A3/A1 (security guidance +
-   shipped charset validator + overloads), S5 docs part, S3
-   decision (fail-fast on already-broken paths; opt-in for `ReadFrom`).
-3. **Opt-in features (need an ADR each before implementation):** S2 (`OnInvalid` policy, amends
-   ADR 0004), S4 (emitter control-char skip, amends ADR 0008), S5 optional
-   `SanitizeTraceIdentifier` (amends ADR 0003).
-4. **Next major:** P3 (`Ordinal` equality), A4 (accessor semantics) - each with ADR updates.
-5. **Post-EOL:** R1 (drop net8.0/net9.0, supersedes ADR 0011's multi-target wave).
-6. **Ongoing:** P1/P2 micro-optimizations guarded by benchmarks; T3 docs-compile guard.
+1. **Landed:** U1/U4/U5 (#73/#74/#75), S1 (#76, 3.5.0). CI/pack fixes (#77-#79).
+2. **Ready to merge (rebase first):** S2 (`OnInvalid` policy + ADR 0013) and S3 (header name
+   validation) - both implemented on branches; the 3.5.0 release moved all
+   `PublicAPI.Unshipped.txt` entries to `Shipped`, so each branch's PublicAPI additions must be
+   reconciled during rebase.
+3. **Quick wins (no breaking changes, no new dependencies):** P4 (sync `Send` override) + T1
+   tests; A6 (remove unused DataAnnotations reference); A1 (`WithValidator<T>()` overload).
+4. **Hardening, strictly opt-in (minor-version friendly):** S5 docs part; A2 (composite
+   validator).
+5. **Opt-in features (need an ADR each before implementation):** S4 (emitter control-char skip,
+   amends ADR 0008), S5 optional `SanitizeTraceIdentifier` (amends ADR 0003).
+6. **Next major:** P3 (`Ordinal` equality), A4 (accessor semantics) - each with ADR updates.
+7. **Post-EOL:** R1 (drop net8.0/net9.0, supersedes ADR 0011's multi-target wave).
+8. **Ongoing:** P1/P2 micro-optimizations guarded by benchmarks; T3 docs-compile guard.
