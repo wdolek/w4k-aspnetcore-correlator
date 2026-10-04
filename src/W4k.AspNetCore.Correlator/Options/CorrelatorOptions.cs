@@ -13,24 +13,16 @@ public sealed class CorrelatorOptions
     /// <summary>
     /// Gets collection of header names to be used when reading correlation ID from request headers.
     /// </summary>
+    /// <remarks>
+    /// Header names are validated when options are first resolved, invalid header name causes
+    /// options validation failure.
+    /// </remarks>
     public List<string> ReadFrom { get; } =
     [
         HttpHeaders.CorrelationId,
         HttpHeaders.RequestId,
         HttpHeaders.AspNetRequestId
     ];
-
-    /// <summary>
-    /// Gets or sets a value indicating whether header names within <see cref="ReadFrom"/> are validated
-    /// when options are first resolved. Invalid header name causes options validation failure.
-    /// </summary>
-    /// <remarks>
-    /// Validation is disabled by default, existing configurations are not affected. Enable to fail
-    /// fast on misconfigured header names - without validation, an invalid header name never matches
-    /// and is silently ignored. Header names of propagation settings (<c>PropagateAs</c>/
-    /// <c>KeepIncomingHeaderName</c>) are always validated when the settings are created.
-    /// </remarks>
-    public bool ValidateHeaderNames { get; set; }
 
     /// <summary>
     /// Gets or sets policy applied when received correlation value is found invalid

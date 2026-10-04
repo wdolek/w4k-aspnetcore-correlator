@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using W4k.AspNetCore.Correlator.Context;
 using W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Http;
@@ -66,13 +66,10 @@ namespace W4k.AspNetCore.Correlator
 
             services
                 .AddOptions<CorrelatorOptions>()
-                .Configure(configureOptions)
-                .Validate(
-                    options => options.ReadFrom.Count > 0,
-                    $"Configure at least one correlation HTTP header, see property: {nameof(CorrelatorOptions.ReadFrom)}")
-                .Validate(
-                    options => !options.ValidateHeaderNames || options.ReadFrom.All(HeaderNameValidator.IsValidHeaderName),
-                    $"Invalid correlation HTTP header name configured, see property: {nameof(CorrelatorOptions.ReadFrom)}");
+                .Configure(configureOptions);
+
+            services
+                .AddSingleton<IValidateOptions<CorrelatorOptions>, CorrelatorOptionsValidator>();
 
             services
                 .AddSingleton<CorrelationContextContainer>()

@@ -8,6 +8,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases up to and including 3.3.0 are documented on the
 [GitHub releases page](https://github.com/wdolek/w4k-aspnetcore-correlator/releases).
 
+## [3.7.0]
+
+### Changed
+
+- Header names within `CorrelatorOptions.ReadFrom` are validated when options are first resolved, invalid header name causes options validation failure (previously silently ignored)
+- Header names passed to `PropagationSettings.PropagateAs`/`KeepIncomingHeaderName` are validated when the settings are created, `ArgumentException` is thrown on invalid header name
+
 ## [3.6.0]
 
 ### Added

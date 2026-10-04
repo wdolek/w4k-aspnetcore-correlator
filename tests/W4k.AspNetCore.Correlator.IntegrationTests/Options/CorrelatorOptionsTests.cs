@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -22,15 +23,17 @@ public class CorrelatorOptionsTests
     }
 
     [Test]
-    public void Invoke_WhenValidateHeaderNamesAndInvalidHeaderName_ExpectOptionsValidationException()
+    public async Task Invoke_WhenInvalidHeaderNameConfigured_ExpectOptionsValidationException()
     {
-        Assert.Throws<OptionsValidationException>(() =>
+        var exception = Assert.Throws<OptionsValidationException>(() =>
         {
-            using var host = CreateTestWebHostBuilder<ValidateHeaderNamesStartup>().Build();
+            using var host = CreateTestWebHostBuilder<InvalidHeaderNameStartup>().Build();
             host.Start();
 
             _ = host.GetTestServer();
         });
+
+        await Assert.That(exception.Message).Contains("X CID");
     }
 
     private static IHostBuilder CreateTestWebHostBuilder<TStartup>()
@@ -63,7 +66,7 @@ public class CorrelatorOptionsTests
         }
     }
 
-    private class ValidateHeaderNamesStartup
+    private class InvalidHeaderNameStartup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -71,7 +74,6 @@ public class CorrelatorOptionsTests
             {
                 o.ReadFrom.Clear();
                 o.ReadFrom.Add("X CID");
-                o.ValidateHeaderNames = true;
             });
         }
 
