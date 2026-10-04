@@ -166,6 +166,118 @@ public class CorrelationContextFactoryTests
     }
 
     [Test]
+    public async Task CreateContext_WhenInvalidValueAndGenerateNewPolicy_ExpectRegeneratedCorrelationContext()
+    {
+        // arrange
+        var correlationId = "123";
+        var httpContext = new DefaultHttpContext
+        {
+            Request =
+            {
+                Headers =
+                {
+                    [HttpHeaders.CorrelationId] = "invalid_correlation",
+                }
+            }
+        };
+
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
+        _baseOptions.Factory = _ => CorrelationId.FromString(correlationId);
+
+        var validationResult = ValidationResult.Invalid("invalid");
+        var validator = Mock.Of<ICorrelationValidator>();
+
+        validator
+            .Validate("invalid_correlation")
+            .Returns(validationResult);
+
+        // act
+        var factory = new CorrelationContextFactory(
+            new OptionsWrapper<CorrelatorOptions>(_baseOptions),
+            validator.Object,
+            _logger);
+        var correlationContext = factory.CreateContext(httpContext);
+
+        // assert
+        var regeneratedCorrelationContext = await Assert.That(correlationContext).IsTypeOf<RegeneratedCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.Value).IsEqualTo(correlationId);
+        await Assert.That(regeneratedCorrelationContext!.Header).IsEqualTo(HttpHeaders.CorrelationId);
+        await Assert.That(validationResult).IsEqualTo(regeneratedCorrelationContext.ValidationResult);
+    }
+
+    [Test]
+    public async Task CreateContext_WhenInvalidValueAndGenerateNewPolicyWithoutFactory_ExpectInvalidCorrelationContext()
+    {
+        // arrange
+        var httpContext = new DefaultHttpContext
+        {
+            Request =
+            {
+                Headers =
+                {
+                    [HttpHeaders.CorrelationId] = "invalid_correlation",
+                }
+            }
+        };
+
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.GenerateNew;
+        _baseOptions.Factory = null;
+
+        var validator = Mock.Of<ICorrelationValidator>();
+
+        validator
+            .Validate("invalid_correlation")
+            .Returns(ValidationResult.Invalid("invalid"));
+
+        // act
+        var factory = new CorrelationContextFactory(
+            new OptionsWrapper<CorrelatorOptions>(_baseOptions),
+            validator.Object,
+            _logger);
+        var correlationContext = factory.CreateContext(httpContext);
+
+        // assert
+        await Assert.That(correlationContext).IsTypeOf<InvalidCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.IsEmpty).IsTrue();
+    }
+
+    [Test]
+    public async Task CreateContext_WhenInvalidValueAndKeepEmptyPolicy_ExpectInvalidCorrelationContext()
+    {
+        // arrange
+        var httpContext = new DefaultHttpContext
+        {
+            Request =
+            {
+                Headers =
+                {
+                    [HttpHeaders.CorrelationId] = "invalid_correlation",
+                }
+            }
+        };
+
+        _baseOptions.InvalidValuePolicy = InvalidCorrelationPolicy.KeepEmpty;
+        _baseOptions.Factory = _ => CorrelationId.FromString("123");
+
+        var validator = Mock.Of<ICorrelationValidator>();
+
+        validator
+            .Validate("invalid_correlation")
+            .Returns(ValidationResult.Invalid("invalid"));
+
+        // act
+        var factory = new CorrelationContextFactory(
+            new OptionsWrapper<CorrelatorOptions>(_baseOptions),
+            validator.Object,
+            _logger);
+        var correlationContext = factory.CreateContext(httpContext);
+
+        // assert
+        await Assert.That(correlationContext).IsTypeOf<InvalidCorrelationContext>();
+        await Assert.That(correlationContext.CorrelationId.IsEmpty).IsTrue();
+    }
+
+    [Test]
     public async Task CreateContext_WhenUnknownCorrelationHeader_ExpectEmptyCorrelationContext()
     {
         // arrange

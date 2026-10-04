@@ -11,6 +11,8 @@ internal static partial class LoggerExtensions
 
     private static readonly EventId ReplacingTraceIdentifierEvent = new(103, nameof(ReplacingTraceIdentifier));
 
+    private static readonly EventId RejectingInvalidCorrelationEvent = new(104, nameof(RejectingInvalidCorrelation));
+
     private static readonly Action<ILogger, Exception?> LogCorrelatedRequestBegin =
         LoggerMessage.Define(
             LogLevel.Debug,
@@ -29,6 +31,12 @@ internal static partial class LoggerExtensions
             ReplacingTraceIdentifierEvent,
             "Replacing TraceIdentifier ({TraceIdentifier}) by correlation ID");
 
+    private static readonly Action<ILogger, Exception?> LogRejectingInvalidCorrelation =
+        LoggerMessage.Define(
+            LogLevel.Warning,
+            RejectingInvalidCorrelationEvent,
+            "Invalid correlation ID received, rejecting request");
+
     public static void CorrelatedRequestBegin(this ILogger logger) =>
         LogCorrelatedRequestBegin(logger, null);
 
@@ -37,4 +45,7 @@ internal static partial class LoggerExtensions
 
     public static void ReplacingTraceIdentifier(this ILogger logger, string traceIdentifier) =>
         LogReplacingTraceIdentifier(logger, traceIdentifier, null);
+
+    public static void RejectingInvalidCorrelation(this ILogger logger) =>
+        LogRejectingInvalidCorrelation(logger, null);
 }
