@@ -14,6 +14,10 @@ W4k.AspNetCore.Correlator.Context.Types.InvalidCorrelationContext
 W4k.AspNetCore.Correlator.Context.Types.InvalidCorrelationContext.Header.get -> string!
 W4k.AspNetCore.Correlator.Context.Types.InvalidCorrelationContext.InvalidCorrelationContext(string! header, W4k.AspNetCore.Correlator.Validation.ValidationResult validationResult) -> void
 W4k.AspNetCore.Correlator.Context.Types.InvalidCorrelationContext.ValidationResult.get -> W4k.AspNetCore.Correlator.Validation.ValidationResult
+W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext
+W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.Header.get -> string!
+W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.RegeneratedCorrelationContext(W4k.AspNetCore.Correlator.CorrelationId! correlationId, string! header, W4k.AspNetCore.Correlator.Validation.ValidationResult validationResult) -> void
+W4k.AspNetCore.Correlator.Context.Types.RegeneratedCorrelationContext.ValidationResult.get -> W4k.AspNetCore.Correlator.Validation.ValidationResult
 W4k.AspNetCore.Correlator.Context.Types.RequestCorrelationContext
 W4k.AspNetCore.Correlator.Context.Types.RequestCorrelationContext.Header.get -> string!
 W4k.AspNetCore.Correlator.Context.Types.RequestCorrelationContext.RequestCorrelationContext(W4k.AspNetCore.Correlator.CorrelationId! correlationId, string! originHeader) -> void
@@ -42,6 +46,8 @@ W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Factory.get -> System.Func<M
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Factory.set -> void
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.get -> W4k.AspNetCore.Correlator.Options.PropagationSettings
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.Forward.set -> void
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.InvalidValuePolicy.get -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
+W4k.AspNetCore.Correlator.Options.CorrelatorOptions.InvalidValuePolicy.set -> void
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.get -> W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.LoggingScope.set -> void
 W4k.AspNetCore.Correlator.Options.CorrelatorOptions.ReadFrom.get -> System.Collections.Generic.List<string!>!
@@ -51,6 +57,10 @@ W4k.AspNetCore.Correlator.Options.HeaderPropagation
 W4k.AspNetCore.Correlator.Options.HeaderPropagation.KeepIncomingHeaderName = 2 -> W4k.AspNetCore.Correlator.Options.HeaderPropagation
 W4k.AspNetCore.Correlator.Options.HeaderPropagation.NoPropagation = 0 -> W4k.AspNetCore.Correlator.Options.HeaderPropagation
 W4k.AspNetCore.Correlator.Options.HeaderPropagation.UsePredefinedHeaderName = 1 -> W4k.AspNetCore.Correlator.Options.HeaderPropagation
+W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
+W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy.GenerateNew = 1 -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
+W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy.KeepEmpty = 0 -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
+W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy.Reject = 2 -> W4k.AspNetCore.Correlator.Options.InvalidCorrelationPolicy
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.CorrelationKey.get -> string!
 W4k.AspNetCore.Correlator.Options.LoggingScopeSettings.Equals(W4k.AspNetCore.Correlator.Options.LoggingScopeSettings other) -> bool
