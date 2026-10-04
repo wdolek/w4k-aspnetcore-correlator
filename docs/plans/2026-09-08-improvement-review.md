@@ -9,9 +9,9 @@ relevant and include concrete code locations.
 >
 > Re-reviewed: 2026-09-13 - statuses refreshed against current master: U1/U4/U5 merged
 > (#73/#74/#75), S1 merged (#76) and released as 3.5.0 (StyleCop.Analyzers removed in the same
-> release prep; CI/pack workflows fixed in #77-#79), S2/S3 implemented on branches and pending
-> merge - both need rebasing first (3.5.0 release moved all `PublicAPI.Unshipped.txt` entries to
-> `Shipped`, so the branches' additions conflict). All other findings re-verified as still
+> release prep; CI/pack workflows fixed in #77-#79), S2/S3 implemented on branches and rebased
+> onto master after 3.5.0 (3.5.0 moved all `PublicAPI.Unshipped.txt` entries to `Shipped` - the
+> branches' additions were reconciled accordingly). All other findings re-verified as still
 > applicable to current code.
 
 Guiding constraints (deliberate design decisions - not defects):
@@ -31,8 +31,8 @@ Guiding constraints (deliberate design decisions - not defects):
 | #  | Finding | Area | Priority | Effort | Status |
 |----|---------|------|----------|--------|--------|
 | S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S | **Merged** (#76), shipped in 3.5.0 |
-| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | **Implemented** - `feature/s2-invalid-correlation-policy` (needs rebase) |
-| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | **Implemented** - `feature/s3-header-name-validation` (needs rebase) |
+| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | **Implemented** - `feature/s2-invalid-correlation-policy` (rebased, ready to merge) |
+| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | **Implemented** - `feature/s3-header-name-validation` (rebased, ready to merge) |
 | S4 | Invalid header value reaching response emission fails as late 500 - behavior-preserving options only | Security | Medium | S | Open (optional feature) |
 | S5 | `ReplaceTraceIdentifier` injects unsanitized value into platform trace logs - docs-first; sanitize only as opt-in | Security | Medium | S | Open |
 | P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S | Open |
@@ -87,8 +87,7 @@ For internet-facing APIs the opt-in validator is strongly advisable, but today i
 
 **Implemented on `feature/s2-invalid-correlation-policy`** (`OnInvalid` policy with `KeepEmpty`/
 `GenerateNew`/`Reject`, `RegeneratedCorrelationContext`, middleware 400, ADR 0013 on the
-docs/adrs-and-plans branch, unit + integration tests) - pending merge; rebase first (3.5.0 moved
-all `PublicAPI.Unshipped.txt` entries to `Shipped`, so the branch's additions conflict). Kept
+docs/adrs-and-plans branch, unit + integration tests) - rebased onto master after 3.5.0 (PublicAPI reconciled), ready to merge. Kept
 below for context.
 
 **Non-breaking as opt-in feature.** New `CorrelationOptions` property, default preserving current
@@ -116,8 +115,8 @@ header name and validation result. Amends ADR 0004 - needs its own ADR before im
 
 **Implemented on `feature/s3-header-name-validation`** per the recommendation below: strict
 validation in `PropagateAs`/`KeepIncomingHeaderName` factories + opt-in `ValidateHeaderNames`
-knob for `ReadFrom` (default off, non-breaking), with tests - pending merge; rebase first (same
-`PublicAPI` conflict as S2). Kept below for context.
+knob for `ReadFrom` (default off, non-breaking), with tests - rebased onto master after 3.5.0
+(PublicAPI reconciled), ready to merge. Kept below for context.
 
 **Potentially breaking if done strictly** - today's behavior differs per location:
 
@@ -381,10 +380,9 @@ net8.0 EOL (2026-11-10). Scope when executing:
 ## Suggested sequencing
 
 1. **Landed:** U1/U4/U5 (#73/#74/#75), S1 (#76, 3.5.0). CI/pack fixes (#77-#79).
-2. **Ready to merge (rebase first):** S2 (`OnInvalid` policy + ADR 0013) and S3 (header name
-   validation) - both implemented on branches; the 3.5.0 release moved all
-   `PublicAPI.Unshipped.txt` entries to `Shipped`, so each branch's PublicAPI additions must be
-   reconciled during rebase.
+2. **Ready to merge:** S2 (`OnInvalid` policy + ADR 0013) and S3 (header name validation) - both
+   implemented on branches and rebased onto master after 3.5.0 (PublicAPI additions reconciled
+   with the release's Shipped/Unshipped move); tests green.
 3. **Quick wins (no breaking changes, no new dependencies):** P4 (sync `Send` override) + T1
    tests; A6 (remove unused DataAnnotations reference); A1 (`WithValidator<T>()` overload).
 4. **Hardening, strictly opt-in (minor-version friendly):** S5 docs part; A2 (composite
