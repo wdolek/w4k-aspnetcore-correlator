@@ -13,6 +13,10 @@ public sealed class CorrelatorOptions
     /// <summary>
     /// Gets collection of header names to be used when reading correlation ID from request headers.
     /// </summary>
+    /// <remarks>
+    /// Header names are validated when options are first resolved, invalid header name causes
+    /// options validation failure.
+    /// </remarks>
     public List<string> ReadFrom { get; } =
     [
         HttpHeaders.CorrelationId,

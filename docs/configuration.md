@@ -83,6 +83,13 @@ correlatorOptions.ReadFrom.Add("X-This-Is-Only-Possible-Correlation-ID-Now");
 
 If you are sure about correlation header name, feel free to use just that and avoid unnecessary lookup in request headers.
 
+Header names within `ReadFrom` are validated when options are first resolved - a typo or an otherwise
+invalid header name (e.g. `"X CID"` containing a space) causes options validation failure instead of
+being silently ignored (an invalid header name never matches).
+
+Header names used within propagation settings (`PropagateAs`/`KeepIncomingHeaderName`) are always
+validated when the settings are created.
+
 ### Invalid correlation value policy
 
 Property `CorrelatorOptions.InvalidValuePolicy`, of type `InvalidCorrelationPolicy`.

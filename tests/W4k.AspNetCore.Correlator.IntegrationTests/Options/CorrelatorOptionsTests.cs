@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -14,20 +15,35 @@ public class CorrelatorOptionsTests
     {
         Assert.Throws<OptionsValidationException>(() =>
         {
-            using var host = CreateTestWebHostBuilder().Build();
+            using var host = CreateTestWebHostBuilder<LocalStartup>().Build();
             host.Start();
 
             _ = host.GetTestServer();
         });
     }
 
-    private static IHostBuilder CreateTestWebHostBuilder() =>
+    [Test]
+    public async Task Invoke_WhenInvalidHeaderNameConfigured_ExpectOptionsValidationException()
+    {
+        var exception = Assert.Throws<OptionsValidationException>(() =>
+        {
+            using var host = CreateTestWebHostBuilder<InvalidHeaderNameStartup>().Build();
+            host.Start();
+
+            _ = host.GetTestServer();
+        });
+
+        await Assert.That(exception.Message).Contains("X CID");
+    }
+
+    private static IHostBuilder CreateTestWebHostBuilder<TStartup>()
+        where TStartup : class =>
         new HostBuilder().ConfigureWebHost(webHostBuilder =>
         {
             webHostBuilder
                 .UseEnvironment("test")
                 .UseTestServer()
-                .UseStartup<LocalStartup>();
+                .UseStartup<TStartup>();
         });
 
     private class LocalStartup
@@ -37,6 +53,27 @@ public class CorrelatorOptionsTests
             services.AddDefaultCorrelator(o =>
             {
                 o.ReadFrom.Clear();
+            });
+        }
+
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseCorrelator();
+            app.Use(async (_, next) =>
+            {
+                await next();
+            });
+        }
+    }
+
+    private class InvalidHeaderNameStartup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDefaultCorrelator(o =>
+            {
+                o.ReadFrom.Clear();
+                o.ReadFrom.Add("X CID");
             });
         }
 
