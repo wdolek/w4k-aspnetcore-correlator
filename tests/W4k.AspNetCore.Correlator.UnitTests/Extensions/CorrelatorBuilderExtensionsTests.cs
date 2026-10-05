@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using W4k.AspNetCore.Correlator.Validation;
 
-namespace W4k.AspNetCore.Correlator.Extensions.DependencyInjection;
+// ReSharper disable once CheckNamespace
+namespace W4k.AspNetCore.Correlator;
 
 public class CorrelatorBuilderExtensionsTests
 {
