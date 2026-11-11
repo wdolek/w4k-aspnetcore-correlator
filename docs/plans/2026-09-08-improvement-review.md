@@ -20,6 +20,11 @@ relevant and include concrete code locations.
 > applicable: P4 (sync `Send` override missing from `CorrelatorHttpMessageHandler.cs:37`),
 > A1 (single `WithValidator<T>(T)` overload only), A6 (`Microsoft.Extensions.Options.DataAnnotations`
 > still referenced for all TFMs).
+>
+> Re-reviewed: 2026-11-11 - R1 executed on `feature/net11-support` (4.0.0): net8.0/net9.0 dropped
+> after EOL (2026-11-10), net11.0 added, multitargeting kept (net10.0;net11.0), per-TFM
+> `Microsoft.Extensions.*` pins replaced by the ASP.NET Core shared framework reference (see ADR
+> 0011 amendment), sanitizer dual implementation collapsed, A6 resolved along the way.
 
 Guiding constraints (deliberate design decisions - not defects):
 
@@ -30,8 +35,8 @@ Guiding constraints (deliberate design decisions - not defects):
 - **Non-breaking policy (2026-09-09):** fixes must not change the library's default behavior.
   Anything that would change behavior ships as an **opt-in feature** (new option, new registration,
   new component) with the current behavior as default - or is deferred to the next major version.
-- **Runtime lifecycle:** net8.0/net9.0 are near (or past) end of support; no effort is spent
-  broadening their coverage (see R1 - planned TFM removal instead).
+- **Runtime lifecycle:** net8.0/net9.0 reached end of support 2026-11-10 and were dropped in
+  4.0.0 (see R1); the library multi-targets the two newest .NET waves.
 
 ## Summary
 
@@ -51,14 +56,14 @@ Guiding constraints (deliberate design decisions - not defects):
 | A3 | No charset/format validator shipped despite having a safe-char allowlist internally | API/Security | Medium | S | **Done** - `CorrelationValuePatternValidator` shipped in #76 |
 | A4 | `ICorrelationContextAccessor` silently returns `EmptyCorrelationContext` when middleware not used | API/UX | Medium | S | Open (next major) |
 | A5 | Options not bindable from `IConfiguration` - documented pattern only, per ADR 0012 | Usability | Low | M | Open |
-| A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates minimal-footprint decision (ADR 0012) | Maintenance | Medium | S | Open |
+| A6 | `Microsoft.Extensions.Options.DataAnnotations` referenced but unused - violates minimal-footprint decision (ADR 0012) | Maintenance | Medium | S | **Done** - removed in 4.0.0 (with R1) |
 | A7 | `default(PropagationSettings)` silently behaves as `PropagateAs("X-Correlation-Id")` instead of `NoPropagation` | API | Medium | S | Open |
 | U1 | `docs/configuration.md` sample won't compile | Docs | High | S | **Merged** (#73) |
 | U4 | CORS consumers need `WithExposedHeaders` - not documented | Docs | Low | S | **Merged** (#74) |
 | U5 | Minor items: `PackageIconUrl`, XML doc typo, `Request-Id` claim, CHANGELOG | Docs | Low | S | **Merged** (#75) |
 | T1 | No integration tests for sync `HttpClient.Send` forwarding (would currently fail, see P4) and for `Emit` + invalid-value paths | Testing | High | S | Open |
 | T2 | ~~CI: integration tests net10.0 only, Linux only~~ - won't fix: net8.0/net9.0 near EOL, older runtimes to be dropped (R1) | Testing | - | - | **Closed - won't fix** |
-| R1 | Drop net8.0/net9.0 TFMs once out of support; simplifies csproj conditionals, sanitizer dual implementation, test matrix | Maintenance | Low | M | Open (post-EOL, e.g. net8 EOL 2026-11) |
+| R1 | Drop net8.0/net9.0 TFMs once out of support; simplifies csproj conditionals, sanitizer dual implementation, test matrix | Maintenance | Low | M | **Done** - `feature/net11-support` (4.0.0, adds net11.0) |
 
 ---
 
@@ -287,7 +292,9 @@ binding support would add a parsing/binding subsystem the library deliberately a
 **Recommendation:** document a consumer-side pattern (bind a POCO, map to `CorrelatorOptions` in
 the configure delegate). Keep `Factory` code-only by design.
 
-### A6. Unused package reference contradicts the minimal-footprint decision
+### A6. Unused package reference contradicts the minimal-footprint decision - DONE
+
+**Removed in 4.0.0** (as part of R1's dependency cleanup). Kept below for context.
 
 `Microsoft.Extensions.Options.DataAnnotations` is referenced for all TFMs
 (`W4k.AspNetCore.Correlator.csproj:74,80,86`) but no data annotations are used. Every consumer
@@ -366,7 +373,14 @@ drift. Still relevant after U1 - guards future docs regressions.
 
 ## Maintenance & lifecycle
 
-### R1. Drop net8.0/net9.0 TFMs once out of support
+### R1. Drop net8.0/net9.0 TFMs once out of support - DONE
+
+**Executed 2026-11-11 on `feature/net11-support` (4.0.0):** net8.0/net9.0 dropped the day after
+EOL, net11.0 added, multitargeting kept (`net10.0;net11.0` per ADR 0011). Beyond the original
+scope below, the .NET 11 SDK's package pruning (NU1510) prompted going further: the per-TFM
+`Microsoft.Extensions.*` pins were removed entirely (framework reference only, see ADR 0011
+amendment) and the unused `Microsoft.Extensions.Options.DataAnnotations` reference with them (A6).
+Kept below for context.
 
 Per maintainer direction (2026-09-09): older runtime support will be removed soon. Trigger: after
 net8.0 EOL (2026-11-10). Scope when executing:
@@ -390,11 +404,13 @@ net8.0 EOL (2026-11-10). Scope when executing:
 2. **Landed:** S2 (`InvalidValuePolicy` + ADR 0013, #80, 3.6.0) and S3 (header name validation,
    #81). Public API analyzer modernization plus deprecated-API test isolation (#82).
 3. **Quick wins (no breaking changes, no new dependencies):** P4 (sync `Send` override) + T1
-   tests; A6 (remove unused DataAnnotations reference); A1 (`WithValidator<T>()` overload).
+   tests; ~~A6 (remove unused DataAnnotations reference)~~ done in 4.0.0 (R1); A1
+   (`WithValidator<T>()` overload).
 4. **Hardening, strictly opt-in (minor-version friendly):** S5 docs part; A2 (composite
    validator).
 5. **Opt-in features (need an ADR each before implementation):** S4 (emitter control-char skip,
    amends ADR 0008), S5 optional `SanitizeTraceIdentifier` (amends ADR 0003).
 6. **Next major:** P3 (`Ordinal` equality), A4 (accessor semantics) - each with ADR updates.
-7. **Post-EOL:** R1 (drop net8.0/net9.0, supersedes ADR 0011's multi-target wave).
+7. **Landed:** R1 (drop net8.0/net9.0, supersedes ADR 0011's multi-target wave - 4.0.0 adds
+   net11.0, keeps net10.0; see ADR 0011 amendment).
 8. **Ongoing:** P1/P2 micro-optimizations guarded by benchmarks; T3 docs-compile guard.

@@ -19,7 +19,7 @@ using the [MADR](https://adr.github.io/madr/) format (Markdown Any/Decision Reco
 | [0008](0008-response-emission-on-starting.md) | Emit correlation ID to response in `OnStarting`, never overwriting | Accepted |
 | [0009](0009-single-registration-di-components.md) | Single-registration DI components with fail-fast guards | Accepted |
 | [0010](0010-public-api-governance.md) | Public API governance via analyzers and root-namespace extensions | Accepted |
-| [0011](0011-multi-targeting-strategy.md) | Multi-target current .NET support waves with version-locked extension packages | Accepted |
+| [0011](0011-multi-targeting-strategy.md) | Multi-target current .NET support waves with version-locked extension packages | Accepted (amended 2026-11-11: net10.0/net11.0, framework-reference-only deps) |
 | [0012](0012-minimal-dependency-footprint.md) | Minimal dependency footprint - no hosting, lazy options validation | Accepted |
 | [0013](0013-opt-in-invalid-correlation-policy.md) | Opt-in policy for invalid correlation values (`OnInvalid`) | Accepted |
 

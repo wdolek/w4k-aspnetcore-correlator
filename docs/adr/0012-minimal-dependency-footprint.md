@@ -38,8 +38,8 @@ As a consequence:
   not at application start. Eager validation would require hosting dependencies
   (`ValidateOnStart`), which is rejected. Consumers who want eager validation can call
   `ValidateOnStart()` themselves in their own host - it is a consumer decision, not a library one.
-- The currently referenced `Microsoft.Extensions.Options.DataAnnotations` package is unused and
-  slated for removal (improvement plan, A6) - options rules are expressed with plain
+- The `Microsoft.Extensions.Options.DataAnnotations` package was unused and has been removed in
+  4.0.0 (improvement plan A6) - options rules are expressed with plain
   `Validate(...)` callbacks.
 - `IConfiguration` binding of options is not provided by the library (delegate-based `Factory`,
   readonly-struct settings - see improvement plan A5 for optional patterns); adding a binding
