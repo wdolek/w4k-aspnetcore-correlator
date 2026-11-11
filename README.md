@@ -140,6 +140,8 @@ implement `ICorrelationValidator`, see [detailed configuration](docs/configurati
 - [Dependency injection](docs/registration.md) registration
 - [Components](docs/components.md) description
 - [Alternative packages and further reading](docs/alternatives.md)
+- [Architecture Decision Records](docs/adr/README.md)
+- [Improvement plans](docs/plans/2026-09-08-improvement-review.md)
 - [Changelog](CHANGELOG.md)
 
 ---

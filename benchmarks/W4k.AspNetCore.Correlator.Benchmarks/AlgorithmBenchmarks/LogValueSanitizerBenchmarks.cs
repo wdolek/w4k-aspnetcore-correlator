@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
@@ -10,8 +10,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.AlgorithmBenchmarks;
 
 [MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net10_0, baseline: true)]
-[SimpleJob(RuntimeMoniker.Net90)]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net11_0)]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByMethod)]
 public class LogValueSanitizerBenchmarks
 {

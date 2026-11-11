@@ -14,8 +14,7 @@ namespace W4k.AspNetCore.Correlator.Benchmarks.RequestBenchmarks;
 
 [MemoryDiagnoser]
 [SimpleJob(RuntimeMoniker.Net10_0, baseline: true)]
-[SimpleJob(RuntimeMoniker.Net90)]
-[SimpleJob(RuntimeMoniker.Net80)]
+[SimpleJob(RuntimeMoniker.Net11_0)]
 [CategoriesColumn]
 [GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory, BenchmarkLogicalGroupRule.ByJob)]
 public class NoCorrelatorBenchmarks : IDisposable

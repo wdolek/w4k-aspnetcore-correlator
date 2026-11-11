@@ -8,6 +8,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Releases up to and including 3.3.0 are documented on the
 [GitHub releases page](https://github.com/wdolek/w4k-aspnetcore-correlator/releases).
 
+## [4.0.0]
+
+### Added
+
+- .NET 11 (`net11.0`) target
+
+### Changed
+
+- **Breaking:** target frameworks are now `net10.0` and `net11.0` only (previously `net8.0`, `net9.0` and `net10.0`)
+- Package no longer declares `Microsoft.Extensions.*` dependencies: the required abstractions are provided by the `Microsoft.AspNetCore.App` shared framework reference (which consumers already required transitively), see ADR 0011 amendment
+- Single log-value sanitizer implementation for all target frameworks (net8.0-specific implementation removed)
+
+### Removed
+
+- **Breaking:** `net8.0` and `net9.0` support (both out of support since 2026-11-10)
+- `Microsoft.Extensions.Options.DataAnnotations` dependency (unused, see improvement plan A6)
+
+### Fixed
+
+- Debug builds of a Web SDK app project-referencing this library failed on .NET 11 SDK with "scoped css bundles do not have matching endpoints" (SDK regression, [dotnet/sdk#56656](https://github.com/dotnet/sdk/issues/56656)) - worked around with `EnableHotReloadInRuntimeConfigDevFile=false`, to be removed once the SDK fix ships
+
 ## [3.7.0]
 
 ### Changed

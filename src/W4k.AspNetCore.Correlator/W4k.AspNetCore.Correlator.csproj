@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <IsPackable>true</IsPackable>
     <IncludeSymbols>true</IncludeSymbols>
@@ -11,8 +11,12 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Nullable>enable</Nullable>
-    <!-- turn off package pruning while net8.0 is supported -->
-    <RestoreEnablePackagePruning>false</RestoreEnablePackagePruning>
+    <!-- .NET 11 SDK regression workaround (dotnet/sdk#56656): a Debug build of a Web SDK app
+         referencing this Web SDK library fails with "scoped css bundles do not have matching
+         endpoints" for the hot-reload browser-tools JS module. A library never runs standalone,
+         so opting out of the hot-reload runtime config is a no-op here. Remove when the SDK fix
+         ships. -->
+    <EnableHotReloadInRuntimeConfigDevFile>false</EnableHotReloadInRuntimeConfigDevFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,7 +33,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <VersionPrefix>3.7.0</VersionPrefix>
+    <VersionPrefix>4.0.0</VersionPrefix>
     <Authors>Zdenek Havlin</Authors>
     <Description>
       ASP.NET Core middleware processing incoming request correlation ID, together with HTTP message handler
@@ -51,29 +55,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.14.15">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="11.0.100" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="18.12.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
-    <PackageReference Include="Microsoft.Extensions.Http" Version="[8.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="[8.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="[8.0.0,)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net9.0'">
-    <PackageReference Include="Microsoft.Extensions.Http" Version="[9.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="[9.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="[9.0.0,)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
-    <PackageReference Include="Microsoft.Extensions.Http" Version="[10.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="[10.0.0,)" />
-    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="[10.0.0,)" />
   </ItemGroup>
 
   <ItemGroup>

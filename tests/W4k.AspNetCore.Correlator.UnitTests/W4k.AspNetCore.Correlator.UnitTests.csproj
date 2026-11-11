@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
     <Nullable>enable</Nullable>
@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TUnit" Version="1.65.68" />
-    <PackageReference Include="TUnit.Mocks" Version="1.65.68" />
+    <PackageReference Include="TUnit" Version="1.83.0" />
+    <PackageReference Include="TUnit.Mocks" Version="1.83.0" />
   </ItemGroup>
 
   <ItemGroup>
