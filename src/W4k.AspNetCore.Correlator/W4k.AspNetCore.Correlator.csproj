@@ -62,10 +62,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <!-- NB! Microsoft.Extensions.* (Http, Options) are not referenced explicitly: the SDK (Web)
-       provides them via the ASP.NET Core shared framework reference, which also flows to
-       consumers (see ADR 0011 and 0012) -->
-
   <ItemGroup>
     <None Include="$(ProjectDir)../../README.md" Pack="true" PackagePath="/" Visible="false" />
     <None Include="$(ProjectDir)../../images/correlator_128px.png" Pack="true" PackagePath="_img/" Visible="false" />
