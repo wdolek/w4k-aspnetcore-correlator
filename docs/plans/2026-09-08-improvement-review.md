@@ -13,6 +13,13 @@ relevant and include concrete code locations.
 > onto master after 3.5.0 (3.5.0 moved all `PublicAPI.Unshipped.txt` entries to `Shipped` - the
 > branches' additions were reconciled accordingly). All other findings re-verified as still
 > applicable to current code.
+>
+> Re-reviewed: 2026-10-05 - statuses refreshed against current master: S2 merged (#80, released
+> as 3.6.0) and S3 merged (#81, released as 3.7.0 per CHANGELOG; note - master tags show 3.6.0
+> pointing at S2's commit, 3.7.0 tag not yet present). All other findings re-verified as still
+> applicable: P4 (sync `Send` override missing from `CorrelatorHttpMessageHandler.cs:37`),
+> A1 (single `WithValidator<T>(T)` overload only), A6 (`Microsoft.Extensions.Options.DataAnnotations`
+> still referenced for all TFMs).
 
 Guiding constraints (deliberate design decisions - not defects):
 
@@ -31,8 +38,8 @@ Guiding constraints (deliberate design decisions - not defects):
 | #  | Finding | Area | Priority | Effort | Status |
 |----|---------|------|----------|--------|--------|
 | S1 | No security guidance for internet-facing deployments; opt-in validation deserves a discoverable one-liner helper | Docs/Security | Medium | S | **Merged** (#76), shipped in 3.5.0 |
-| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | **Implemented** - `feature/s2-invalid-correlation-policy` (rebased, ready to merge) |
-| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | **Implemented** - `feature/s3-header-name-validation` (rebased, ready to merge) |
+| S2 | Invalid correlation neither rejected nor regenerated - request continues without any correlation; **opt-in policy** `OnInvalid` proposed | Security/UX | High | M | **Merged** (#80), shipped in 3.6.0 |
+| S3 | Header names in options are not validated - potential break for invalid configs, needs decision (see item) | Security/UX | Medium | S | **Merged** (#81), 3.7.0 (CHANGELOG) |
 | S4 | Invalid header value reaching response emission fails as late 500 - behavior-preserving options only | Security | Medium | S | Open (optional feature) |
 | S5 | `ReplaceTraceIdentifier` injects unsanitized value into platform trace logs - docs-first; sanitize only as opt-in | Security | Medium | S | Open |
 | P1 | Per-request closure allocation in `OnStarting` registration | Performance | Low | S | Open |
@@ -83,12 +90,11 @@ For internet-facing APIs the opt-in validator is strongly advisable, but today i
   charset validator (A3), so hardening is a single line instead of a custom implementation.
   Zero cost for consumers who don't call it - the opt-in default is unchanged (ADR 0004).
 
-### S2. Invalid value: opt-in policy for what happens after failed validation
+### S2. Invalid value: opt-in policy for what happens after failed validation - MERGED (#80)
 
-**Implemented on `feature/s2-invalid-correlation-policy`** (`OnInvalid` policy with `KeepEmpty`/
-`GenerateNew`/`Reject`, `RegeneratedCorrelationContext`, middleware 400, ADR 0013 on the
-docs/adrs-and-plans branch, unit + integration tests) - rebased onto master after 3.5.0 (PublicAPI reconciled), ready to merge. Kept
-below for context.
+**Merged as `CorrelatorOptions.InvalidValuePolicy` (#80), shipped in 3.6.0:** `KeepEmpty`/
+`GenerateNew`/`Reject` policies, `RegeneratedCorrelationContext`, middleware 400 on `Reject`,
+ADR 0013, unit + integration tests. Kept below for context.
 
 **Non-breaking as opt-in feature.** New `CorrelationOptions` property, default preserving current
 behavior; new behavior only when explicitly configured (and only meaningful when a validator is
@@ -111,12 +117,12 @@ options.OnInvalid = InvalidCorrelationPolicy.GenerateNew; // opt-in
 Requires a new context type or a `GeneratedCorrelationContext` variant carrying the original
 header name and validation result. Amends ADR 0004 - needs its own ADR before implementation.
 
-### S3. Header names are not validated - decision needed (potential break)
+### S3. Header names are not validated - decision needed (potential break) - MERGED (#81)
 
-**Implemented on `feature/s3-header-name-validation`** per the recommendation below: strict
-validation in `PropagateAs`/`KeepIncomingHeaderName` factories + opt-in `ValidateHeaderNames`
-knob for `ReadFrom` (default off, non-breaking), with tests - rebased onto master after 3.5.0
-(PublicAPI reconciled), ready to merge. Kept below for context.
+**Merged (#81) as strict validation in `PropagateAs`/`KeepIncomingHeaderName` factories +
+opt-in `ValidateHeaderNames` knob for `ReadFrom` (default off), with tests.** Shipped as 3.7.0
+per CHANGELOG; note master currently tags 3.6.0 on the S2 commit #80 and no 3.7.0 tag exists
+yet. Kept below for context.
 
 **Potentially breaking if done strictly** - today's behavior differs per location:
 
@@ -379,10 +385,10 @@ net8.0 EOL (2026-11-10). Scope when executing:
 
 ## Suggested sequencing
 
-1. **Landed:** U1/U4/U5 (#73/#74/#75), S1 (#76, 3.5.0). CI/pack fixes (#77-#79).
-2. **Ready to merge:** S2 (`OnInvalid` policy + ADR 0013) and S3 (header name validation) - both
-   implemented on branches and rebased onto master after 3.5.0 (PublicAPI additions reconciled
-   with the release's Shipped/Unshipped move); tests green.
+1. **Landed:** U1/U4/U5 (#73/#74/#75), S1 (#76, 3.5.0). CI/pack fixes (#77-#79). Docs modernization
+   (#70-#72: xUnit -> TUnit, `test` -> `tests`, Moq -> TUnit.Mocks).
+2. **Landed:** S2 (`InvalidValuePolicy` + ADR 0013, #80, 3.6.0) and S3 (header name validation,
+   #81). Public API analyzer modernization plus deprecated-API test isolation (#82).
 3. **Quick wins (no breaking changes, no new dependencies):** P4 (sync `Send` override) + T1
    tests; A6 (remove unused DataAnnotations reference); A1 (`WithValidator<T>()` overload).
 4. **Hardening, strictly opt-in (minor-version friendly):** S5 docs part; A2 (composite
