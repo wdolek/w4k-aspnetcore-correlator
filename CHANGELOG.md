@@ -25,6 +25,10 @@ Releases up to and including 3.3.0 are documented on the
 - **Breaking:** `net8.0` and `net9.0` support (both out of support since 2026-11-10)
 - `Microsoft.Extensions.Options.DataAnnotations` dependency (unused, see improvement plan A6)
 
+### Fixed
+
+- Debug builds of a Web SDK app project-referencing this library failed on .NET 11 SDK with "scoped css bundles do not have matching endpoints" (SDK regression, [dotnet/sdk#56656](https://github.com/dotnet/sdk/issues/56656)) - worked around with `EnableHotReloadInRuntimeConfigDevFile=false`, to be removed once the SDK fix ships
+
 ## [3.7.0]
 
 ### Changed

@@ -11,6 +11,12 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <Nullable>enable</Nullable>
+    <!-- .NET 11 SDK regression workaround (dotnet/sdk#56656): a Debug build of a Web SDK app
+         referencing this Web SDK library fails with "scoped css bundles do not have matching
+         endpoints" for the hot-reload browser-tools JS module. A library never runs standalone,
+         so opting out of the hot-reload runtime config is a no-op here. Remove when the SDK fix
+         ships. -->
+    <EnableHotReloadInRuntimeConfigDevFile>false</EnableHotReloadInRuntimeConfigDevFile>
   </PropertyGroup>
 
   <PropertyGroup>
